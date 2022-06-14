@@ -1,8 +1,8 @@
-# PhaRaO
+# CFEAR
 
-C++ Implementation of [PhaRaO paper](https://irap.kaist.ac.kr/publications/yspark-2020-icra.pdf)
+C++ Implementation of [CFEAR paper](https://arxiv.org/pdf/2105.01457.pdf)
 
-- [PhaRaO](#pharao)
+- [CFEAR](#cfear)
   - [Requirements](#requirements)
   - [Build](#build)
     - [Windows](#windows)
