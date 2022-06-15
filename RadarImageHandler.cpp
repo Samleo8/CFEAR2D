@@ -267,7 +267,7 @@ void imageLogPolarToCartesian(const cv::Mat &aSrcImage, cv::Mat &aDestImage) {
  */
 void imageCropRange(const cv::Mat &aSrcImage, cv::Mat &aDestImage,
                     const unsigned int aCropStart,
-                    const unsigned int aCropWidth) {
+                    const unsigned int aCropWidth, const bool aAsReference) {
     cv::Mat subImage;
     cv::Size imageSize = aSrcImage.size();
 
@@ -278,7 +278,10 @@ void imageCropRange(const cv::Mat &aSrcImage, cv::Mat &aDestImage,
     cv::Mat subImageRef(aSrcImage, roi);
     subImageRef.copyTo(subImage);
 
-    aDestImage = subImageRef;
+    if (aAsReference)
+        aDestImage = subImageRef;
+    else
+        aDestImage = subImage;
 }
 
 /**

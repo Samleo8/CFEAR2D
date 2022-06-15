@@ -103,7 +103,7 @@ void imageLogPolarToCartesian(const cv::Mat &aSrcImage, cv::Mat &aDestImage);
 
 void imageCropRange(const cv::Mat &aSrcImage, cv::Mat &aDestImage,
                     const unsigned int aCropStart,
-                    const unsigned int aCropWidth);
+                    const unsigned int aCropWidth, const bool aAsReference = false);
 
 double computeConfidenceLevel(const RotTransData &aData);
 
