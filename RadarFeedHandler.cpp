@@ -42,7 +42,7 @@ bool getDataFromFolder(const std::filesystem::path &aFolderPath,
         return false;
     }
 
-    fs::path csvFilePath = fs::path(basePath);
+    fs::path csvFilePath = basePath / "gt";
     csvFilePath /= "radar_odometry.csv";
 
     success = getGroundTruthFromCSVFile(csvFilePath, aGroundTruthVector);

@@ -58,12 +58,15 @@ Data is being reformatted as:
 data
  |
  |---0
-     |
-     |---radar
-           |---<img_1>.jpg
-          ...
-           |---<img_n>.jpg
-   | radar.timestamps
+    |---gt
+          |---radar_odometry.csv
+    |---radar
+          |---<img_1>.jpg
+              
+               ...
+               
+          |---<img_n>.jpg
+    | radar.timestamps
  |
  |---1
     ...
