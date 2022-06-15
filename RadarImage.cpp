@@ -159,19 +159,27 @@ bool RadarImage::isProcessed() {
  ******************************************************/
 
 /**
- * @brief Get raw polar image (i.e. range-azimuth polar image)
- * @return Get raw polar (range-azimuth) image
+ * @brief Get raw image (includes metadata)
+ * @return Get raw image
  */
-const cv::Mat &RadarImage::getImagePolar() {
+const cv::Mat &RadarImage::getImageRaw() {
     return mRawImage;
 }
 
 /**
- * @brief Get raw polar image (i.e. range-azimuth polar image)
- * @return Get raw polar (range-azimuth) image
+ * @brief Get polar image (i.e. range-azimuth image)
+ * @return Get polar (range-azimuth) image
  */
-const cv::Mat &RadarImage::getImageRaw() {
-    return mRawImage;
+const cv::Mat &RadarImage::getImagePolar() {
+    return mPolarImage;
+}
+
+/**
+ * @brief Get polar image (i.e. range-azimuth image)
+ * @return Get polar (range-azimuth) image
+ */
+const cv::Mat &RadarImage::getImageMetaData() {
+    return mMetaDataImage;
 }
 
 /**
@@ -208,7 +216,7 @@ const cv::Mat &RadarImage::getImageLogPolar() {
 const cv::Mat &RadarImage::getImage(ImageType aType) {
     switch (aType) {
         case RIMG_RAW:
-             [[fallthrough]];
+            return getImageRaw();
         case RIMG_POLAR:
              [[fallthrough]];
         case RIMG_RANGE_AZIM:
@@ -288,12 +296,13 @@ void RadarImage::preprocessImages() {
         return;
     }
 
-    // Crop away metadata
+    // Crop raw image to get metadata and polar image, AS REFERENCE of raw image
     // NOTE: Oxford Dataset only
-    imageCropRange(mRawImage, mRawImage, 11, mRawImage.cols);
+    imageCropRange(mRawImage, mMetaDataImage, 0, 10, true);
+    imageCropRange(mRawImage, mPolarImage, 11, mRawImage.cols, true);
 
     // Convert to Cartesian and Polar 
-    imagePolarToCartesian(mRawImage, mCartImage);
+    imagePolarToCartesian(mPolarImage, mCartImage);
 
     // TODO: Possibly test a downsampling in the radial direction before k-max processing
     // TODO: Possibly try point-cloud generating technique from RadarSLAM

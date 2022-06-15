@@ -57,8 +57,10 @@ class RadarImage {
     // All preprocessed images
     // TODO: Remove the ones we don't need to store, esp raw
 
-    cv::Mat mRawImage; ///< Raw range-azimuth image
-    cv::Mat mCartImage;     ///< Downsampled Cartesian image
+    cv::Mat mRawImage;         ///< Raw range-azimuth image
+    cv::Mat &mPolarImage;      ///< Raw range-azimuth image
+    cv::Mat &mMetaDataImage;   ///< Metadata image (Oxford dataset only)
+    cv::Mat mCartImage;        ///< Downsampled Cartesian image
 
     // TODO: Unused for now
     cv::Mat mLogPolarImage;   ///< Downsampled log-polar image
@@ -91,6 +93,7 @@ class RadarImage {
      */
     enum ImageType {
         RIMG_RAW,
+        RIMG_METADATA,
         RIMG_POLAR,
         RIMG_RANGE_AZIM,
         // downsampled,
@@ -101,6 +104,8 @@ class RadarImage {
     };
 
     const cv::Mat &getImage(ImageType aType);
+    const cv::Mat &getImageRaw();
+    const cv::Mat &getImageMetaData();
     const cv::Mat &getImagePolar();
     const cv::Mat &getImageCart();
     const cv::Mat &getImageLogPolar();
