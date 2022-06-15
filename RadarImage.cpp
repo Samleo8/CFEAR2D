@@ -301,6 +301,9 @@ void RadarImage::preprocessImages() {
     imageCropRange(mRawImage, mMetaDataImage, 0, 10, true);
     imageCropRange(mRawImage, mPolarImage, 11, mRawImage.cols, true);
 
+    // Process the metadata here
+    mMetaData = extractMetaDataFromImage(mMetaDataImage);
+
     // Convert to Cartesian and Polar 
     imagePolarToCartesian(mPolarImage, mCartImage);
 

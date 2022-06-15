@@ -62,6 +62,8 @@ class RadarImage {
     cv::Mat &mMetaDataImage;   ///< Metadata image (Oxford dataset only)
     cv::Mat mCartImage;        ///< Downsampled Cartesian image
 
+    MetaData mMetaData;        ///< Metadata information (azimuth and timestamps)
+
     // TODO: Unused for now
     cv::Mat mLogPolarImage;   ///< Downsampled log-polar image
     // cv::Mat mDownsampledImage;    ///< Downsampled range-azimuth image

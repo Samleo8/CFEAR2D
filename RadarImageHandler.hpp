@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <vector>
 
 /**
  * @brief Translation data struct (no rotation). Used in pose graph and sliding
@@ -42,6 +43,16 @@ typedef struct {
     double dy;      ///< Translational change along y-axis [m]
     double dRotRad; ///< Rotational change [rad]
 } RotTransData;
+
+/**
+ * @brief List of metadata information (vector of doubles) 
+ */
+typedef std::vector<double> MetaDataList;
+
+typedef struct{
+    MetaDataList timestamps;
+    MetaDataList azimuths;
+} MetaData;
 
 // Defines
 /** @brief Simple MAX function */
@@ -83,6 +94,9 @@ typedef struct {
 /** @brief Square of radar max range */
 #define RADAR_MAX_RANGE_M_SQUARED (RADAR_MAX_RANGE_M * RADAR_MAX_RANGE_M)
 
+/** @brief Converts sweep counter values into azimuth in radians TODO: check radians or deg */
+#define SWEEP_COUNTER_TO_AZIM (M_PI / 2800.0);
+
 // Functions
 bool imagePathFromTimestamp(std::string &aImagePath, unsigned int aSetNumber,
                             unsigned int aImageNumber);
@@ -104,6 +118,8 @@ void imageLogPolarToCartesian(const cv::Mat &aSrcImage, cv::Mat &aDestImage);
 void imageCropRange(const cv::Mat &aSrcImage, cv::Mat &aDestImage,
                     const unsigned int aCropStart,
                     const unsigned int aCropWidth, const bool aAsReference = false);
+
+const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg);
 
 double computeConfidenceLevel(const RotTransData &aData);
 
