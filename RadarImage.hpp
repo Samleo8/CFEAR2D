@@ -59,10 +59,11 @@ class RadarImage {
 
     cv::Mat mRawImage; ///< Raw range-azimuth image
 
-    cv::Mat mDownsampledImage;    ///< Downsampled range-azimuth image
     cv::Mat mCoarseCartImage;     ///< Downsampled Cartesian image
     cv::Mat mCoarseLogPolarImage; ///< Downsampled log-polar image
 
+    // TODO: Unused for now
+    cv::Mat mDownsampledImage;    ///< Downsampled range-azimuth image
     cv::Mat mSubImage;     ///< Cropped range-azimuth sub-image
     cv::Mat mSubImageCart; ///< Cropped Cartesian sub-image
 
@@ -100,7 +101,7 @@ class RadarImage {
 
     const cv::Mat &getImage(ImageType aType);
     const cv::Mat &getImageCoarseCart();
-    const cv::Mat &getImageCoarseLogPolar();
+    const cv::Mat &getImageLogPolar();
     const cv::Mat &getImageSubFullCart();
 
     // Image Display
@@ -113,25 +114,6 @@ class RadarImage {
     void preprocessImages();
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);
     void performFFTOnImage(const cv::Mat &aSrcImage, cv::Mat &aDestImage);
-
-    double accountForSystematicError(double aValue);
-
-    double
-    getRotationDifference(RadarImage &aRImage,
-                          const double aFilterSize = DEFAULT_FILTER_SIZE);
-    void
-    getTranslationDifference(RadarImage &aRImage, cv::Point2d &aTranslationXY,
-                             const double aRotationDifferenceRad = 0,
-                             const double aFilterSize = DEFAULT_FILTER_SIZE,
-                             const bool aDisplayFilter = false);
-    void getRefinedTranslationDifference(
-        RadarImage &aRImage, cv::Point2d &aTranslationXY,
-        const double aRotationDifferenceRad = 0,
-        const double aFilterSize = DEFAULT_FILTER_SIZE,
-        const bool aDisplayFilter = false);
-    void getRotationTranslationDifference(
-        RadarImage &aRImage, RotTransData &aData,
-        const double aFilterSize = DEFAULT_FILTER_SIZE);
 };
 
 #endif

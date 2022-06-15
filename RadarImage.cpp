@@ -175,18 +175,8 @@ const cv::Mat &RadarImage::getImageCoarseCart() {
  *
  * @return Coarse log-polar aImage
  */
-const cv::Mat &RadarImage::getImageCoarseLogPolar() {
+const cv::Mat &RadarImage::getImageLogPolar() {
     return mCoarseLogPolarImage;
-}
-
-/**
- * @brief Get cartesian sub-image (preprocessed from sub-image)
- * NOTE: Preprocessing must be done first!
- *
- * @return Full-res cartesian sub-aImage
- */
-const cv::Mat &RadarImage::getImageSubFullCart() {
-    return mSubImageCart;
 }
 
 /**
@@ -269,12 +259,10 @@ void RadarImage::displayImage(ImageType aType, const bool aWaitKey,
 
 // (Pre-)Processing
 /**
- * @brief Performs preprocessing of images. Generates coarse cartesian and
- * coarse log polar from downsampled image (radial direction only). Also
- * generates full-res cartsian from a cropped sub image
- *
- * NOTE: Change crop range (`RADAR_IMAGE_SUB_RANGE`) in
- * RadarImageHandler.hpp
+ * @brief Performs preprocessing of images. Generates Cartesian and
+ * polar from raw log-polar image.
+ * @note Need to 
+ * @todo Try different filtering methods
  */
 void RadarImage::preprocessImages() {
     if (!mRawImage.data) {
@@ -285,9 +273,16 @@ void RadarImage::preprocessImages() {
     }
 
     // Crop away metadata
-    // TODO: Do something with the metadata?
+    // NOTE: Oxford Dataset only
     imageCropRange(mRawImage, mRawImage, 11, mRawImage.cols);
 
+    // Convert to Cartesian and Polar 
+
+    // TODO: Possibly test a downsampling in the radial direction before k-max processing
+    // TODO: Possibly try point-cloud generating technique from RadarSLAM
+
+
+    /*
     // Downsample Image first
     imageDownsampleRadial(mRawImage, mDownsampledImage,
                           RADAR_IMAGE_DOWNSAMPLED_RANGE);
@@ -302,6 +297,7 @@ void RadarImage::preprocessImages() {
     // TODO: Try different ranges and starting positions
     imageCropRange(mRawImage, mSubImage, 0, RADAR_IMAGE_SUB_RANGE);
     imagePolarToCartesian(mSubImage, mSubImageCart);
+    */
 
     mPreprocessed = true;
     return;
@@ -336,172 +332,4 @@ void RadarImage::performFFTOnImage(const cv::Mat &aSrcImage,
     cv::magnitude(F0[0], F0[1], aDestImage);
 
     return;
-}
-
-/**
- * @brief Account for systematic error due to subpixel shifts
- * @param[in] aValue Value to remove systematic error away from
- * @return Updated value
- */
-double RadarImage::accountForSystematicError(double aValue) {
-    return aValue - TRANSLATION_SYSTEMATIC_ERROR;
-}
-
-/**
- * @brief Computes rotation difference between one radar image and another.
- * Uses OpenCV phase correlation directly on computed log polar images.
- * @param[in] aRImage Other radar image to compute relative rotation difference
- * with. Should be previous radar image.
- * @param[in] aFilterSize High-pass filter size to use.
- *
- * @return Rotation in radians
- */
-double RadarImage::getRotationDifference(RadarImage &aRImage,
-                                         const double aFilterSize) {
-    cv::Mat lpSelf, lpOther;
-
-    if (!mPreprocessed) {
-        preprocessImages();
-    }
-
-    getImageCoarseLogPolar().convertTo(lpSelf, CV_64FC1);
-    aRImage.getImageCoarseLogPolar().convertTo(lpOther, CV_64FC1);
-
-    // ? Seems like no change despite order change
-    cv::Point2d scale_and_rotation =
-        phaseCorrelate2(lpOther, lpSelf, aFilterSize);
-
-    // Optimise by precalculating the logPolar1.rows
-    /// @note MULTIPLIER = (2 * pi) / lpSelf.rows
-    double rot_rad = accountForSystematicError(scale_and_rotation.y) *
-                     NORMALISE_ANGLE_MULTIPLIER;
-
-    // double scale =
-    //     exp(accountForSystematicError(scale_and_rotation.x) / lpSelf.cols);
-    // printf("Scale: %lf\n", scale);
-
-    return rot_rad;
-}
-
-/**
- * @brief Computes translation difference between one radar image and another.
- * @note Preferably, the radar images relative rotation have been pre-computed
- * and corrected for already. Otherwise, this function will also do it for you.
- * @see getRotationDifference()
- *
- * @param[in] aRImage Other radar image to compute relative translation
- * difference with. Should be NEXT radar image.
- * @param[out] aTranslationXY Point with x and y coordinates being translation
- * along x and y axis respectively @note Units are in [m] with conversion factor
- * as RANGE_RESOLUTION
- * @param[in] aRotationDifferenceRad Rotation difference to correct for
- * (radians). Default 0.
- * @param[in] aFilterSize High-pass filter size to use.
- * @param[in] aDisplayFilter Flag of whether to display highpass filtered image
- */
-void RadarImage::getTranslationDifference(RadarImage &aRImage,
-                                          cv::Point2d &aTranslationXY,
-                                          const double aRotationDifferenceRad,
-                                          const double aFilterSize,
-                                          const bool aDisplayFilter) {
-    cv::Mat cartSelf, cartSelfRot, cartOther;
-
-    if (!mPreprocessed) {
-        preprocessImages();
-    }
-
-    getImage(coarseCart).convertTo(cartSelf, CV_64FC1);
-    if (aRotationDifferenceRad != 0) {
-        performImageRotation(cartSelf, cartSelf, aRotationDifferenceRad);
-    }
-
-    aRImage.getImage(coarseCart).convertTo(cartOther, CV_64FC1);
-
-    cv::Point2d translation =
-        phaseCorrelate2(cartOther, cartSelf, aFilterSize, aDisplayFilter);
-
-    double outX = accountForSystematicError(translation.x);
-    double outY = accountForSystematicError(translation.y);
-
-    /// @note Returns units in meters
-    aTranslationXY =
-        cv::Point2d(outX * RANGE_RESOLUTION, outY * RANGE_RESOLUTION);
-
-    return;
-}
-
-/**
- * @brief Computes translation difference between one radar image and another.
- * @note Preferably, the radar images relative rotation have been pre-computed
- * and corrected for already. Otherwise, this function will also do it for you.
- * @see getRotationDifference()
- *
- * @param[in] aRImage Other radar image to compute relative translation
- * difference with. Should be NEXT radar image.
- * @param[out] aTranslationXY Point with x and y coordinates being translation
- * along x and y axis respectively
- *                            @note Units are in [m] with conversion factor as
- * RANGE_RESOLUTION
- * @param[in] aRotationDifferenceRad Rotation difference to correct for
- * (radians). Default 0.
- * @param[in] aFilterSize Added filter size.
- * @param[in] aDisplayFilter Flag of whether to display highpass filtered image
- */
-void RadarImage::getRefinedTranslationDifference(
-    RadarImage &aRImage, cv::Point2d &aTranslationXY,
-    const double aRotationDifferenceRad, const double aFilterSize,
-    const bool aDisplayFilter) {
-    cv::Mat cartSelf, cartSelfRot, cartOther;
-
-    if (!mPreprocessed) {
-        preprocessImages();
-    }
-
-    getImage(subCart).convertTo(cartSelf, CV_64FC1);
-    if (aRotationDifferenceRad != 0) {
-        performImageRotation(cartSelf, cartSelf, aRotationDifferenceRad);
-    }
-
-    aRImage.getImage(subCart).convertTo(cartOther, CV_64FC1);
-
-    cv::Point2d translation =
-        phaseCorrelate2(cartOther, cartSelf, aFilterSize + 1, aDisplayFilter);
-
-    double outX = accountForSystematicError(translation.x);
-    double outY = accountForSystematicError(translation.y);
-
-    /// @note Returns units in meters
-    aTranslationXY =
-        cv::Point2d(outX * RANGE_RESOLUTION, outY * RANGE_RESOLUTION);
-
-    return;
-}
-
-/**
- * @brief Computes rotation and translation difference between one radar image
- * and another. Stores into RotTransData struct
- * @see getTranslationDifference(), getRotationDifference()
- *
- * @param[in] aRImage Other radar image to compute relative translation
- * difference with. Should be NEXT radar image.
- * @param[out] aData RotTransData struct where
- * @param[in] aFilterSize Highpass filter size.
- */
-void RadarImage::getRotationTranslationDifference(RadarImage &aRImage,
-                                                  RotTransData &aData,
-                                                  const double aFilterSize) {
-    double rotRad = getRotationDifference(aRImage, aFilterSize);
-    cv::Point2d translation;
-    getTranslationDifference(aRImage, translation, rotRad, aFilterSize);
-
-    // cv::Point2d translation2;
-    // getRefinedTranslationDifference(aRImage, translation2, rotRad,
-    // aFilterSize);
-
-    // translation = (translation + translation2) / 2;
-
-    // Load into data
-    aData.dx = translation.x;
-    aData.dy = translation.y;
-    aData.dRotRad = rotRad;
 }
