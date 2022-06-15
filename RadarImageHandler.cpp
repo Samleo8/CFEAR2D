@@ -272,8 +272,7 @@ void imageCropRange(const cv::Mat &aSrcImage, cv::Mat &aDestImage,
     cv::Size imageSize = aSrcImage.size();
 
     // Ensure crop within range
-    cv::Rect roi(aCropStart, 0, MIN(imageSize.width - aCropStart, aCropWidth),
-                 imageSize.height);
+    cv::Rect roi(aCropStart, 0, MIN(imageSize.width, aCropWidth), imageSize.height);
 
     cv::Mat subImageRef(aSrcImage, roi);
     subImageRef.copyTo(subImage);
