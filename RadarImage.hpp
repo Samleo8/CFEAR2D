@@ -58,14 +58,13 @@ class RadarImage {
     // TODO: Remove the ones we don't need to store, esp raw
 
     cv::Mat mRawImage; ///< Raw range-azimuth image
-
-    cv::Mat mCoarseCartImage;     ///< Downsampled Cartesian image
-    cv::Mat mCoarseLogPolarImage; ///< Downsampled log-polar image
+    cv::Mat mCartImage;     ///< Downsampled Cartesian image
 
     // TODO: Unused for now
-    cv::Mat mDownsampledImage;    ///< Downsampled range-azimuth image
-    cv::Mat mSubImage;     ///< Cropped range-azimuth sub-image
-    cv::Mat mSubImageCart; ///< Cropped Cartesian sub-image
+    cv::Mat mLogPolarImage;   ///< Downsampled log-polar image
+    // cv::Mat mDownsampledImage;    ///< Downsampled range-azimuth image
+    // cv::Mat mSubImage;     ///< Cropped range-azimuth sub-image
+    // cv::Mat mSubImageCart; ///< Cropped Cartesian sub-image
 
     bool mLoaded = false;       ///< Flag of whether image has been loaded
     bool mPreprocessed = false; ///< Flag of whether image has been preprocessed
@@ -91,18 +90,21 @@ class RadarImage {
      * @brief Interface to images. Used for specifying image type.
      */
     enum ImageType {
-        raw,
-        downsampled,
-        coarseCart,
-        coarseLogPolar,
-        sub,
-        subCart
+        RIMG_RAW,
+        RIMG_POLAR,
+        RIMG_RANGE_AZIM,
+        // downsampled,
+        RIMG_CART,
+        RIMG_LOGPOLAR,
+        // sub,
+        // subCart
     };
 
     const cv::Mat &getImage(ImageType aType);
-    const cv::Mat &getImageCoarseCart();
+    const cv::Mat &getImagePolar();
+    const cv::Mat &getImageCart();
     const cv::Mat &getImageLogPolar();
-    const cv::Mat &getImageSubFullCart();
+    // const cv::Mat &getImageSubFullCart();
 
     // Image Display
     void displayImage(ImageType aType, const bool aWaitKey = true,

@@ -159,29 +159,47 @@ bool RadarImage::isProcessed() {
  ******************************************************/
 
 /**
- * @brief Get coarse cartesian image (preprocessed from image downsampled in
+ * @brief Get raw polar image (i.e. range-azimuth polar image)
+ * @return Get raw polar (range-azimuth) image
+ */
+const cv::Mat &RadarImage::getImagePolar() {
+    return mRawImage;
+}
+
+/**
+ * @brief Get raw polar image (i.e. range-azimuth polar image)
+ * @return Get raw polar (range-azimuth) image
+ */
+const cv::Mat &RadarImage::getImageRaw() {
+    return mRawImage;
+}
+
+/**
+ * @brief Get cartesian image (preprocessed from image downsampled in
  * radial direction) NOTE: Preprocessing must be done first!
  *
  * @return Coarse cartesian aImage
  */
-const cv::Mat &RadarImage::getImageCoarseCart() {
-    return mCoarseCartImage;
+const cv::Mat &RadarImage::getImageCart() {
+    return mCartImage;
 }
 
 /**
  * @brief Get coarse log-polar image (preprocessed from image downsampled in
  * radial direction)
+ * @deprecated Log polar image currently unused
  * NOTE: Preprocessing must be done first!
+ * @todo If preprocessing is not done, then perform the relevant conversion function
  *
  * @return Coarse log-polar aImage
  */
 const cv::Mat &RadarImage::getImageLogPolar() {
-    return mCoarseLogPolarImage;
+    return mLogPolarImage;
 }
 
 /**
  * @brief Gets one of `type` (enum) image associated with this radar image.
- *        For example, obtain raw image via `getImage(raw)`
+ *        For example, obtain raw image via `getImage(RIMG_RAW)`
  *
  * NOTE: This aImage can only be obtained after preprocessing is done
  *
@@ -189,18 +207,16 @@ const cv::Mat &RadarImage::getImageLogPolar() {
  */
 const cv::Mat &RadarImage::getImage(ImageType aType) {
     switch (aType) {
-        case raw:
-            return mRawImage;
-        case downsampled:
-            return mDownsampledImage;
-        case coarseCart:
-            return mCoarseCartImage;
-        case coarseLogPolar:
-            return mCoarseLogPolarImage;
-        case sub:
-            return mSubImage;
-        case subCart:
-            return mSubImageCart;
+        case RIMG_RAW:
+             [[fallthrough]];
+        case RIMG_POLAR:
+             [[fallthrough]];
+        case RIMG_RANGE_AZIM:
+            return getImagePolar();
+        case RIMG_CART:
+            return getImageCart();
+        case RIMG_LOGPOLAR:
+            return getImageLogPolar();
         default:
             printf_err("Invalid image type! Returning raw image!\n");
             return mRawImage;
@@ -277,10 +293,15 @@ void RadarImage::preprocessImages() {
     imageCropRange(mRawImage, mRawImage, 11, mRawImage.cols);
 
     // Convert to Cartesian and Polar 
+    imagePolarToCartesian(mRawImage, mCartImage);
 
     // TODO: Possibly test a downsampling in the radial direction before k-max processing
     // TODO: Possibly try point-cloud generating technique from RadarSLAM
 
+
+    // Obtain log polar image
+    // NOTE: currently unused
+    // imageCartesianToLogPolar(mCartImage, mLogPolarImage);
 
     /*
     // Downsample Image first
@@ -288,10 +309,7 @@ void RadarImage::preprocessImages() {
                           RADAR_IMAGE_DOWNSAMPLED_RANGE);
 
     // Obtain coarse cartesian image
-    imagePolarToCartesian(mDownsampledImage, mCoarseCartImage);
-
-    // Obtain log polar image
-    imageCartesianToLogPolar(mCoarseCartImage, mCoarseLogPolarImage);
+    imagePolarToCartesian(mDownsampledImage, mCartImage);
 
     // Obtain cartesian of sub image (in full res)
     // TODO: Try different ranges and starting positions

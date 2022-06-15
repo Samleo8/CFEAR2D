@@ -723,7 +723,7 @@ void RadarFeed::run(const int aStartFrame, const int aEndFrame,
                 fs::path saveRadarPath =
                     saveImagesPath / ("radar_" + currFramePadded + ".jpg");
                 cv::imwrite(saveRadarPath.string(),
-                            currImage.getImageCoarseCart());
+                            currImage.getImageCart());
 
                 printf("Visualisation canvas saved to %s\n",
                        saveVisPath.string().c_str());
