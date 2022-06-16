@@ -46,35 +46,6 @@ typedef struct {
     double dRotRad; ///< Rotational change [rad]
 } RotTransData;
 
-/**
- * @brief 2D Cartesian Point struct. Used for storing 2D Cartesian points
- */
-struct PointCart2D {
-    double x; ///< X-coordinate
-    double y; ///< Y-coordinate
-
-    void toPolar(struct PointPolar2D & polar) {
-        polar->R = sqrt(x * x + y * y);
-        polar->theta = atan2(y, x);
-    }
-};
-
-typedef struct PointCart2D PointCart2D;
-
-/**
- * @brief 2D Polar Point struct. Used for storing 2D Polar points
- */
-struct PointPolar2D {
-    double R;     ///< range-coordinate
-    double theta; ///< azimuth-coordinate
-
-    void toCartesian(struct PointCart2D & cart) {
-        cart->x = R * cos(theta);
-        cart->y = R * sin(theta);
-    }
-};
-
-typedef struct PointPolar2D PointPolar2D;
 
 /** @brief Typedef for vector of feature points */
 typedef std::vector<PointCart2D> FeaturePointsVec;
