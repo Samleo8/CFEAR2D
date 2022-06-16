@@ -27,6 +27,9 @@
 #include <string>
 #include <vector>
 
+#include "PointCart2D.hpp"
+#include "PointPolar2D.hpp"
+
 /**
  * @brief Translation data struct (no rotation). Used in pose graph and sliding
  * window to store only translation data between 2 consecutive frames.

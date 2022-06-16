@@ -411,7 +411,7 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
         const double azimuth = azimuths[i];
 
         // Get the top k value index pairs
-        const double *Mi_const = M.ptr<double>(i);
+        const double *Mi_const = imgPolar.ptr<double>(i);
         std::vector<ValueIndexPair> &topKVec;
 
         getTopK(Mi_const, N, aK, topKVec);
@@ -419,7 +419,7 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
         // Now loop through the top k and add them to the feature points vector
         for (int j = 0; j < aK; j++) {
             const ValueIndexPair &pair = topKVec[j];
-            
+
             const double val = pair.first;
             const size_t idx = pair.second;
 
@@ -428,7 +428,8 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
                 PointCart2D pointCart;
                 PointPolar2D pointPolar;
 
-                const double range = (static_cast<double>(idx) + 1.0) * RANGE_RESOLUTION;
+                const double range =
+                    (static_cast<double>(idx) + 1.0) * RANGE_RESOLUTION;
 
                 pointPolar.azimuth = azimuth;
                 pointPolar.range = range;
@@ -439,7 +440,6 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
             }
         }
     }
-}
 }
 
 /**

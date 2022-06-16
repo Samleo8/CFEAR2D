@@ -338,7 +338,7 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
         // TODO: Make this more efficient - matrix iteration like this can be quite slow
         // TODO: Potentially use unions?
 
-        const double* Mi = M.ptr<double>(i);
+        const double* Mi = aMetaDataImg.ptr<double>(i);
 
         // Extract timestamp information
         for (int j = 0; j < 8; j++) {
