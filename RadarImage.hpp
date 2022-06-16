@@ -57,12 +57,17 @@ class RadarImage {
     // All preprocessed images
     // TODO: Remove the ones we don't need to store, esp raw
 
-    cv::Mat mRawImage;         ///< Raw range-azimuth image
+    cv::Mat mRawImage;        ///< Raw range-azimuth image
     cv::Mat mPolarImage;      ///< Raw range-azimuth image
     cv::Mat mMetaDataImage;   ///< Metadata image (Oxford dataset only)
-    cv::Mat mCartImage;        ///< Downsampled Cartesian image
+    cv::Mat mCartImage;       ///< Cartesian image
 
-    MetaData mMetaData;        ///< Metadata information (azimuth and timestamps)
+    MetaData mMetaData;       ///< Metadata information (azimuth and timestamps)
+
+    /** @brief Feature points (Cartesian) found from filtering
+      * @note In sensor coordinates 
+      */
+    std::vector<2DPointCart> mFeaturePoints; 
 
     // TODO: Unused for now
     cv::Mat mLogPolarImage;   ///< Downsampled log-polar image
@@ -123,7 +128,8 @@ class RadarImage {
     void preprocessImages();
 
     // Filtering process
-    void performKStrong(std::vector<2DPointCart> &aOutputPoints, size_t K, double Zmin);
+    void performKStrong(const size_t aK, const double aZmin, const bool aClearOld = true);
+    const std::vector<2DPointCart> &getFeaturePoints();
 
     // Generating Oriented Surface Points
     // TODO: Might want to make as its own class

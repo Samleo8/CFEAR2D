@@ -308,8 +308,6 @@ void RadarImage::preprocessImages() {
     imagePolarToCartesian(mPolarImage, mCartImage);
 
     // TODO: Possibly test a downsampling in the radial direction before k-max processing
-    // TODO: Possibly try point-cloud generating technique from RadarSLAM
-
 
     // Obtain log polar image
     // NOTE: currently unused
@@ -333,8 +331,38 @@ void RadarImage::preprocessImages() {
     return;
 }
 
-void performKStrong(std::vector<2DPointCart> &aOutputPoints, size_t K, double Zmin){
-    
+/**
+ * @brief Perform K Strong filtering on radar image
+ * @note Internally updates mFeaturePoints vector
+ * 
+ * @param[in] aK Number of points (k) to keep after filtering
+ * @param[in] aZmin Minimum power value to count as valid feature point
+ * @param[in] aClearOld Whether to clear existing feature points vector
+ */
+void RadarImage::performKStrong(const size_t aK, const double aZmin, const bool aClearOld){
+    if (!mPreprocessed) {
+        printf_err("Error: Cannot perform K-Strong filtering: Image has not been preprocessed!\n");
+        return;
+    }
+
+    // TODO: Possibly try point-cloud generating technique from RadarSLAM
+
+    // Setup mFeaturePoints vector
+    if (aClearOld) mFeaturePoints.clear();
+
+    const size_t sz = mFeaturePoints.size();
+    mFeaturePoints.reserve(sz + aK);
+
+    // TODO: Actually perform the k-strong filtering by looping over each row (azimuth) of the image
+}
+
+/**
+ * @brief Get FeaturePoints member class
+ * 
+ * @return const std::vector<2DPointCart>& Vector of feature points 
+ */
+const std::vector<2DPointCart> &getFeaturePoints() {
+    return mFeaturePoints;
 }
 
 /**

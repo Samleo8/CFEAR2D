@@ -46,69 +46,6 @@ void writeText(cv::Mat aImg, const std::string &aText, const int ax,
 }
 
 /**
- * @brief Get radar image data from 2 radar images. Also returns the rotated r2
- * image.
- *
- * @param[in] r1 Radar image 1
- * @param[in] r2 Radar image 2
- * @param[out] r2Rot Rotated 2nd image based on image data
- * @param[out] data Rotation translation data
- * @param[in] filterSize Filter size
- * @param[in] displayHighpass Flag whether or not to display highpass image
- */
-void getRadarImageData(RadarImage &r1, RadarImage &r2, cv::Mat &r2Rot,
-                       RotTransData &data,
-                       const double filterSize = DEFAULT_FILTER_SIZE,
-                       const bool displayHighpass = false) {
-    // TODO: Fix this
-    //     double rotDifference = r1.getRotationDifference(r2, filterSize);
-
-    //     cv::Point2d translation;
-    //     r1.getTranslationDifference(r2, translation, rotDifference,
-    //     filterSize,
-    //                                 displayHighpass);
-
-    //     performImageRotation(r1.getImageCoarseCart(), r2Rot, rotDifference);
-
-    //     data.dRotRad = rotDifference;
-    //     data.dx = translation.x;
-    //     data.dy = translation.y;
-}
-
-/**
- * @brief Obtains text from data
- * @param[in] data Rotation translation data
- * @param[out] outputStr Output string
- */
-void getTextFromData(const RotTransData &data, std::string &outputStr) {
-    const double transX = data.dx;
-    const double transY = data.dy;
-    const double rotDifference = data.dRotRad;
-    const double confidence = computeConfidenceLevel(data);
-
-    char output[OUT_BUFFER_SIZE];
-    int len = 0;
-    len += snprintf(output + len, OUT_BUFFER_SIZE - len, "Rot (rad): %lf\n",
-                    rotDifference);
-    len += snprintf(output + len, OUT_BUFFER_SIZE - len, "Rot (deg): %lf\n\n",
-                    RAD_TO_DEG * rotDifference);
-
-    len += snprintf(output + len, OUT_BUFFER_SIZE - len,
-                    "Translation (pixels): %lf %lf\n",
-                    transX / RANGE_RESOLUTION, transY / RANGE_RESOLUTION);
-    len += snprintf(output + len, OUT_BUFFER_SIZE - len,
-                    "Translation (m): %lf %lf\n\n", transX, transY);
-
-    len += snprintf(output + len, OUT_BUFFER_SIZE - len, "Confidence: %lf\n",
-                    confidence);
-
-    printf("%s", output);
-    fflush(stdout);
-
-    outputStr = std::string(output);
-}
-
-/**
  * @brief Applies header and footer texts to images and concatenates them for
  * easy saving
  *
@@ -165,15 +102,13 @@ void concatImagesWithText(cv::Mat displayImages[],
  * @param[in] basePath Base folder path to save image
  * @param[in] dataset Dataset number
  * @param[in] r1ID First image ID
- * @param[in] r2ID Second image ID
  * @param[out] outPathStr String to path to image
  */
 void genImagePath(fs::path &basePath, const unsigned int dataset,
                   const unsigned int r1ID,
                   std::string &outPathStr, const std::string &appendStr = "") {
     fs::path outPath(basePath);
-    outPath /= std::to_string(dataset) + "_" + std::to_string(r1ID) + "_" +
-               std::to_string(r2ID) + appendStr + ".jpg";
+    outPath /= std::to_string(dataset) + "_" + std::to_string(r1ID) + appendStr + ".jpg";
     outPathStr = outPath.string();
 }
 
@@ -190,37 +125,9 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
                          enum OutputStyle outStyle = NORMAL) {
     // Init radar images
     RadarImage r1(dataset, r1ID, true);
-    RadarImage r2(dataset, r2ID, true);
-    RotTransData data;
-    cv::Mat r2Rot;
-    std::string outputStr;
-
-    // r1.displayImage(r1.coarseCart, std::to_string(r1ID));
-    // r2.displayImage(r2.coarseCart, std::to_string(r2ID));
-
-    getRadarImageData(r1, r2, r2Rot, data, filterSize);
-
-    getTextFromData(data, outputStr);
-
-    // Fancy display that's easier to save
-    cv::Mat r1Img, r2Img;
-    r1Img = r1.getImage(RadarImage::RIMG_CART);
-    r2Img = r2.getImage(RadarImage::RIMG_CART);
-
-    // Images to pad
-    cv::Mat displayImages[] = { r1Img, r2Rot, r2Img };
-    const int nImgs = sizeof(displayImages) / sizeof(displayImages[0]);
-
-    std::string headerTexts[nImgs] = { "Frame " + std::to_string(r1ID),
-                                       "Frame " + std::to_string(r1ID) +
-                                           " (Rot)",
-                                       "Frame " + std::to_string(r2ID) };
-
-    std::string footerTexts[nImgs] = { outputStr, "", "" };
-
-    // Concat images for display
-    concatImagesWithText(displayImages, headerTexts, footerTexts, nImgs,
-                         outputImg, outStyle);
+    
+    
+    
 }
 
 /**
