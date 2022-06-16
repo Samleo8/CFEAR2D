@@ -46,6 +46,34 @@ typedef struct {
 } RotTransData;
 
 /**
+ * @brief 2D Cartesian Point struct. Used for storing 2D Cartesian points
+ */
+typedef struct {
+    double x;       ///< X-coordinate
+    double y;       ///< Y-coordinate
+
+    void toPolar(2DPointPolar &polar) {
+        polar->R = sqrt(x * x + y * y);
+        polar->theta = atan2(y, x);
+    }
+} 2DPointCart;
+
+
+/**
+ * @brief 2D Polar Point struct. Used for storing 2D Polar points
+ */
+typedef struct {
+    double R;      ///< range-coordinate
+    double theta;  ///< azimuth-coordinate
+
+    void toCart(2DPointCart &cart) {
+        cart->x = R * cos(theta);
+        cart->y = R * sin(theta);
+    }
+} 2DPointPolar;
+
+
+/**
  * @brief List of metadata information (vector of doubles) 
  */
 typedef std::vector<double> MetaDataList;

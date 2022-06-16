@@ -333,6 +333,10 @@ void RadarImage::preprocessImages() {
     return;
 }
 
+void performKStrong(std::vector<2DPointCart> &aOutputPoints, size_t K, double Zmin){
+    
+}
+
 /**
  * @brief Performs FFT on image using OpenCV implementation of DFT
  *

@@ -121,6 +121,14 @@ class RadarImage {
 
     // Image (pre-)processing
     void preprocessImages();
+
+    // Filtering process
+    void performKStrong(std::vector<2DPointCart> &aOutputPoints, size_t K, double Zmin);
+
+    // Generating Oriented Surface Points
+    // TODO: Might want to make as its own class
+
+    // NOTE: UNUSED
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);
     void performFFTOnImage(const cv::Mat &aSrcImage, cv::Mat &aDestImage);
 };
