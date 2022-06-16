@@ -425,8 +425,8 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
 
             // Only accept values which are also above Zmin
             if (val > aZmin) {
-                2DPointCart pointCart;
-                2DPointPolar pointPolar;
+                PointCart2D pointCart;
+                PointPolar2D pointPolar;
 
                 const double range = (static_cast<double>(idx) + 1.0) * RANGE_RESOLUTION;
 

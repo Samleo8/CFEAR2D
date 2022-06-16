@@ -16,16 +16,16 @@
 #include <math.h>
 #endif // !_USE_MATH_DEFINES
 
+#include <bitset>
 #include <filesystem>
 #include <fstream>
 #include <opencv2/opencv.hpp>
+#include <queue>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
-#include <queue>
-#include <bitset>
 
 /**
  * @brief Translation data struct (no rotation). Used in pose graph and sliding
@@ -49,37 +49,35 @@ typedef struct {
 /**
  * @brief 2D Cartesian Point struct. Used for storing 2D Cartesian points
  */
-struct 2DPointCart{
-    double x;       ///< X-coordinate
-    double y;       ///< Y-coordinate
+struct PointCart2D {
+    double x; ///< X-coordinate
+    double y; ///< Y-coordinate
 
-    void toPolar(struct 2DPointPolar &polar) {
+    void toPolar(struct PointPolar2D & polar) {
         polar->R = sqrt(x * x + y * y);
         polar->theta = atan2(y, x);
     }
 };
 
-typedef struct 2DPointCart 2DPointCart;
-
+typedef struct PointCart2D PointCart2D;
 
 /**
  * @brief 2D Polar Point struct. Used for storing 2D Polar points
  */
-struct 2DPointPolar {
-    double R;      ///< range-coordinate
-    double theta;  ///< azimuth-coordinate
+struct PointPolar2D {
+    double R;     ///< range-coordinate
+    double theta; ///< azimuth-coordinate
 
-    void toCartesian(struct 2DPointCart &cart) {
+    void toCartesian(struct PointCart2D & cart) {
         cart->x = R * cos(theta);
         cart->y = R * sin(theta);
     }
 };
 
-typedef struct 2DPointPolar 2DPointPolar;
-
+typedef struct PointPolar2D PointPolar2D;
 
 /** @brief Typedef for vector of feature points */
-typedef std::vector<2DPointCart> FeaturePointsVec;
+typedef std::vector<PointCart2D> FeaturePointsVec;
 
 /** @brief Typedef for list of metadata information (vector of doubles) */
 typedef std::vector<double> MetaDataList;
@@ -87,7 +85,7 @@ typedef std::vector<double> MetaDataList;
 /**
  * @brief Struct of metadata information (timestamps and azimuths)
  */
-typedef struct{
+typedef struct {
     MetaDataList timestamps;
     MetaDataList azimuths;
 } MetaData;
@@ -138,7 +136,8 @@ typedef std::pair<double, size_t> ValueIndexPair;
 /** @brief Square of radar max range */
 #define RADAR_MAX_RANGE_M_SQUARED (RADAR_MAX_RANGE_M * RADAR_MAX_RANGE_M)
 
-/** @brief Converts sweep counter values into azimuth in radians TODO: check radians or deg */
+/** @brief Converts sweep counter values into azimuth in radians TODO: check
+ * radians or deg */
 #define SWEEP_COUNTER_TO_AZIM (M_PI / 2800.0);
 
 // Functions
@@ -161,7 +160,8 @@ void imageLogPolarToCartesian(const cv::Mat &aSrcImage, cv::Mat &aDestImage);
 
 void imageCropRange(const cv::Mat &aSrcImage, cv::Mat &aDestImage,
                     const unsigned int aCropStart,
-                    const unsigned int aCropWidth, const bool aAsReference = false);
+                    const unsigned int aCropWidth,
+                    const bool aAsReference = false);
 
 const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg);
 
