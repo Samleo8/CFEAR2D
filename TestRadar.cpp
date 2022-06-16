@@ -123,11 +123,20 @@ void genImagePath(fs::path &basePath, const unsigned int dataset,
 void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
                          cv::Mat &outputImg,
                          enum OutputStyle outStyle = NORMAL) {
-    // Init radar images
+    // Obtain radar images
     RadarImage r1(dataset, r1ID, true);
     
-    
-    
+    // TODO: For now, do nothing with K strongest filtering
+
+    // K-filtering
+    const size_t K = 10;
+    const double Z_min = 30; // TODO: check/play with params
+    r1.performKStrong(K, Z_min);
+
+    // Get filtered points and display them on image
+    FeaturePointsVec featurePoints = r1.getFeaturePoints();
+
+    outputImg = r1.getImage(RIMG_CART);
 }
 
 /**

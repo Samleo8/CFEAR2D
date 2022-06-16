@@ -67,7 +67,7 @@ class RadarImage {
     /** @brief Feature points (Cartesian) found from filtering
       * @note In sensor coordinates 
       */
-    std::vector<2DPointCart> mFeaturePoints; 
+    FeaturePointsVec mFeaturePoints; 
 
     // TODO: Unused for now
     cv::Mat mLogPolarImage;   ///< Downsampled log-polar image
@@ -129,7 +129,7 @@ class RadarImage {
 
     // Filtering process
     void performKStrong(const size_t aK, const double aZmin, const bool aClearOld = true);
-    const std::vector<2DPointCart> &getFeaturePoints();
+    const FeaturePointsVec &getFeaturePoints();
 
     // Generating Oriented Surface Points
     // TODO: Might want to make as its own class

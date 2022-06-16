@@ -359,9 +359,9 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin, const bool 
 /**
  * @brief Get FeaturePoints member class
  * 
- * @return const std::vector<2DPointCart>& Vector of feature points 
+ * @return Vector of feature points 
  */
-const std::vector<2DPointCart> &getFeaturePoints() {
+const FeaturePointsVec &getFeaturePoints() {
     return mFeaturePoints;
 }
 

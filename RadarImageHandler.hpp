@@ -72,12 +72,15 @@ typedef struct {
     }
 } 2DPointPolar;
 
+/** @brief Typedef for vector of feature points */
+typedef std::vector<2DPointCart> FeaturePointsVec;
 
-/**
- * @brief List of metadata information (vector of doubles) 
- */
+/** @brief Typedef for list of metadata information (vector of doubles) */
 typedef std::vector<double> MetaDataList;
 
+/**
+ * @brief Struct of metadata information (timestamps and azimuths)
+ */
 typedef struct{
     MetaDataList timestamps;
     MetaDataList azimuths;
