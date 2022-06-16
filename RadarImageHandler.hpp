@@ -48,29 +48,34 @@ typedef struct {
 /**
  * @brief 2D Cartesian Point struct. Used for storing 2D Cartesian points
  */
-typedef struct {
+struct 2DPointCart{
     double x;       ///< X-coordinate
     double y;       ///< Y-coordinate
 
-    void toPolar(2DPointPolar &polar) {
+    void toPolar(struct 2DPointPolar &polar) {
         polar->R = sqrt(x * x + y * y);
         polar->theta = atan2(y, x);
     }
-} 2DPointCart;
+};
+
+typedef struct 2DPointCart 2DPointCart;
 
 
 /**
  * @brief 2D Polar Point struct. Used for storing 2D Polar points
  */
-typedef struct {
+struct 2DPointPolar {
     double R;      ///< range-coordinate
     double theta;  ///< azimuth-coordinate
 
-    void toCart(2DPointCart &cart) {
+    void toCart(struct 2DPointCart &cart) {
         cart->x = R * cos(theta);
         cart->y = R * sin(theta);
     }
-} 2DPointPolar;
+};
+
+typedef struct 2DPointPolar 2DPointPolar;
+
 
 /** @brief Typedef for vector of feature points */
 typedef std::vector<2DPointCart> FeaturePointsVec;
