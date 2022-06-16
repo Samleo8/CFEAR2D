@@ -331,6 +331,10 @@ void RadarImage::preprocessImages() {
     return;
 }
 
+void RadarImage::getTopK(const double* aAzim){
+    // https://stackoverflow.com/questions/14902876/indices-of-the-k-largest-elements-in-an-unsorted-length-n-array
+}
+
 /**
  * @brief Perform K Strong filtering on radar image
  * @note Internally updates mFeaturePoints vector
@@ -353,7 +357,29 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin, const bool 
     const size_t sz = mFeaturePoints.size();
     mFeaturePoints.reserve(sz + aK);
 
-    // TODO: Actually perform the k-strong filtering by looping over each row (azimuth) of the image
+    // TODO: Perform the k-strong filtering by looping over each row (azimuth) of the image
+    // And getting the top k points that are above threshold
+    const cv::Mat &imgPolar = getImagePolar();
+	const int M = imgPolar.rows;
+	const int N = imgPolar.cols;
+    
+    for (int i = 0; i < M; i++) {
+        const double* Mi_const = M.ptr<double>(i);
+        double *Mi;
+        std::copy(Mi_const, Mi_const + N, Mi);
+
+        // Max efficiency by using std::nth_element to get kth largest elements
+        std::nth_element(Mi, Mi + k - 1, Mi + N, std::greater<int>());
+
+        // Loop through the top k elements
+        for (int j; j < k; j++) {
+            if (Mi[j] > aZmin) {
+                mFeaturePoints.push_back(cv::Point(range, azim));
+            }
+        }
+
+        }
+    }
 }
 
 /**
