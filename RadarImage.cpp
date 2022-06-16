@@ -341,7 +341,7 @@ void RadarImage::preprocessImages() {
  * https://stackoverflow.com/questions/14902876/indices-of-the-k-largest-elements-in-an-unsorted-length-n-array
  * @param[in] aAzim Pointer to azimuth array
  * @param[in] aSize
- * @param[out] aTopK Vector of top k
+ * @param[out] aTopKVec Vector of top k
  */
 void RadarImage::getTopK(const double *aAzim, const size_t aSize,
                          const size_t aK,
@@ -356,19 +356,19 @@ void RadarImage::getTopK(const double *aAzim, const size_t aSize,
         if (pq.size() < aK) {
             pq.push(std::make_pair(val, i));
         }
-        else if (val > mTopK.top().first) {
+        else if (val > pq.top().first) {
             pq.pop();
             pq.push(std::make_pair(val, i));
         }
     }
 
     // Now pop the top k elements of our pruned PQ and populate the vector
-    kpq = pq.size();
-    aTopK.clear();
-    aTopK.reserve(aK);
+    aTopKVec.clear();
+    aTopKVec.reserve(aK);
 
-    for (size_t i = 0; i < kpq.; i++) {
-        aTopK.push_back(pq.top());
+    size_t kpq = pq.size();
+    for (size_t i = 0; i < kpq; i++) {
+        aTopKVec.push_back(pq.top());
         pq.pop();
     }
 }
@@ -412,7 +412,7 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
 
         // Get the top k value index pairs
         const double *Mi_const = imgPolar.ptr<double>(i);
-        std::vector<ValueIndexPair> &topKVec;
+        std::vector<ValueIndexPair> topKVec;
 
         getTopK(Mi_const, N, aK, topKVec);
 
@@ -431,8 +431,8 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
                 const double range =
                     (static_cast<double>(idx) + 1.0) * RANGE_RESOLUTION;
 
-                pointPolar.azimuth = azimuth;
-                pointPolar.range = range;
+                pointPolar.R = range;
+                pointPolar.theta = azimuth;
 
                 pointPolar.toCartesian(pointCart);
 
@@ -447,7 +447,7 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
  *
  * @return Vector of feature points
  */
-const FeaturePointsVec &getFeaturePoints() {
+const FeaturePointsVec &RadarImage::getFeaturePoints() {
     return mFeaturePoints;
 }
 

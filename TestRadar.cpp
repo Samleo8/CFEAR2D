@@ -136,7 +136,7 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     // Get filtered points and display them on image
     FeaturePointsVec featurePoints = r1.getFeaturePoints();
 
-    outputImg = r1.getImage(RIMG_CART);
+    outputImg = r1.getImage(r1.RIMG_CART);
 }
 
 /**
