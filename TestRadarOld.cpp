@@ -61,18 +61,17 @@ void getRadarImageData(RadarImage &r1, RadarImage &r2, cv::Mat &r2Rot,
                        const double filterSize = DEFAULT_FILTER_SIZE,
                        const bool displayHighpass = false) {
     // TODO: Fix this
-    //     double rotDifference = r1.getRotationDifference(r2, filterSize);
+//     double rotDifference = r1.getRotationDifference(r2, filterSize);
 
-    //     cv::Point2d translation;
-    //     r1.getTranslationDifference(r2, translation, rotDifference,
-    //     filterSize,
-    //                                 displayHighpass);
+//     cv::Point2d translation;
+//     r1.getTranslationDifference(r2, translation, rotDifference, filterSize,
+//                                 displayHighpass);
 
-    //     performImageRotation(r1.getImageCoarseCart(), r2Rot, rotDifference);
+//     performImageRotation(r1.getImageCoarseCart(), r2Rot, rotDifference);
 
-    //     data.dRotRad = rotDifference;
-    //     data.dx = translation.x;
-    //     data.dy = translation.y;
+//     data.dRotRad = rotDifference;
+//     data.dx = translation.x;
+//     data.dy = translation.y;
 }
 
 /**
@@ -169,7 +168,7 @@ void concatImagesWithText(cv::Mat displayImages[],
  * @param[out] outPathStr String to path to image
  */
 void genImagePath(fs::path &basePath, const unsigned int dataset,
-                  const unsigned int r1ID,
+                  const unsigned int r1ID, const unsigned int r2ID,
                   std::string &outPathStr, const std::string &appendStr = "") {
     fs::path outPath(basePath);
     outPath /= std::to_string(dataset) + "_" + std::to_string(r1ID) + "_" +
@@ -186,6 +185,7 @@ void genImagePath(fs::path &basePath, const unsigned int dataset,
  * @param[out] outputImg Output image
  */
 void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
+                         const unsigned int r2ID, const double filterSize,
                          cv::Mat &outputImg,
                          enum OutputStyle outStyle = NORMAL) {
     // Init radar images
@@ -226,19 +226,23 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
 /**
  * @brief Main function. Handles input from command line.
  *
- * Computes kstrong filtering and outputs a fancy image for easy saving. Can
+ * Computes phase corr for data, and outputs a fancy image for easy saving. Can
  * also allow for auto saving.
  */
 int main(int argc, char **argv) {
-    if (argc < 3 || argc > 4) {
-        printf("Usage: %s <dataset> <image1ID> [0|1:saveDirectToFile]]\n",
+    if (argc < 4 || argc > 6) {
+        printf("Usage: %s <dataset> <image1ID> <image2ID> [filter "
+               "size [0|1:saveDirectToFile]]\n",
                argv[0]);
         return EXIT_FAILURE;
     }
 
     const unsigned int dataset = atoi(argv[1]);
-    const unsigned int r1ID = atoi(argv[2]);
-    const bool saveDirectly = (argc == 4 && atoi(argv[3]));
+    const unsigned int r1ID = atoi(argv[2]), r2ID = atoi(argv[3]);
+
+    const double filterSize =
+        ((argc == 5) ? atof(argv[4]) : DEFAULT_FILTER_SIZE);
+    const bool saveDirectly = (argc == 6 && atoi(argv[5]));
 
     // Create path to save images
     fs::path saveImagesPath(".");
@@ -251,17 +255,55 @@ int main(int argc, char **argv) {
      * @section TestRadar-KeyframeToKeyframe Compute keyframe to keyframe
      **********************************************************************/
     cv::Mat outputImg;
-    outputImgFromFrames(dataset, r1ID, outputImg, NORMAL);
+    outputImgFromFrames(dataset, r1ID, r2ID, filterSize, outputImg, NORMAL);
 
     // Display or save image
     if (saveDirectly) {
         std::string outputImgPathStr;
-        genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStr,
-                     "_allframes");
+        genImagePath(saveImagesPath, dataset, r1ID, r2ID, outputImgPathStr,
+                     "_keyframes");
         cv::imwrite(outputImgPathStr, outputImg);
     }
     else {
-        cv::imshow("Frame " + std::to_string(r1ID), outputImg);
+        cv::imshow("Frame " + std::to_string(r1ID) + " against " +
+                       std::to_string(r2ID),
+                   outputImg);
+
+        cv::waitKey(0);
+        cv::destroyAllWindows();
+    }
+
+    /**********************************************************************
+     * @section TestRadar-FrameToFrame Compute frame to frame range
+     **********************************************************************/
+    cv::Mat outputImg2;
+    int start = MIN(r1ID, r2ID);
+    int end = MAX(r1ID, r2ID);
+
+    // Nothing to do
+    if (start + 1 == end || !saveDirectly) return 0;
+
+    for (int i = start; i < end; i++) {
+        cv::Mat outputImgTemp;
+        outputImgFromFrames(dataset, i, i + 1, filterSize, outputImgTemp,
+                            ON_THE_SIDE);
+        if (i == start)
+            outputImg2 = outputImgTemp;
+        else
+            cv::vconcat(outputImg2, outputImgTemp, outputImg2);
+    }
+
+    // Display or save image
+    if (saveDirectly) {
+        std::string outputImgPathStr;
+        genImagePath(saveImagesPath, dataset, r1ID, r2ID, outputImgPathStr,
+                     "_allframes");
+        cv::imwrite(outputImgPathStr, outputImg2);
+    }
+    else {
+        cv::imshow("All frames from " + std::to_string(r1ID) + " to " +
+                       std::to_string(r2ID),
+                   outputImg2);
 
         cv::waitKey(0);
         cv::destroyAllWindows();
