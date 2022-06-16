@@ -60,17 +60,18 @@ void getRadarImageData(RadarImage &r1, RadarImage &r2, cv::Mat &r2Rot,
                        RotTransData &data,
                        const double filterSize = DEFAULT_FILTER_SIZE,
                        const bool displayHighpass = false) {
-    double rotDifference = r1.getRotationDifference(r2, filterSize);
+    // TODO: Fix this
+//     double rotDifference = r1.getRotationDifference(r2, filterSize);
 
-    cv::Point2d translation;
-    r1.getTranslationDifference(r2, translation, rotDifference, filterSize,
-                                displayHighpass);
+//     cv::Point2d translation;
+//     r1.getTranslationDifference(r2, translation, rotDifference, filterSize,
+//                                 displayHighpass);
 
-    performImageRotation(r1.getImageCoarseCart(), r2Rot, rotDifference);
+//     performImageRotation(r1.getImageCoarseCart(), r2Rot, rotDifference);
 
-    data.dRotRad = rotDifference;
-    data.dx = translation.x;
-    data.dy = translation.y;
+//     data.dRotRad = rotDifference;
+//     data.dx = translation.x;
+//     data.dy = translation.y;
 }
 
 /**
@@ -203,8 +204,8 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
 
     // Fancy display that's easier to save
     cv::Mat r1Img, r2Img;
-    r1Img = r1.getImage(RadarImage::coarseCart);
-    r2Img = r2.getImage(RadarImage::coarseCart);
+    r1Img = r1.getImage(RadarImage::RIMG_CART);
+    r2Img = r2.getImage(RadarImage::RIMG_CART);
 
     // Images to pad
     cv::Mat displayImages[] = { r1Img, r2Rot, r2Img };
