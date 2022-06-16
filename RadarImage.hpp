@@ -58,8 +58,8 @@ class RadarImage {
     // TODO: Remove the ones we don't need to store, esp raw
 
     cv::Mat mRawImage;         ///< Raw range-azimuth image
-    cv::Mat &mPolarImage;      ///< Raw range-azimuth image
-    cv::Mat &mMetaDataImage;   ///< Metadata image (Oxford dataset only)
+    cv::Mat mPolarImage;      ///< Raw range-azimuth image
+    cv::Mat mMetaDataImage;   ///< Metadata image (Oxford dataset only)
     cv::Mat mCartImage;        ///< Downsampled Cartesian image
 
     MetaData mMetaData;        ///< Metadata information (azimuth and timestamps)

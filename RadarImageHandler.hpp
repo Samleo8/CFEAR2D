@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <bitset>
 
 /**
  * @brief Translation data struct (no rotation). Used in pose graph and sliding
