@@ -41,8 +41,15 @@ target_link_libraries(CeresTest ${CERES_LIBRARIES})
 
 
 # Radar Testing Module
-add_executable(TestRadar ImageProcessing.cpp
-                         RadarImageHandler.cpp RadarImage.cpp TestRadar.cpp)
+add_executable(
+  TestRadar
+  ImageProcessing.cpp
+  PointCart2D.cpp
+  PointPolar2D.cpp 
+  RadarImageHandler.cpp
+  RadarImage.cpp
+  TestRadar.cpp
+)
 set_property(TARGET TestRadar PROPERTY C_STANDARD 11)
 set_property(TARGET TestRadar PROPERTY CXX_STANDARD 17)
 target_link_libraries(TestRadar ${OpenCV_LIBS})
@@ -54,6 +61,8 @@ add_executable(
   CVColor.cpp
   OdometryVisualiser.cpp
   ImageProcessing.cpp
+  PointCart2D.cpp 
+  PointPolar2D.cpp 
   RadarImageHandler.cpp
   RadarImage.cpp
   PoseGraph.cpp
