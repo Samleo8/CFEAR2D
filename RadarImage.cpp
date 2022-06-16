@@ -197,7 +197,8 @@ const cv::Mat &RadarImage::getImageCart() {
  * radial direction)
  * @deprecated Log polar image currently unused
  * NOTE: Preprocessing must be done first!
- * @todo If preprocessing is not done, then perform the relevant conversion function
+ * @todo If preprocessing is not done, then perform the relevant conversion
+ * function
  *
  * @return Coarse log-polar aImage
  */
@@ -218,7 +219,7 @@ const cv::Mat &RadarImage::getImage(ImageType aType) {
         case RIMG_RAW:
             return getImageRaw();
         case RIMG_POLAR:
-             [[fallthrough]];
+            [[fallthrough]];
         case RIMG_RANGE_AZIM:
             return getImagePolar();
         case RIMG_CART:
@@ -285,7 +286,7 @@ void RadarImage::displayImage(ImageType aType, const bool aWaitKey,
 /**
  * @brief Performs preprocessing of images. Generates Cartesian and
  * polar from raw log-polar image.
- * @note Need to 
+ * @note Need to
  * @todo Try different filtering methods
  */
 void RadarImage::preprocessImages() {
@@ -304,10 +305,11 @@ void RadarImage::preprocessImages() {
     // Process the metadata here
     mMetaData = extractMetaDataFromImage(mMetaDataImage);
 
-    // Convert to Cartesian and Polar 
+    // Convert to Cartesian and Polar
     imagePolarToCartesian(mPolarImage, mCartImage);
 
-    // TODO: Possibly test a downsampling in the radial direction before k-max processing
+    // TODO: Possibly test a downsampling in the radial direction before k-max
+    // processing
 
     // Obtain log polar image
     // NOTE: currently unused
@@ -331,21 +333,59 @@ void RadarImage::preprocessImages() {
     return;
 }
 
-void RadarImage::getTopK(const double* aAzim){
-    // https://stackoverflow.com/questions/14902876/indices-of-the-k-largest-elements-in-an-unsorted-length-n-array
+/**
+ * @brief Efficient way of getting top k indices and values via priority
+ * queue
+ * @note Should be approximately n log kpq
+ * @ref
+ * https://stackoverflow.com/questions/14902876/indices-of-the-k-largest-elements-in-an-unsorted-length-n-array
+ * @param[in] aAzim Pointer to azimuth array
+ * @param[in] aSize
+ * @param[out] aTopK Vector of top k
+ */
+void RadarImage::getTopK(const double *aAzim, const size_t aSize,
+                         const size_t aK,
+                         std::vector<ValueIndexPair> &aTopKVec) {
+    std::priority_queue<ValueIndexPair> pq;
+
+    // Push relevant ValueIndexPairs into the PQ (fast)
+    // While pruning away the elements that don't need to be in the queue,
+    // thus reducing the size of the queue and improving efficiency
+    for (size_t i = 0; i < aSize; i++) {
+        double val = aAzim[i];
+        if (pq.size() < aK) {
+            pq.push(std::make_pair(val, i));
+        }
+        else if (val > mTopK.top().first) {
+            pq.pop();
+            pq.push(std::make_pair(val, i));
+        }
+    }
+
+    // Now pop the top k elements of our pruned PQ and populate the vector
+    kpq = pq.size();
+    aTopK.clear();
+    aTopK.reserve(aK);
+
+    for (size_t i = 0; i < kpq.; i++) {
+        aTopK.push_back(pq.top());
+        pq.pop();
+    }
 }
 
 /**
  * @brief Perform K Strong filtering on radar image
- * @note Internally updates mFeaturePoints vector
- * 
+ * @note Internally adds onto or populates the mFeaturePoints vector
+ *
  * @param[in] aK Number of points (k) to keep after filtering
  * @param[in] aZmin Minimum power value to count as valid feature point
  * @param[in] aClearOld Whether to clear existing feature points vector
  */
-void RadarImage::performKStrong(const size_t aK, const double aZmin, const bool aClearOld){
+void RadarImage::performKStrong(const size_t aK, const double aZmin,
+                                const bool aClearOld) {
     if (!mPreprocessed) {
-        printf_err("Error: Cannot perform K-Strong filtering: Image has not been preprocessed!\n");
+        printf_err("Error: Cannot perform K-Strong filtering: Image has not "
+                   "been preprocessed!\n");
         return;
     }
 
@@ -357,35 +397,55 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin, const bool 
     const size_t sz = mFeaturePoints.size();
     mFeaturePoints.reserve(sz + aK);
 
-    // TODO: Perform the k-strong filtering by looping over each row (azimuth) of the image
-    // And getting the top k points that are above threshold
+    // Get metadata information
+    const MetaDataList azimuths = mMetaData.azimuths;
+
+    // TODO: Perform the k-strong filtering by looping over each row (azimuth)
+    // of the image And getting the top k points that are above threshold
     const cv::Mat &imgPolar = getImagePolar();
-	const int M = imgPolar.rows;
-	const int N = imgPolar.cols;
-    
+    const int M = imgPolar.rows;
+    const int N = imgPolar.cols;
+
     for (int i = 0; i < M; i++) {
-        const double* Mi_const = M.ptr<double>(i);
-        double *Mi;
-        std::copy(Mi_const, Mi_const + N, Mi);
+        // Get relevant values from metadata
+        const double azimuth = azimuths[i];
 
-        // Max efficiency by using std::nth_element to get kth largest elements
-        std::nth_element(Mi, Mi + k - 1, Mi + N, std::greater<int>());
+        // Get the top k value index pairs
+        const double *Mi_const = M.ptr<double>(i);
+        std::vector<ValueIndexPair> &topKVec;
 
-        // Loop through the top k elements
-        for (int j; j < k; j++) {
-            if (Mi[j] > aZmin) {
-                mFeaturePoints.push_back(cv::Point(range, azim));
+        getTopK(Mi_const, N, aK, topKVec);
+
+        // Now loop through the top k and add them to the feature points vector
+        for (int j = 0; j < aK; j++) {
+            const ValueIndexPair &pair = topKVec[j];
+            
+            const double val = pair.first;
+            const size_t idx = pair.second;
+
+            // Only accept values which are also above Zmin
+            if (val > aZmin) {
+                2DPointCart pointCart;
+                2DPointPolar pointPolar;
+
+                const double range = (static_cast<double>(idx) + 1.0) * RANGE_RESOLUTION;
+
+                pointPolar.azimuth = azimuth;
+                pointPolar.range = range;
+
+                pointPolar.toCartesian(pointCart);
+
+                mFeaturePoints.push_back(pointCart);
             }
         }
-
-        }
     }
+}
 }
 
 /**
  * @brief Get FeaturePoints member class
- * 
- * @return Vector of feature points 
+ *
+ * @return Vector of feature points
  */
 const FeaturePointsVec &getFeaturePoints() {
     return mFeaturePoints;

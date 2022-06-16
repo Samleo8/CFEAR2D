@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <queue>
 #include <bitset>
 
 /**
@@ -68,7 +69,7 @@ struct 2DPointPolar {
     double R;      ///< range-coordinate
     double theta;  ///< azimuth-coordinate
 
-    void toCart(struct 2DPointCart &cart) {
+    void toCartesian(struct 2DPointCart &cart) {
         cart->x = R * cos(theta);
         cart->y = R * sin(theta);
     }
@@ -90,6 +91,12 @@ typedef struct{
     MetaDataList timestamps;
     MetaDataList azimuths;
 } MetaData;
+
+/**
+ * @brief Typedef for a value index pair. Used in k-strong filtering.
+ * @see RadarImage::getTopK()
+ */
+typedef std::pair<double, size_t> ValueIndexPair;
 
 // Defines
 /** @brief Simple MAX function */

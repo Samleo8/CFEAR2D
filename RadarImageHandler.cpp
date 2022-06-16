@@ -325,7 +325,6 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
     timestamps.reserve(M);
     azimuths.reserve(M);
 
-
     // Every row of image (each azimuth value)
     // NOTE:
     /// - cols 0-7: Timestamp

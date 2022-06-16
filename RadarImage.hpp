@@ -57,20 +57,20 @@ class RadarImage {
     // All preprocessed images
     // TODO: Remove the ones we don't need to store, esp raw
 
-    cv::Mat mRawImage;        ///< Raw range-azimuth image
-    cv::Mat mPolarImage;      ///< Raw range-azimuth image
-    cv::Mat mMetaDataImage;   ///< Metadata image (Oxford dataset only)
-    cv::Mat mCartImage;       ///< Cartesian image
+    cv::Mat mRawImage;      ///< Raw range-azimuth image
+    cv::Mat mPolarImage;    ///< Raw range-azimuth image
+    cv::Mat mMetaDataImage; ///< Metadata image (Oxford dataset only)
+    cv::Mat mCartImage;     ///< Cartesian image
 
-    MetaData mMetaData;       ///< Metadata information (azimuth and timestamps)
+    MetaData mMetaData; ///< Metadata information (azimuth and timestamps)
 
     /** @brief Feature points (Cartesian) found from filtering
-      * @note In sensor coordinates 
-      */
-    FeaturePointsVec mFeaturePoints; 
+     * @note In sensor coordinates
+     */
+    FeaturePointsVec mFeaturePoints;
 
     // TODO: Unused for now
-    cv::Mat mLogPolarImage;   ///< Downsampled log-polar image
+    cv::Mat mLogPolarImage; ///< Downsampled log-polar image
     // cv::Mat mDownsampledImage;    ///< Downsampled range-azimuth image
     // cv::Mat mSubImage;     ///< Cropped range-azimuth sub-image
     // cv::Mat mSubImageCart; ///< Cropped Cartesian sub-image
@@ -128,7 +128,10 @@ class RadarImage {
     void preprocessImages();
 
     // Filtering process
-    void performKStrong(const size_t aK, const double aZmin, const bool aClearOld = true);
+    void getTopK(const double *aAzim, const size_t aSize, const size_t aK,
+                 std::vector<ValueIndexPair> &aTopKVec);
+    void performKStrong(const size_t aK, const double aZmin,
+                        const bool aClearOld = true);
     const FeaturePointsVec &getFeaturePoints();
 
     // Generating Oriented Surface Points
