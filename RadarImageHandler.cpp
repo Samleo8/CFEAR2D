@@ -312,7 +312,14 @@ void convertRotTransToTransData(TransData &aTransData,
 
 /**
  * @brief Extract format information from a polar radar beam
- * @param[in] 
+ * @ref
+ * https://oxford-robotics-institute.github.io/radar-robotcar-dataset/documentation
+ * @note Metadata is organized as follows:
+ *         - cols 0-7 (incl): Unix Timestamp as int64
+ *         - cols 8-9 (incl): Sweep counter as uint16 (used for azimuth calculation)
+ *         - cols 10 (incl): Valid bit
+ *
+ * @param[in] aMetaData Meta data of the radar image as an image
  */
 const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
 	const int M = aMetaDataImg.rows;
@@ -338,32 +345,10 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
     
         const double* Mi = aMetaDataImg.ptr<double>(i);
 
-        str_info = "";
+        // TODO: Just use bitwise operators to concat data
 
-        // Extract timestamp information
-        for (int j = 0; j < 8; j++) {
-            int val = static_cast<int>(Mi[j]);
-            std::string str = std::bitset<8>(val).to_string();
-            str_info = str + str_info;
-        }
-        
-        timestamp = static_cast<double>(std::stoll(str_info, nullptr, 2));
         timestamps.push_back(timestamp);
-
-        str_info = "";
-
-        // Extract azimuth information
-        for (int j = 8; j < 10; j++) {
-            int val = static_cast<int>(Mi[j]);
-
-            std::string str = std::bitset<8>(val).to_string();
-            str_info = str + str_info;
-        }
-
-        std::cout << "str_info: " << str_info << std::endl;
-
-        sweep_counter = static_cast<double>(std::stoll(str_info, nullptr, 2));
-        azimuth = sweep_counter * SWEEP_COUNTER_TO_AZIM;
+            
         azimuths.push_back(azimuth);
 
         std::cout << "Sweep Counter: " << sweep_counter << " Azimuth: " << azimuth << std::endl;

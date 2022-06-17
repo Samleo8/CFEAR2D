@@ -112,9 +112,11 @@ typedef std::pair<double, size_t> ValueIndexPair;
 /** @brief Square of radar max range */
 #define RADAR_MAX_RANGE_M_SQUARED (RADAR_MAX_RANGE_M * RADAR_MAX_RANGE_M)
 
-/** @brief Converts sweep counter values into azimuth in radians TODO: check
- * radians or deg */
-#define SWEEP_COUNTER_TO_AZIM (M_PI / 2800.0);
+/** @brief Encoder size */
+#define ENCODER_SIZE 5600
+
+/** @brief Converts sweep counter values into azimuth in radians */
+#define SWEEP_COUNTER_TO_AZIM (2 * M_PI / encoder_size)
 
 // Functions
 bool imagePathFromTimestamp(std::string &aImagePath, unsigned int aSetNumber,
