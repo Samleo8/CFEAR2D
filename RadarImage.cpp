@@ -401,7 +401,7 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
     // Get metadata information
     const MetaDataList azimuths = mMetaData.azimuths;
 
-    // TODO: Perform the k-strong filtering by looping over each row (azimuth)
+    // Perform the k-strong filtering by looping over each row (azimuth)
     // of the image And getting the top k points that are above threshold
     const cv::Mat &imgPolar = getImagePolar();
     const int M = imgPolar.rows;
@@ -431,6 +431,8 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
 
                 const double range =
                     (static_cast<double>(idx) + 1.0) * RANGE_RESOLUTION;
+
+                // std::cout << "Range: " << range << std::endl;
 
                 pointPolar.R = range;
                 pointPolar.theta = azimuth;

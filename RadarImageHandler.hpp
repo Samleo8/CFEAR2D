@@ -49,9 +49,11 @@ typedef struct {
     double dRotRad; ///< Rotational change [rad]
 } RotTransData;
 
+/** @brief Feature Point */
+typedef PointCart2D FeaturePoint;
 
 /** @brief Typedef for vector of feature points */
-typedef std::vector<PointCart2D> FeaturePointsVec;
+typedef std::vector<FeaturePoint> FeaturePointsVec;
 
 /** @brief Typedef for list of metadata information (vector of doubles) */
 typedef std::vector<double> MetaDataList;

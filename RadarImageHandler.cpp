@@ -336,10 +336,9 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
 	for (int i = 0; i < M; i++) {
         std::string str_info;
     
-        // TODO: Make this more efficient - matrix iteration like this can be quite slow
-        // TODO: Potentially use unions?
-
         const double* Mi = aMetaDataImg.ptr<double>(i);
+
+        str_info = "";
 
         // Extract timestamp information
         for (int j = 0; j < 8; j++) {
@@ -356,13 +355,18 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
         // Extract azimuth information
         for (int j = 8; j < 10; j++) {
             int val = static_cast<int>(Mi[j]);
+
             std::string str = std::bitset<8>(val).to_string();
             str_info = str + str_info;
         }
 
+        std::cout << "str_info: " << str_info << std::endl;
+
         sweep_counter = static_cast<double>(std::stoll(str_info, nullptr, 2));
         azimuth = sweep_counter * SWEEP_COUNTER_TO_AZIM;
         azimuths.push_back(azimuth);
+
+        std::cout << "Sweep Counter: " << sweep_counter << " Azimuth: " << azimuth << std::endl;
     }
 
     metaData.azimuths = azimuths;
