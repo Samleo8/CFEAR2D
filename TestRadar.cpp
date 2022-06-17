@@ -157,8 +157,7 @@ int main(int argc, char **argv) {
 
     // Create path to save images
     fs::path saveImagesPath(".");
-    saveImagesPath /= "raw_output";
-    saveImagesPath /= "error_images";
+    saveImagesPath /= "results";
 
     fs::create_directories(saveImagesPath);
 
@@ -171,8 +170,7 @@ int main(int argc, char **argv) {
     // Display or save image
     if (saveDirectly) {
         std::string outputImgPathStr;
-        genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStr,
-                     "_allframes");
+        genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStr);
         cv::imwrite(outputImgPathStr, outputImg);
     }
     else {
