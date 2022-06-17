@@ -299,8 +299,9 @@ void RadarImage::preprocessImages() {
 
     // Crop raw image to get metadata and polar image, AS REFERENCE of raw image
     // NOTE: Oxford Dataset only
-    imageCropRange(mRawImage, mMetaDataImage, 0, 10, true);
-    imageCropRange(mRawImage, mPolarImage, 11, mRawImage.cols - 12, true);
+    // TODO: Figure out why referencing does not work
+    imageCropRange(mRawImage, mMetaDataImage, 0, 10, false);
+    imageCropRange(mRawImage, mPolarImage, 11, mRawImage.cols - 11, false);
 
     // Process the metadata here
     mMetaData = extractMetaDataFromImage(mMetaDataImage);

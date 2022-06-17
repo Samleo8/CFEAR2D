@@ -351,6 +351,8 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
         timestamp = static_cast<double>(std::stoll(str_info, nullptr, 2));
         timestamps.push_back(timestamp);
 
+        str_info = "";
+
         // Extract azimuth information
         for (int j = 8; j < 10; j++) {
             int val = static_cast<int>(Mi[j]);
