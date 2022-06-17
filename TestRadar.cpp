@@ -144,7 +144,7 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
 
     // K-filtering
     const size_t K = 10;
-    const double Z_min = 2; // TODO: check/play with params
+    const double Z_min = 55;
     r1.performKStrong(K, Z_min);
 
     // Get filtered points and display them on image
