@@ -116,7 +116,6 @@ void genImagePath(fs::path &basePath, const unsigned int dataset,
  * @brief Generate output image given 2 frames
  * @param[in] dataset Dataset number
  * @param[in] r1ID First image ID
- * @param[in] r2ID Second image ID
  * @param[in] filterSize Filter size
  * @param[out] outputImg Output image
  */

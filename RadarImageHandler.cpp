@@ -261,7 +261,7 @@ void imageLogPolarToCartesian(const cv::Mat &aSrcImage, cv::Mat &aDestImage) {
  * @param[in] aSrcImage Source image to crop
  * @param[out] aDestImage Destination image to crop
  * @param[in] aCropStart Crop starting from here (pixels)
- * @param[in] aCropWidth Crop up to this many pixels
+ * @param[in] aCropWidth Width of cropping rectangle
  *
  * @return OpenCV Mat image (original image if error)
  */
@@ -272,7 +272,8 @@ void imageCropRange(const cv::Mat &aSrcImage, cv::Mat &aDestImage,
     cv::Size imageSize = aSrcImage.size();
 
     // Ensure crop within range
-    cv::Rect roi(aCropStart, 0, MIN(imageSize.width, aCropWidth), imageSize.height);
+    // NOTE: The format is (x, y, width, height)
+    cv::Rect roi(aCropStart, 0, MIN(imageSize.width - aCropStart, aCropWidth), imageSize.height);
 
     cv::Mat subImageRef(aSrcImage, roi);
     subImageRef.copyTo(subImage);

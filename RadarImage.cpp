@@ -130,7 +130,7 @@ RadarImage::RadarImage(unsigned int aSetNumber, unsigned int aImageNumber,
         if (aPreprocess) preprocessImages();
     }
     else {
-        printf("Failed to load image! No processing done!");
+        printf_err("Failed to load image! No processing done!");
         mLoaded = false;
         mPreprocessed = false;
     }
@@ -300,7 +300,7 @@ void RadarImage::preprocessImages() {
     // Crop raw image to get metadata and polar image, AS REFERENCE of raw image
     // NOTE: Oxford Dataset only
     imageCropRange(mRawImage, mMetaDataImage, 0, 10, true);
-    imageCropRange(mRawImage, mPolarImage, 11, mRawImage.cols, true);
+    imageCropRange(mRawImage, mPolarImage, 11, mRawImage.cols - 12, true);
 
     // Process the metadata here
     mMetaData = extractMetaDataFromImage(mMetaDataImage);
