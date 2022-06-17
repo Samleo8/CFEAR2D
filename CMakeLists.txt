@@ -72,10 +72,10 @@ target_link_libraries(TestRadar ${OpenCV_LIBS})
 # set_property(TARGET TestVisualiser PROPERTY CXX_STANDARD 17)
 
 # OpenMP Linking
-if(OpenMP_CXX_FOUND)
-  target_link_libraries(
-    TestVisualiser PUBLIC OpenMP::OpenMP_C OpenMP::OpenMP_CXX ${OpenCV_LIBS}
-                          ${CERES_LIBRARIES})
-else()
-  target_link_libraries(TestVisualiser ${OpenCV_LIBS} ${CERES_LIBRARIES})
-endif()
+# if(OpenMP_CXX_FOUND)
+#   target_link_libraries(
+#     TestVisualiser PUBLIC OpenMP::OpenMP_C OpenMP::OpenMP_CXX ${OpenCV_LIBS}
+#                           ${CERES_LIBRARIES})
+# else()
+#   target_link_libraries(TestVisualiser ${OpenCV_LIBS} ${CERES_LIBRARIES})
+# endif()
