@@ -56,20 +56,20 @@ target_link_libraries(TestRadar ${OpenCV_LIBS})
 
 
 # Main Visualiser Testing module
-add_executable(
-  TestVisualiser
-  CVColor.cpp
-  OdometryVisualiser.cpp
-  ImageProcessing.cpp
-  PointCart2D.cpp 
-  PointPolar2D.cpp 
-  RadarImageHandler.cpp
-  RadarImage.cpp
-  PoseGraph.cpp
-  RadarFeedHandler.cpp
-  RadarFeed.cpp
-  TestVisualiser.cpp)
-set_property(TARGET TestVisualiser PROPERTY CXX_STANDARD 17)
+# add_executable(
+#   TestVisualiser
+#   CVColor.cpp
+#   OdometryVisualiser.cpp
+#   ImageProcessing.cpp
+#   PointCart2D.cpp 
+#   PointPolar2D.cpp 
+#   RadarImageHandler.cpp
+#   RadarImage.cpp
+#   PoseGraph.cpp
+#   RadarFeedHandler.cpp
+#   RadarFeed.cpp
+#   TestVisualiser.cpp)
+# set_property(TARGET TestVisualiser PROPERTY CXX_STANDARD 17)
 
 # OpenMP Linking
 if(OpenMP_CXX_FOUND)
