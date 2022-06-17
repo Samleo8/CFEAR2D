@@ -46,6 +46,21 @@ void writeText(cv::Mat aImg, const std::string &aText, const int ax,
 }
 
 /**
+ * @brief Draws point on image at specified coordinate. Actually a small circle
+ * 
+ * @param[in,out] aImg Input image
+ * @param[in] x x coordinate
+ * @param[in] y y coordinate
+ */
+void drawPoint(cv::Mat &aImg, const double x, const double y) {
+    const cv::Point2d coord(x, y);
+    const int pointSize = 2;
+    const cv::Scalar color(0, 0, 255);
+
+    cv::circle(aImg, coord, pointSize, color, cv::FILLED, cv::LINE_8);
+}
+
+/**
  * @brief Applies header and footer texts to images and concatenates them for
  * easy saving
  *
@@ -129,13 +144,25 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
 
     // K-filtering
     const size_t K = 10;
-    const double Z_min = 30; // TODO: check/play with params
+    const double Z_min = 2; // TODO: check/play with params
     r1.performKStrong(K, Z_min);
 
     // Get filtered points and display them on image
     FeaturePointsVec featurePoints = r1.getFeaturePoints();
 
+    // Draw feature points
     outputImg = r1.getImage(r1.RIMG_CART);
+
+    for (size_t i = 0, sz = featurePoints.size(); i < sz; i++) {
+        const FeaturePoint &point = featurePoints[i];
+
+        // std::cout << "Point " << i << ": (" << point.x << ", " << point.y << ")"
+        //           << std::endl;
+
+        // Draw point
+        drawPoint(outputImg, point.x, point.y);
+    }
+
 }
 
 /**
