@@ -5,7 +5,7 @@ project(TestRadar)
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(Boost REQUIRED)
-find_package(Ceres REQUIRED COMPONENTS EigenSparse)
+find_package(Ceres REQUIRED COMPONENTS SparseLinearAlgebraLibrary)
 find_package(OpenMP)
 
 include_directories(${Boost_INCLUDE_DIRS} ${CERES_INCLUDE_DIRS}
