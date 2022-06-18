@@ -273,7 +273,8 @@ void imageCropRange(const cv::Mat &aSrcImage, cv::Mat &aDestImage,
 
     // Ensure crop within range
     // NOTE: The format is (x, y, width, height)
-    cv::Rect roi(aCropStart, 0, MIN(imageSize.width - aCropStart, aCropWidth), imageSize.height);
+    cv::Rect roi(aCropStart, 0, MIN(imageSize.width - aCropStart, aCropWidth),
+                 imageSize.height);
 
     cv::Mat subImageRef(aSrcImage, roi);
     subImageRef.copyTo(subImage);
@@ -316,13 +317,14 @@ void convertRotTransToTransData(TransData &aTransData,
  * https://oxford-robotics-institute.github.io/radar-robotcar-dataset/documentation
  * @note Metadata is organized as follows:
  *         - cols 0-7 (incl): Unix Timestamp as int64
- *         - cols 8-9 (incl): Sweep counter as uint16 (used for azimuth calculation)
+ *         - cols 8-9 (incl): Sweep counter as uint16 (used for azimuth
+ * calculation)
  *         - cols 10 (incl): Valid bit
  *
  * @param[in] aMetaData Meta data of the radar image as an image
  */
 const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
-	const int M = aMetaDataImg.rows;
+    const int M = aMetaDataImg.rows;
     const int N = aMetaDataImg.cols;
 
     // Reserve meta data information, locally cached for efficiency
@@ -339,13 +341,11 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
     // - cols 0-7: Timestamp
     // - cols 8-9: Sweep counter (used for azimuth calculation)
     // - cols 10: Valid bit
-    
-    double timestamp, azimuth, sweep_counter;
 
-	for (int i = 0; i < M; i++) {
+    for (int i = 0; i < M; i++) {
         std::string str_info;
-    
-        const uint8_t* Mi = aMetaDataImg.ptr<uint8_t>(i);
+
+        const uint8_t *Mi = aMetaDataImg.ptr<uint8_t>(i);
 
         // Just use bitwise operators to concat data
         // Form timestamp value from bitwise ops
@@ -354,20 +354,25 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
             timestamp_bit <<= 8;
             timestamp_bit |= (int8_t)Mi[j];
         }
-        
-        timestamps.push_back(timestamp);
+
+        timestamps.push_back(timestamp_bit);
 
         // Form sweep_counter value
+        uint16_t sweep_counter_bit = (uint16_t)Mi[8];
+        sweep_counter_bit <<= 8;
+        sweep_counter_bit |= (uint8_t)Mi[9];
 
-
+        const double azimuth = (double)(sweep_counter_bit * SWEEP_COUNTER_TO_AZIM);
         azimuths.push_back(azimuth);
 
-        // std::cout << "Sweep Counter: " << sweep_counter << " Azimuth: " << azimuth << std::endl;
+        // Form valid bit
+        const bool valid_bit = (bool)(Mi[10]);
+        isValid.push_back(valid_bit);
     }
 
     metaData.azimuths = azimuths;
     metaData.timestamps = timestamps;
     metaData.isValid = isValid;
 
-	return metaData;
+    return metaData;
 }
