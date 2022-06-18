@@ -349,23 +349,27 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
 
         // Just use bitwise operators to concat data
         // Form timestamp value from bitwise ops
-        int64_t timestamp_bit = (int64_t)(int8_t)Mi[0];
+        int64_t timestamp_bit =
+            static_cast<int64_t>(static_cast<int8_t>(Mi[0]));
+
         for (int j = 1; j < 8; j++) {
-            timestamp_bit <<= 8;
-            timestamp_bit |= (int8_t)Mi[j];
+            timestamp_bit <<= static_cast<int64_t>(8);
+            timestamp_bit |= static_cast<int64_t>(static_cast<int8_t>(Mi[j]));
         }
 
         timestamps.push_back(timestamp_bit);
 
         // Form sweep_counter value
-        uint16_t sweep_counter_bit = (uint16_t)Mi[8];
-        sweep_counter_bit <<= 8;
-        sweep_counter_bit |= (uint8_t)Mi[9];
+        uint16_t sweep_counter_bit =
+            static_cast<uint16_t>(static_cast<uint8_t>(Mi[8]));
+        sweep_counter_bit <<= static_cast<uint64_t>(8);
+        sweep_counter_bit |= static_cast<uint16_t>(static_cast<uint8_t>(Mi[9]));
 
-        const double azimuth = (double)((double)sweep_counter_bit * SWEEP_COUNTER_TO_AZIM);
+        const double azimuth =
+            (double)((double)sweep_counter_bit * SWEEP_COUNTER_TO_AZIM);
         azimuths.push_back(azimuth);
 
-        std::cout << azimuth << std::endl;
+        std::cout << sweep_counter_bit << " " << azimuth << std::endl;
 
         // Form valid bit
         const bool valid_bit = (bool)(Mi[10]);
