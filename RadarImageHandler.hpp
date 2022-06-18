@@ -119,6 +119,12 @@ typedef std::pair<double, size_t> ValueIndexPair;
 /** @brief Converts sweep counter values into azimuth in radians */
 #define SWEEP_COUNTER_TO_AZIM (2 * M_PI / ENCODER_SIZE)
 
+/** @brief Number of columns in metadata for timestamp information */
+#define TIMESTAMP_N_COLS 8
+
+/** @brief Number of columns in metadata for sweep counter information */
+#define SWEEP_COUNTER_N_COLS 2
+
 // Functions
 bool imagePathFromTimestamp(std::string &aImagePath, unsigned int aSetNumber,
                             unsigned int aImageNumber);

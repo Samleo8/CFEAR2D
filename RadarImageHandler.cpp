@@ -345,32 +345,27 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
     for (int i = 0; i < M; i++) {
         std::string str_info;
 
-        // TODO: Check endianness
+        // Use memcpy and then casting to ensure
+        // correct endianness regardless of system
         const uint8_t *Mi = aMetaDataImg.ptr<uint8_t>(i);
 
-        // Just use bitwise operators to concat data
-        // Form timestamp value from bitwise ops
-        uint64_t timestamp_bit =
-            static_cast<uint64_t>(Mi[7]);
-
-        for (int j = 6; j >= 0; j--) {
-            timestamp_bit <<= static_cast<uint64_t>(8);
-            timestamp_bit |= static_cast<uint64_t>(Mi[j]);
-        }
-
-        timestamps.push_back(timestamp_bit);
+        // Copy the blocks of memory into fresh array to be re-casted
+        uint64_t timestamp;
+        std::memcpy(&timestamp, Mi, TIMESTAMP_N_COLS);
+        
+        timestamps.push_back(timestamp);
 
         // Form sweep_counter value
-        uint16_t sweep_counter_bit =
-            static_cast<uint16_t>(Mi[9]);
-        sweep_counter_bit <<= static_cast<uint16_t>(8);
-        sweep_counter_bit |= static_cast<uint16_t>(Mi[8]);
+        uint16_t sweep_counter;
+        std::memcpy(&sweep_counter, Mi + TIMESTAMP_N_COLS,
+                    SWEEP_COUNTER_N_COLS);
 
         const double azimuth =
-            (double)(sweep_counter_bit * SWEEP_COUNTER_TO_AZIM);
+            (double)(sweep_counter * SWEEP_COUNTER_TO_AZIM);
         azimuths.push_back(azimuth);
 
-        std::cout << timestamp_bit << " " << sweep_counter_bit << " " << azimuth << std::endl;
+        std::cout << timestamp << " " << sweep_counter << " " << azimuth
+                  << std::endl;
 
         // Form valid bit
         const bool valid_bit = static_cast<bool>(Mi[10]);
