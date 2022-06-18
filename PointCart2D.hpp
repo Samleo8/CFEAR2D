@@ -11,6 +11,7 @@
 #ifndef __POINT_CART_2D_H__
 #define __POINT_CART_2D_H__
 
+#include <opencv2/opencv.hpp>
 #include <math.h>
 
 // NOTE: Forward declaration of PointPolar2D class
@@ -25,6 +26,7 @@ class PointCart2D {
     double y; ///< Y-coordinate
 
     void toPolar(PointPolar2D &polar);
+    void toCV(cv::Point2d &aCVPoint);
 };
 
 #endif
