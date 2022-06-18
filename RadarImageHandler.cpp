@@ -365,6 +365,8 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
         const double azimuth = (double)(sweep_counter_bit * SWEEP_COUNTER_TO_AZIM);
         azimuths.push_back(azimuth);
 
+        std::cout << azimuth << std::endl;
+
         // Form valid bit
         const bool valid_bit = (bool)(Mi[10]);
         isValid.push_back(valid_bit);

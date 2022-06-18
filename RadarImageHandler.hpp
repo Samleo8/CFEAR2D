@@ -117,7 +117,7 @@ typedef std::pair<double, size_t> ValueIndexPair;
 #define ENCODER_SIZE 5600
 
 /** @brief Converts sweep counter values into azimuth in radians */
-#define SWEEP_COUNTER_TO_AZIM (2 * M_PI / encoder_size)
+#define SWEEP_COUNTER_TO_AZIM (2 * M_PI / ENCODER_SIZE)
 
 // Functions
 bool imagePathFromTimestamp(std::string &aImagePath, unsigned int aSetNumber,
