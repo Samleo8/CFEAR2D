@@ -49,15 +49,13 @@ void writeText(cv::Mat aImg, const std::string &aText, const int ax,
  * @brief Draws point on image at specified coordinate. Actually a small circle
  * 
  * @param[in,out] aImg Input image
- * @param[in] x x coordinate
- * @param[in] y y coordinate
+ * @param[in] aCoord Coordinate of point
  */
-void drawPoint(cv::Mat &aImg, const double x, const double y) {
-    const cv::Point2d coord(x, y);
-    const int pointSize = 2;
+void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord) {
+    const int pointSize = 4;
     const cv::Scalar color(0, 0, 255);
 
-    cv::circle(aImg, coord, pointSize, color, cv::FILLED, cv::LINE_8);
+    cv::circle(aImg, aCoord, pointSize, color, cv::FILLED, cv::LINE_8);
 }
 
 /**
@@ -151,17 +149,29 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     FeaturePointsVec featurePoints = r1.getFeaturePoints();
 
     // Draw feature points
-    outputImg = r1.getImage(r1.RIMG_CART);
+    const cv::Mat outputImgGray = r1.getImage(r1.RIMG_CART);
+    cv::cvtColor(outputImgGray, outputImg, cv::COLOR_GRAY2BGR);
+
+    const cv::Point2d imgCenter = cv::Point2d(outputImg.cols, outputImg.rows) / 2;
 
     for (size_t i = 0, sz = featurePoints.size(); i < sz; i++) {
-        const FeaturePoint &point = featurePoints[i];
+        FeaturePoint point = featurePoints[i];
+        
+        cv::Point2d pointCV;
+        point.toCV(pointCV);
 
-        // std::cout << "Point " << i << ": (" << point.x << ", " << point.y << ")"
-        //           << std::endl;
+        std::cout << "Point " << i << ": (" << point.x << ", " << point.y << ")";
 
         // Draw point
         // TODO: Point is in meters, but we want to display it in pixels
-        drawPoint(outputImg, point.x, point.y);
+        pointCV /= RANGE_RESOLUTION;
+        pointCV += imgCenter;
+
+        std::cout << "| CV: " << "(" << pointCV.x << ", " << pointCV.y << ")"
+                  << std::endl;
+
+        // It is also with reference to the center of the frame, so we need to re-center it
+        drawPoint(outputImg, pointCV);
     }
 
 }
