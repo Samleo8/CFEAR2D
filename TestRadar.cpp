@@ -160,15 +160,15 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
         cv::Point2d pointCV;
         point.toCV(pointCV);
 
-        std::cout << "Point " << i << ": (" << point.x << ", " << point.y << ")";
+        // std::cout << "Point " << i << ": (" << point.x << ", " << point.y << ")";
 
         // Draw point
         // TODO: Point is in meters, but we want to display it in pixels
         pointCV /= RANGE_RESOLUTION;
         pointCV += imgCenter;
 
-        std::cout << "| CV: " << "(" << pointCV.x << ", " << pointCV.y << ")"
-                  << std::endl;
+        // std::cout << "| CV: " << "(" << pointCV.x << ", " << pointCV.y << ")"
+        //           << std::endl;
 
         // It is also with reference to the center of the frame, so we need to re-center it
         drawPoint(outputImg, pointCV);
