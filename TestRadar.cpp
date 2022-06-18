@@ -47,7 +47,7 @@ void writeText(cv::Mat aImg, const std::string &aText, const int ax,
 
 /**
  * @brief Draws point on image at specified coordinate. Actually a small circle
- * 
+ *
  * @param[in,out] aImg Input image
  * @param[in] aCoord Coordinate of point
  */
@@ -118,10 +118,11 @@ void concatImagesWithText(cv::Mat displayImages[],
  * @param[out] outPathStr String to path to image
  */
 void genImagePath(fs::path &basePath, const unsigned int dataset,
-                  const unsigned int r1ID,
-                  std::string &outPathStr, const std::string &appendStr = "") {
+                  const unsigned int r1ID, std::string &outPathStr,
+                  const std::string &appendStr = "") {
     fs::path outPath(basePath);
-    outPath /= std::to_string(dataset) + "_" + std::to_string(r1ID) + appendStr + ".jpg";
+    outPath /= std::to_string(dataset) + "_" + std::to_string(r1ID) +
+               appendStr + ".jpg";
     outPathStr = outPath.string();
 }
 
@@ -137,12 +138,12 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
                          enum OutputStyle outStyle = NORMAL) {
     // Obtain radar images
     RadarImage r1(dataset, r1ID, true);
-    
+
     // TODO: For now, do nothing with K strongest filtering
 
     // K-filtering
     const size_t K = 10;
-    const double Z_min = 55; 
+    const double Z_min = 55;
     r1.performKStrong(K, Z_min);
 
     // Get filtered points and display them on image
@@ -152,28 +153,32 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     const cv::Mat outputImgGray = r1.getImage(r1.RIMG_CART);
     cv::cvtColor(outputImgGray, outputImg, cv::COLOR_GRAY2BGR);
 
-    const cv::Point2d imgCenter = cv::Point2d(outputImg.cols, outputImg.rows) / 2;
+    const cv::Point2d imgCenter =
+        cv::Point2d(outputImg.cols, outputImg.rows) / 2;
 
     for (size_t i = 0, sz = featurePoints.size(); i < sz; i++) {
         FeaturePoint point = featurePoints[i];
-        
+
         cv::Point2d pointCV;
         point.toCV(pointCV);
 
-        // std::cout << "Point " << i << ": (" << point.x << ", " << point.y << ")";
+        // std::cout << "Point " << i << ": (" << point.x << ", " << point.y <<
+        // ")";
 
         // Draw point
-        // TODO: Point is in meters, but we want to display it in pixels
+        // NOTE: Point is in meters, but we want to display it in pixels
+        //       It is also with reference to the center of the frame, so we
+        //       need to re-center it
+
         pointCV /= RANGE_RESOLUTION;
         pointCV += imgCenter;
 
-        // std::cout << "| CV: " << "(" << pointCV.x << ", " << pointCV.y << ")"
-        //           << std::endl;
-
-        // It is also with reference to the center of the frame, so we need to re-center it
+        // std::cout << "| CV: " << "(" << pointCV.x << ", " << pointCV.y <<
+        // ")";
+        // std::cout << std::endl;
+        
         drawPoint(outputImg, pointCV);
     }
-
 }
 
 /**
