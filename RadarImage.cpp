@@ -412,7 +412,7 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
         const double azimuth = azimuths[i];
 
         // Get the top k value index pairs
-        const double *Mi_const = imgPolar.ptr<double>(i);
+        const uint8_t *Mi_const = imgPolar.ptr<uint8_t>(i);
         std::vector<ValueIndexPair> topKVec;
 
         getTopK(Mi_const, N, aK, topKVec);

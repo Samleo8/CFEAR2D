@@ -16,7 +16,6 @@
 #include <math.h>
 #endif // !_USE_MATH_DEFINES
 
-#include <bitset>
 #include <filesystem>
 #include <fstream>
 #include <opencv2/opencv.hpp>
