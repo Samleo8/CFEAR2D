@@ -362,7 +362,7 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
         sweep_counter_bit <<= 8;
         sweep_counter_bit |= (uint8_t)Mi[9];
 
-        const double azimuth = (double)(sweep_counter_bit * SWEEP_COUNTER_TO_AZIM);
+        const double azimuth = (double)((double)sweep_counter_bit * SWEEP_COUNTER_TO_AZIM);
         azimuths.push_back(azimuth);
 
         std::cout << azimuth << std::endl;
