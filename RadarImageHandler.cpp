@@ -327,8 +327,9 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
 
     // Reserve meta data information, locally cached for efficiency
     MetaData metaData;
-    MetaDataList timestamps;
-    MetaDataList azimuths;
+    MetaDataList<int64_t> timestamps;
+    MetaDataList<double> azimuths;
+    MetaDataList<bool> isValid;
 
     timestamps.reserve(M);
     azimuths.reserve(M);
@@ -356,7 +357,8 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
         
         timestamps.push_back(timestamp);
 
-        // Form azimuth value 
+        // Form sweep_counter value
+
 
         azimuths.push_back(azimuth);
 
@@ -365,6 +367,7 @@ const MetaData extractMetaDataFromImage(const cv::Mat &aMetaDataImg) {
 
     metaData.azimuths = azimuths;
     metaData.timestamps = timestamps;
+    metaData.isValid = isValid;
 
 	return metaData;
 }

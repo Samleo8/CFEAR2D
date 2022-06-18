@@ -344,7 +344,7 @@ void RadarImage::preprocessImages() {
  * @param[in] aSize
  * @param[out] aTopKVec Vector of top k
  */
-void RadarImage::getTopK(const double *aAzim, const size_t aSize,
+void RadarImage::getTopK(const uint8_t *aAzim, const size_t aSize,
                          const size_t aK,
                          std::vector<ValueIndexPair> &aTopKVec) {
     std::priority_queue<ValueIndexPair> pq;
@@ -399,7 +399,8 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
     mFeaturePoints.reserve(sz + aK);
 
     // Get metadata information
-    const MetaDataList azimuths = mMetaData.azimuths;
+    const MetaDataList<double> azimuths = mMetaData.azimuths;
+    const MetaDataList<bool> isValid = mMetaData.isValid;
 
     // Perform the k-strong filtering by looping over each row (azimuth)
     // of the image And getting the top k points that are above threshold

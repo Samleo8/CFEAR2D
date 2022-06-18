@@ -128,7 +128,7 @@ class RadarImage {
     void preprocessImages();
 
     // Filtering process
-    void getTopK(const double *aAzim, const size_t aSize, const size_t aK,
+    void getTopK(const uint8_t *aAzim, const size_t aSize, const size_t aK,
                  std::vector<ValueIndexPair> &aTopKVec);
     void performKStrong(const size_t aK, const double aZmin,
                         const bool aClearOld = true);

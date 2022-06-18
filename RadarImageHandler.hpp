@@ -55,14 +55,16 @@ typedef PointCart2D FeaturePoint;
 typedef std::vector<FeaturePoint> FeaturePointsVec;
 
 /** @brief Typedef for list of metadata information (vector of doubles) */
-typedef std::vector<double> MetaDataList;
+template <typename T>
+using MetaDataList = std::vector<T>;
 
 /**
  * @brief Struct of metadata information (timestamps and azimuths)
  */
 typedef struct {
-    MetaDataList timestamps;
-    MetaDataList azimuths;
+    MetaDataList<int64_t> timestamps;
+    MetaDataList<double> azimuths;
+    MetaDataList<bool> isValid;
 } MetaData;
 
 /**
