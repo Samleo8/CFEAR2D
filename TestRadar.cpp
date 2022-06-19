@@ -157,7 +157,7 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
         cv::Point2d(outputImg.cols, outputImg.rows) / 2;
 
     for (size_t i = 0, sz = featurePoints.size(); i < sz; i++) {
-        FeaturePoint point = featurePoints[i];
+        FilteredPoint point = featurePoints[i];
 
         cv::Point2d pointCV;
         point.toCV(pointCV);

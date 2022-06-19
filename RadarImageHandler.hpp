@@ -49,10 +49,10 @@ typedef struct {
 } RotTransData;
 
 /** @brief Feature Point */
-typedef PointCart2D FeaturePoint;
+typedef PointCart2D FilteredPoint;
 
 /** @brief Typedef for vector of feature points */
-typedef std::vector<FeaturePoint> FilteredPointsVec;
+typedef std::vector<FilteredPoint> FilteredPointsVec;
 
 /** @brief Typedef for list of metadata information (vector of doubles) */
 template <typename T>
