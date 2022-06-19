@@ -52,7 +52,7 @@ typedef struct {
 typedef PointCart2D FeaturePoint;
 
 /** @brief Typedef for vector of feature points */
-typedef std::vector<FeaturePoint> FeaturePointsVec;
+typedef std::vector<FeaturePoint> FilteredPointsVec;
 
 /** @brief Typedef for list of metadata information (vector of doubles) */
 template <typename T>

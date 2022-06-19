@@ -376,7 +376,7 @@ void RadarImage::getTopK(const uint8_t *aAzim, const size_t aSize,
 
 /**
  * @brief Perform K Strong filtering on radar image
- * @note Internally adds onto or populates the mFeaturePoints vector
+ * @note Internally adds onto or populates the mFilteredPoints vector
  *
  * @param[in] aK Number of points (k) to keep after filtering
  * @param[in] aZmin Minimum power value to count as valid feature point
@@ -392,11 +392,11 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
 
     // TODO: Possibly try point-cloud generating technique from RadarSLAM
 
-    // Setup mFeaturePoints vector
-    if (aClearOld) mFeaturePoints.clear();
+    // Setup mFilteredPoints vector
+    if (aClearOld) mFilteredPoints.clear();
 
-    const size_t sz = mFeaturePoints.size();
-    mFeaturePoints.reserve(sz + aK);
+    const size_t sz = mFilteredPoints.size();
+    mFilteredPoints.reserve(sz + aK);
 
     // Get metadata information
     const MetaDataList<double> azimuths = mMetaData.azimuths;
@@ -440,7 +440,7 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
 
                 pointPolar.toCartesian(pointCart);
 
-                mFeaturePoints.push_back(pointCart);
+                mFilteredPoints.push_back(pointCart);
             }
         }
     }
@@ -451,8 +451,8 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
  *
  * @return Vector of feature points
  */
-const FeaturePointsVec &RadarImage::getFeaturePoints() {
-    return mFeaturePoints;
+const FilteredPointsVec &RadarImage::getFeaturePoints() {
+    return mFilteredPoints;
 }
 
 /**
