@@ -63,8 +63,23 @@ void pointToGridCoordinate(const PointCart2D &aPoint, PointCart2D &aGridCoordina
  * @brief Downsample point cloud in radar image
  * 
  * 1) Associate the points in the 2D point cloud to their respective grids @see associateWithDownsampledGrid
- * 
+ * 2) Find the centroids of the grids @see findCentroids
  */
 void RadarImage::downsamplePointCloud(){
+    // Place filtered points in grid
+    FilteredPointsVec filteredPoints;
 
+    for (size_t i = 0, sz = filteredPoints.size(); i < sz; i++) {
+        PointCart2D gridCoordinate;
+        pointToGridCoordinate(filteredPoints[i], gridCoordinate);
+
+        mORSPGrid[gridCoordinate.x][gridCoordinate.y].push_back(filteredPoints[i]);
+    }
+
+    // Now find the centroids
+    for (size_t i = 0; i < ORSP_GRID_N; i++) {
+        for (size_t j = 0; j < ORSP_GRID_N; j++) {
+            mORSPCentroidGrid[i][j] = getCentroid(mORSPGrid[i][j]);
+        }
+    }
 }

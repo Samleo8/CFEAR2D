@@ -73,8 +73,16 @@ class RadarImage {
 
     /** 
      * @brief Downsampled grid of vector of filtered points
+     * @note While one can save memory by using a representation involving only a running mean, 
+     * it is more computationally efficient in the second step when searching for neighbours
+     * because we only need to search points in the grid neighbours around the original grid squares.
      */
     FilteredPointsVec mORSPGrid[ORSP_GRID_N][ORSP_GRID_N];
+
+    /** 
+     * @brief Downsampled grid of centroid of filtered points
+     */
+    PointCart2D mORSPCentroidGrid[ORSP_GRID_N][ORSP_GRID_N];
 
     // TODO: Unused for now
     cv::Mat mLogPolarImage; ///< Downsampled log-polar image
