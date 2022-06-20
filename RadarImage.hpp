@@ -66,12 +66,15 @@ class RadarImage {
     MetaData mMetaData; ///< Metadata information (azimuth and timestamps)
 
     /** 
-     * @brief Feature points (Cartesian) found from filtering
+     * @brief Points (Cartesian) found from filtering
      * @note In sensor coordinates
      */
     FilteredPointsVec mFilteredPoints;
 
-    
+    /** 
+     * @brief Downsampled grid of vector of filtered points
+     */
+    FilteredPointsVec mORSFGrid[ORSP_GRID_N][ORSP_GRID_N];
 
     // TODO: Unused for now
     cv::Mat mLogPolarImage; ///< Downsampled log-polar image

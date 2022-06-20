@@ -45,8 +45,18 @@ const PointCart2D getCentroid(const Point2DList &aPoints) {
 //     return centroid;
 // }
 
-void associateWithDownsampledGrid(){
+/**
+ * @brief Associate filtered point coordinate to downsampled grid coordinate
+ * @param[in] aPoint Filtered point to associate
+ * @param[out] aGridCoordinate Output grid coordinate
+ */
+void pointToGridCoordinate(const PointCart2D &aPoint, PointCart2D &aGridCoordinate) {
+    // TODO: Check correctness
+    // NOTE: Need to add max range to convert to correct coordinate system (where (0,0) is at top left)
+    aGridCoordinate.x = floor((aPoint.x + RADAR_MAX_RANGE_M) / ORSP_GRID_SQUARE_WIDTH);
+    aGridCoordinate.y = floor((aPoint.y + RADAR_MAX_RANGE_M) / ORSP_GRID_SQUARE_WIDTH);
 
+    // TODO: Bound aGridCoordinate to be within grid
 }
 
 /**
