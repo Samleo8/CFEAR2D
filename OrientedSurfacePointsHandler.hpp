@@ -56,6 +56,9 @@ struct OrientedSurfacePoint {
 /** @brief Typedef for OrientedSurfacePoint struct */
 typedef struct OrientedSurfacePoints ORSP;
 
+/** @brief Typedef for OrientedSurfacePoint struct */
+typedef std::vector<ORSP> ORSPVec;
+
 /// NOTE: All class related functions are declared in @see RadarImage.hpp. Helper functions are here.
 const PointCart2D getCentroid(const Point2DList &aPoints);
 const PointCart3D getCentroid(const Point3DList &aPoints);

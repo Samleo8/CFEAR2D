@@ -84,6 +84,9 @@ class RadarImage {
      */
     PointCart2D mORSPCentroidGrid[ORSP_GRID_N][ORSP_GRID_N];
 
+    /** @brief Vector of oriented surface points */
+    ORSPVec mORSPVec;
+
     // TODO: Unused for now
     cv::Mat mLogPolarImage; ///< Downsampled log-polar image
     // cv::Mat mDownsampledImage;    ///< Downsampled range-azimuth image
@@ -151,6 +154,7 @@ class RadarImage {
 
     // Generating Oriented Surface Points
     void downsamplePointCloud();
+    void estimatePointDistribution();
 
     // NOTE: UNUSED
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);
