@@ -27,6 +27,8 @@ class PointCart2D : public cv::Point2d {
     PointCart2D();
     PointCart2D(const double aX, const double aY);
 
+    const size_t distance(const PointCart2D &aPoint, const size_t norm = 2) const;
+
     void toPolar(PointPolar2D &polar);
     void toCV(cv::Point2d &aCVPoint);
     void toEigen(Eigen::Vector2d &aEigenPoint);
