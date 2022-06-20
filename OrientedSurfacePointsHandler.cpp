@@ -75,7 +75,10 @@ void RadarImage::downsamplePointCloud(){
         PointCart2D gridCoordinate;
         pointToGridCoordinate(filteredPoints[i], gridCoordinate);
 
-        mORSPGrid[gridCoordinate.x][gridCoordinate.y].push_back(filteredPoints[i]);
+        size_t gridX = static_cast<size_t>(gridCoordinate.x);
+        size_t gridY = static_cast<size_t>(gridCoordinate.y);
+        
+        mORSPGrid[gridX][gridY].push_back(filteredPoints[i]);
     }
 
     // Now find the centroids

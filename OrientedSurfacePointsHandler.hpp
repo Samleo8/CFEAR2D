@@ -45,16 +45,13 @@ const size_t ORSP_GRID_N = static_cast<size_t>(floor(2 * RADAR_MAX_RANGE_M / ORS
 /**
  * @brief Final Oriented Surface Point representation, holds mean and normal vector obtained from covariance
  */
-struct OrientedSurfacePoint {
+typedef struct {
     // Mean / center of point
     Eigen::Vector2d center;
 
     // Normal vector
     Eigen::Vector2d normal;
-};
-
-/** @brief Typedef for OrientedSurfacePoint struct */
-typedef struct OrientedSurfacePoints ORSP;
+} ORSP;
 
 /** @brief Typedef for OrientedSurfacePoint struct */
 typedef std::vector<ORSP> ORSPVec;
