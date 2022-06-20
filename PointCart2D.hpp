@@ -31,8 +31,7 @@ class PointCart2D : public cv::Point2d {
     void toCV(cv::Point2d &aCVPoint);
     void toEigen(Eigen::Vector2d &aEigenPoint);
 
-    template<typename T>
-    PointCart2D& operator/=(T aScalar);
+    PointCart2D& operator/=(size_t aScalar);
 };
 
 

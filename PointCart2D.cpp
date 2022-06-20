@@ -7,8 +7,7 @@ PointCart2D::PointCart2D() : cv::Point2d(0, 0) {
 PointCart2D::PointCart2D(const double aX, const double aY) : cv::Point2d(aX, aY) {
 }
 
-template<typename T>
-PointCart2D& PointCart2D::operator/=(T aScalar){
+PointCart2D& PointCart2D::operator/=(size_t aScalar){
     this->x /= aScalar;
     this->y /= aScalar;
 
