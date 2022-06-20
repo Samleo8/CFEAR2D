@@ -14,9 +14,9 @@
 #ifndef __RADAR_IMAGE_H__
 #define __RADAR_IMAGE_H__
 
-#include "ImageProcessing.hpp"   // needed for Fourier transforms
-#include "RadarImageHandler.hpp" // needed to handle file path and data
+#include "ImageProcessing.hpp" // needed for Fourier transforms
 #include "OrientedSurfacePointsHandler.hpp"
+#include "RadarImageHandler.hpp" // needed to handle file path and data
 
 // Constants
 /** @brief Tau = 2 * Pi. Used for radian conversion and img proc */
@@ -65,21 +65,22 @@ class RadarImage {
 
     MetaData mMetaData; ///< Metadata information (azimuth and timestamps)
 
-    /** 
+    /**
      * @brief Points (Cartesian) found from filtering
      * @note In sensor coordinates
      */
     FilteredPointsVec mFilteredPoints;
 
-    /** 
+    /**
      * @brief Downsampled grid of vector of filtered points
-     * @note While one can save memory by using a representation involving only a running mean, 
-     * it is more computationally efficient in the second step when searching for neighbours
-     * because we only need to search points in the grid neighbours around the original grid squares.
+     * @note While one can save memory by using a representation involving only
+     * a running mean, it is more computationally efficient in the second step
+     * when searching for neighbours because we only need to search points in
+     * the grid neighbours around the original grid squares.
      */
     FilteredPointsVec mORSPGrid[ORSP_GRID_N][ORSP_GRID_N];
 
-    /** 
+    /**
      * @brief Downsampled grid of centroid of filtered points
      */
     PointCart2D mORSPCentroidGrid[ORSP_GRID_N][ORSP_GRID_N];
@@ -154,6 +155,8 @@ class RadarImage {
 
     // Generating Oriented Surface Points
     void downsamplePointCloud();
+    void findValidNeighbours(Point2DList aValidNeighbours, const size_t aGridX,
+                             const size_t aGridY);
     void estimatePointDistribution();
 
     // NOTE: UNUSED
