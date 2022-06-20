@@ -187,8 +187,10 @@ void RadarImage::estimatePointDistribution() {
             getMeanCovariance(validNeighbours, mean, covMatrix);
 
             // From covariance matrix, use SVD to get eigenvectors
-            
+            EigenSolver<Matrix2d> eigenSolver(covMatrix);
+
             // Smallest eigenvector is normal vector
+            eigenSolver.eigenvalues();
         }
     }
 }
