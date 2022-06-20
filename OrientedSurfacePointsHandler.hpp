@@ -47,6 +47,12 @@ const double ORSP_GRID_SQUARE_WIDTH = ORSP_RADIUS / ORSP_RESAMPLE_FACTOR;
 const size_t ORSP_GRID_N =
     static_cast<size_t>(floor(2 * RADAR_MAX_RANGE_M / ORSP_GRID_SQUARE_WIDTH));
 
+/** 
+ * @brief Minimum number of valid neighbours of a filtered centroid point
+ * required for the point distribution to be valid
+ */
+const size_t ORSP_VALID_NEIGHBOUR_MIN = 6;
+
 /**
  * @brief Final Oriented Surface Point representation, holds mean and normal
  * vector obtained from covariance

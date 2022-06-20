@@ -20,30 +20,21 @@
  */
 const PointCart2D getCentroid(const Point2DList &aPoints) {
     PointCart2D centroid(0, 0);
+
+    // Empty list: Return (0,0) for centroid
+    if (aPoints.size() == 0) return centroid;
+
+    // Otherwise, calculate centroid by summing up all coordinates
     for (const PointCart2D &point : aPoints) {
         centroid += point;
     }
 
+    // And dividing by size
     size_t sz = aPoints.size();
     centroid /= sz;
 
     return centroid;
 }
-
-/**
- * @brief Get Centroid from list of 3D points
- *
- * @param[in] aPoints List of points
- * @return const Point3D
- */
-// const PointCart3D getCentroid(const Point3DList &aPoints) {
-//     Point3D centroid(0,0);
-//     for (const PointCart3D &point : aPoints) {
-//         centroid += point;
-//     }
-//     centroid /= aPoints.size();
-//     return centroid;
-// }
 
 /**
  * @brief Get mean and covariance matrix from list of 2D points
@@ -56,7 +47,8 @@ void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
                        Eigen::Matrix2d &aCovMatrix) {
     // Convert list of points into Eigen matrix, then use vectorization
     const size_t sz = aPoints.size();
-    Eigen::Matrix2d pointsListMat(sz, 2); // TODO: Eigen is col-major, so colwise is faster? 
+    Eigen::Matrix2d pointsListMat(
+        sz, 2); // TODO: Eigen is col-major, so colwise is faster?
 
     for (size_t i = 0; i < sz; i++) {
         pointsListMat(i, 0) = aPoints[i].x;
@@ -173,11 +165,20 @@ void RadarImage::estimatePointDistribution() {
     // For each centroid, search around to find neighbours within radius
     for (size_t i = 0; i < ORSP_GRID_N; i++) {
         for (size_t j = 0; j < ORSP_GRID_N; j++) {
-            Point2DList validNeighbours;
+            // First we need to check if this grid space has a valid centroid
+            const Point2DList &currPoints = mORSPGrid[i][j];
 
-            // Search around the centroids, keeping within the neighbouring
-            // grids
+            if (currPoints.size() == 0) continue;
+
+            // Search around the centroids to find valid neighbours
+            // NOTE: Smart efficiency consideration: search only within the
+            // neighbouring grids
+            Point2DList validNeighbours;
             findValidNeighbours(validNeighbours, i, j);
+
+            // TODO: Check for invalid points
+            // Ensure enough neighbours to consider as valid point distribution
+            if (validNeighbours.size() <= ORSP_VALID_NEIGHBOUR_MIN) continue;
 
             // After finding valid neighbours
             // Compute mean and covariance
@@ -185,7 +186,9 @@ void RadarImage::estimatePointDistribution() {
             Eigen::Matrix2d covMatrix;
             getMeanCovariance(validNeighbours, mean, covMatrix);
 
-            // From covariance matrix, compute eigenvectors to get normal vector
+            // From covariance matrix, use SVD to get eigenvectors
+            
+            // Smallest eigenvector is normal vector
         }
     }
 }
