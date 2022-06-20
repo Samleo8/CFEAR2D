@@ -139,7 +139,7 @@ class RadarImage {
     const FilteredPointsVec &getFilteredPoints();
 
     // Generating Oriented Surface Points
-    // TODO: Might want to make as its own class
+    void downsamplePointCloud();
 
     // NOTE: UNUSED
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);
