@@ -40,7 +40,7 @@ const unsigned int ORSP_RESAMPLE_FACTOR = 1;
 const double ORSP_GRID_SQUARE_WIDTH = ORSP_RADIUS / ORSP_RESAMPLE_FACTOR;
 
 /** @brief Maximum number of grid squares, used in ORSP grid formation. Needs to double because max range is radius of image. */
-const size_t ORSP_GRID_N = static_cast<size_t>(ceil(2 * RADAR_MAX_RANGE_M / ORSP_GRID_SQUARE_WIDTH));
+const size_t ORSP_GRID_N = static_cast<size_t>(floor(2 * RADAR_MAX_RANGE_M / ORSP_GRID_SQUARE_WIDTH));
 
 /**
  * @brief Final Oriented Surface Point representation, holds mean and normal vector obtained from covariance
