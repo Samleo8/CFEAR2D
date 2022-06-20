@@ -1,6 +1,3 @@
-#ifndef __RADAR_IMAGE_H__
-#define __RADAR_IMAGE_H__
-
 /**
  * @file RadarImage.hpp
  *
@@ -14,8 +11,12 @@
  * @author Samuel Leong <samleocw@gmail.com>
  */
 
+#ifndef __RADAR_IMAGE_H__
+#define __RADAR_IMAGE_H__
+
 #include "ImageProcessing.hpp"   // needed for Fourier transforms
 #include "RadarImageHandler.hpp" // needed to handle file path and data
+#include "OrientedSurfacePointsHandler.hpp"
 
 // Constants
 /** @brief Tau = 2 * Pi. Used for radian conversion and img proc */
@@ -64,10 +65,13 @@ class RadarImage {
 
     MetaData mMetaData; ///< Metadata information (azimuth and timestamps)
 
-    /** @brief Feature points (Cartesian) found from filtering
+    /** 
+     * @brief Feature points (Cartesian) found from filtering
      * @note In sensor coordinates
      */
     FilteredPointsVec mFilteredPoints;
+
+    
 
     // TODO: Unused for now
     cv::Mat mLogPolarImage; ///< Downsampled log-polar image

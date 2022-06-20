@@ -46,6 +46,7 @@ add_executable(
   ImageProcessing.cpp
   PointCart2D.cpp
   PointPolar2D.cpp 
+  OrientedSurfacePointsHandler.cpp
   RadarImageHandler.cpp
   RadarImage.cpp
   TestRadar.cpp
