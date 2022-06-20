@@ -74,7 +74,7 @@ class RadarImage {
     /** 
      * @brief Downsampled grid of vector of filtered points
      */
-    FilteredPointsVec mORSFGrid[ORSP_GRID_N][ORSP_GRID_N];
+    FilteredPointsVec mORSPGrid[ORSP_GRID_N][ORSP_GRID_N];
 
     // TODO: Unused for now
     cv::Mat mLogPolarImage; ///< Downsampled log-polar image
