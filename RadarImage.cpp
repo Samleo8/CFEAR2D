@@ -447,11 +447,11 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
 }
 
 /**
- * @brief Get FeaturePoints member class
+ * @brief Get member variable of filtered points
  *
- * @return Vector of feature points
+ * @return Vector of filtered points
  */
-const FilteredPointsVec &RadarImage::getFeaturePoints() {
+const FilteredPointsVec &RadarImage::getFilteredPoints() {
     return mFilteredPoints;
 }
 

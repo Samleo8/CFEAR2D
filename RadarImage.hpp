@@ -132,7 +132,7 @@ class RadarImage {
                  std::vector<ValueIndexPair> &aTopKVec);
     void performKStrong(const size_t aK, const double aZmin,
                         const bool aClearOld = true);
-    const FilteredPointsVec &getFeaturePoints();
+    const FilteredPointsVec &getFilteredPoints();
 
     // Generating Oriented Surface Points
     // TODO: Might want to make as its own class

@@ -147,7 +147,7 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     r1.performKStrong(K, Z_min);
 
     // Get filtered points and display them on image
-    FilteredPointsVec featurePoints = r1.getFeaturePoints();
+    FilteredPointsVec filteredPoints = r1.getFilteredPoints();
 
     // Draw feature points
     const cv::Mat outputImgGray = r1.getImage(r1.RIMG_CART);
@@ -156,8 +156,8 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     const cv::Point2d imgCenter =
         cv::Point2d(outputImg.cols, outputImg.rows) / 2;
 
-    for (size_t i = 0, sz = featurePoints.size(); i < sz; i++) {
-        FilteredPoint point = featurePoints[i];
+    for (size_t i = 0, sz = filteredPoints.size(); i < sz; i++) {
+        FilteredPoint point = filteredPoints[i];
 
         cv::Point2d pointCV;
         point.toCV(pointCV);
