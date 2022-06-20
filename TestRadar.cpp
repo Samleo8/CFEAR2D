@@ -156,6 +156,10 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     const cv::Point2d imgCenter =
         cv::Point2d(outputImg.cols, outputImg.rows) / 2;
 
+    std::cout << imgCenter << " "
+              << cv::Point2d(RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M) /
+                     RANGE_RESOLUTION << std::endl;
+
     for (size_t i = 0, sz = filteredPoints.size(); i < sz; i++) {
         FilteredPoint point = filteredPoints[i];
 
@@ -169,14 +173,10 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
         // NOTE: Point is in meters, but we want to display it in pixels
         //       It is also with reference to the center of the frame, so we
         //       need to re-center it
-
+        // TODO: Check the resolution stuff
         pointCV /= RANGE_RESOLUTION;
         pointCV += imgCenter;
 
-        // std::cout << "| CV: " << "(" << pointCV.x << ", " << pointCV.y <<
-        // ")";
-        // std::cout << std::endl;
-        
         drawPoint(outputImg, pointCV);
     }
 }
