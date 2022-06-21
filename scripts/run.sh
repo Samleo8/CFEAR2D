@@ -8,7 +8,7 @@ echo "[Dataset $DATASET_ID]"
 # exit 0
 
 START_IND=0
-END_IND=30
+END_IND=10
 for (( IMG_IND=$START_IND; IMG_IND<=$END_IND; IMG_IND++ )); do
     echo " > Running on image $IMG_IND"
     ./build/TestRadar $DATASET_ID $IMG_IND 1
