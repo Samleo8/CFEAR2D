@@ -52,7 +52,7 @@ void writeText(cv::Mat aImg, const std::string &aText, const int ax,
  * @param[in] aCoord Coordinate of point
  */
 void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord) {
-    const int pointSize = 4;
+    const int pointSize = 5;
     const cv::Scalar color(0, 0, 255);
 
     cv::circle(aImg, aCoord, pointSize, color, cv::FILLED, cv::LINE_8);
@@ -131,10 +131,12 @@ void genImagePath(fs::path &basePath, const unsigned int dataset,
  * @param[in] dataset Dataset number
  * @param[in] r1ID First image ID
  * @param[in] filterSize Filter size
- * @param[out] outputImg Output image
+ * @param[out] outputImgFiltered Output image for filtered points
+ * @param[out] outputImgORSP Output image for ORSP visualization
  */
 void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
-                         cv::Mat &outputImg,
+                         cv::Mat &outputImgFiltered, 
+                         cv::Mat &outputImgORSP,
                          enum OutputStyle outStyle = NORMAL) {
     // Obtain radar images
     RadarImage r1(dataset, r1ID, true);
@@ -142,23 +144,24 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     std::cout << r1.getImagePolar().size() << std::endl;
 
     // K-filtering
-    const size_t K = 10;
+    const size_t K = 12;
     const double Z_min = 55;
     r1.performKStrong(K, Z_min);
 
     // Get filtered points and display them on image
     FilteredPointsVec filteredPoints = r1.getFilteredPoints();
 
-    // Draw feature points
+    // Draw filtered points
     const cv::Mat outputImgGray = r1.getImage(r1.RIMG_CART);
-    cv::cvtColor(outputImgGray, outputImg, cv::COLOR_GRAY2BGR);
+    // TODO: Make the background lighter?
+    const float BACKGROUND_LIGHTNESS_FACTOR = 1;
+    if (BACKGROUND_LIGHTNESS_FACTOR > 1) outputImgGray /= BACKGROUND_LIGHTNESS_FACTOR;
 
-    const cv::Point2d imgCenter =
-        cv::Point2d(outputImg.cols, outputImg.rows) / 2;
+    cv::cvtColor(outputImgGray, outputImgFiltered, cv::COLOR_GRAY2BGR);
+    cv::cvtColor(outputImgGray, outputImgORSP, cv::COLOR_GRAY2BGR);
 
-    // std::cout << imgCenter << " "
-    //           << cv::Point2d(RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M) /
-    //                  RANGE_RESOLUTION << std::endl;
+    const cv::Point2d imgCenterPx =
+        cv::Point2d(outputImgFiltered.cols, outputImgFiltered.rows) / 2;
 
     for (size_t i = 0, sz = filteredPoints.size(); i < sz; i++) {
         FilteredPoint point = filteredPoints[i];
@@ -166,21 +169,32 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
         cv::Point2d pointCV;
         point.toCV(pointCV);
 
-        // std::cout << "Point " << i << ": (" << point.x << ", " << point.y <<
-        // ")";
-
-        // Draw point
+        // Draw filtered point on image
         // NOTE: Point is in meters, but we want to display it in pixels
         //       It is also with reference to the center of the frame, so we
         //       need to re-center it
         // TODO: Check the resolution stuff
         pointCV /= RANGE_RESOLUTION;
-        pointCV += imgCenter;
+        pointCV += imgCenterPx;
 
-        drawPoint(outputImg, pointCV);
+        drawPoint(outputImgFiltered, pointCV);
     }
 
+    // Compute ORSP and draw those points with vectors
     r1.computeOrientedSurfacePoints();
+    const ORSPVec &featurePoints = r1.getORSPFeaturePoints();
+
+    // Draw ORSP points
+    const double VEC_LEN = 2;
+    for (size_t i = 0, sz = featurePoints.size(); i < sz; i++) {
+        const ORSP &featPt = featurePoints[i];
+        Eigen::Vector2d featPtCenter = featPt.center;
+        Eigen::Vector2d featPtNormal = featPt.normal;
+        Eigen::Vector2d featPtEnd = featPtCenter + featPtNormal * VEC_LEN;
+
+        cv::Point2d pointCV(featPtCenter(0), featPtCenter(1));
+        cv::Point2d pointCVEnd(featPtEnd(0), featPtEnd(1));
+    }
 }
 
 /**
@@ -209,20 +223,23 @@ int main(int argc, char **argv) {
     /**********************************************************************
      * @section TestRadar-KeyframeToKeyframe Compute keyframe to keyframe
      **********************************************************************/
-    cv::Mat outputImg;
-    outputImgFromFrames(dataset, r1ID, outputImg, NORMAL);
+    cv::Mat outputImgFiltered, outputImgORSP;
+    outputImgFromFrames(dataset, r1ID, outputImgFiltered, outputImgORSP, NORMAL);
 
     // Display or save image
     if (saveDirectly) {
-        std::string outputImgPathStr;
-        genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStr);
-        cv::imwrite(outputImgPathStr, outputImg);
+        std::string outputImgPathStrFiltered, outputImgPathStrORSP;
+        genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStrFiltered);
+        genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStrORSP, "_ORSP");
+
+        cv::imwrite(outputImgPathStrFiltered, outputImgFiltered);
+        cv::imwrite(outputImgPathStrORSP, outputImgORSP);
     }
     else {
         const float imgdownscale = 0.1;
-        const cv::Size imgDownSize = cv::Size(outputImg.cols * imgdownscale, outputImg.rows * imgdownscale);
-        cv::resize(outputImg, outputImg, imgDownSize);
-        cv::imshow("Frame " + std::to_string(r1ID), outputImg);
+        const cv::Size imgDownSize = cv::Size(outputImgFiltered.cols * imgdownscale, outputImgFiltered.rows * imgdownscale);
+        cv::resize(outputImgFiltered, outputImgFiltered, imgDownSize);
+        cv::imshow("Frame " + std::to_string(r1ID), outputImgFiltered);
 
         cv::waitKey(0);
         cv::destroyAllWindows();
