@@ -13,7 +13,7 @@
 
 namespace fs = std::filesystem;
 
-static const double defaultFontScale = 0.5;
+static const double defaultFontScale = 10;
 static const int newlineSpaceDefault = 50;
 
 static const cv::Scalar black(0, 0, 0);
@@ -26,7 +26,7 @@ static const cv::Scalar white(255, 255, 255);
 enum OutputStyle { NORMAL, NO_FOOTER, ON_THE_SIDE };
 
 void writeText(cv::Mat aImg, const std::string &aText, const int ax,
-               const int ay, const cv::Scalar &aColor = black,
+               const int ay, const cv::Scalar &aColor = CVColor::blue,
                const double aFontScale = defaultFontScale) {
     // Empty String: Do nothing
     if (aText == "") return;
@@ -40,9 +40,9 @@ void writeText(cv::Mat aImg, const std::string &aText, const int ax,
     std::stringstream ss(aText);
     std::string token;
     while (std::getline(ss, token)) {
-        cv::putText(aImg, token, cv::Point2d(x, y), cv::FONT_HERSHEY_SIMPLEX,
-                    aFontScale, aColor, 1);
         y += newlineSpace;
+        cv::putText(aImg, token, cv::Point2d(x, y), cv::FONT_HERSHEY_SIMPLEX,
+                    aFontScale, aColor, aFontScale * 2, cv::LINE_8, false);
     }
 }
 
@@ -88,21 +88,20 @@ void concatImagesWithText(cv::Mat displayImages[],
     const int numberOfEndl = (outStyle == NORMAL) ? 7 : 0;
 
     const int padding_top = newlineSpaceDefault * defaultFontScale;
-    const int padding_bottom =
-        newlineSpaceDefault * defaultFontScale * (numberOfEndl + 1);
+    const int padding_bottom = (outStyle == NORMAL) ? (newlineSpaceDefault * defaultFontScale * (numberOfEndl + 1)) : 0;
     const int padding_left = 5;
     const int padding_right = 5;
 
-    const int footerTextStartY = padding_top + displayImages[0].rows + 20;
+    const int footerTextStartY = padding_top + displayImages[0].rows;
 
     // Pad images with header and footer text
     for (int i = 0; i < nImgs; i++) {
         cv::copyMakeBorder(displayImages[i], displayImages[i], padding_top,
                            padding_bottom, padding_left, padding_right,
                            cv::BORDER_CONSTANT, white);
-        writeText(displayImages[i], headerTexts[i], padding_left + 10, 20);
+        writeText(displayImages[i], headerTexts[i], padding_left + 10, 0);
         if (outStyle == NORMAL)
-            writeText(displayImages[i], footerTexts[i], 20, footerTextStartY);
+            writeText(displayImages[i], footerTexts[i], 0, footerTextStartY);
     }
 
     // Concat images for output
@@ -255,7 +254,7 @@ int main(int argc, char **argv) {
     cv::Mat outputImgFiltered, outputImgORSP;
     outputImgFromFrames(dataset, r1ID, outputImgFiltered, outputImgORSP, NORMAL);
 
-    const float imgdownscale = (saveDirectly) ? 1 : 0.1;
+    const float imgdownscale = (saveDirectly) ? 1 : 0.05;
     
     const size_t N_IMGS = 2;
     cv::Mat outputImg;
