@@ -255,7 +255,7 @@ int main(int argc, char **argv) {
     cv::Mat outputImgFiltered, outputImgORSP;
     outputImgFromFrames(dataset, r1ID, outputImgFiltered, outputImgORSP, NORMAL);
 
-    const float imgdownscale = 0.1;
+    const float imgdownscale = (saveDirectly) ? 0.1 : 1;
     
     const size_t N_IMGS = 2;
     cv::Mat outputImg;
@@ -273,7 +273,9 @@ int main(int argc, char **argv) {
         genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStr);
 
         // TODO: Resize to save memory?
-        cv::resize(outputImg, outputImg, imgDownSize);
+        if (imgdownscale != 1) {
+            cv::resize(outputImg, outputImg, imgDownSize);
+        }
         cv::imwrite(outputImgPathStr, outputImg);
 
         // genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStrFiltered);
@@ -284,8 +286,10 @@ int main(int argc, char **argv) {
     }
     else {
         // const cv::Mat &outputImg = outputImgORSP;
+        if (imgdownscale != 1) {
+            cv::resize(outputImg, outputImg, imgDownSize);
+        }
 
-        cv::resize(outputImg, outputImg, imgDownSize);
         cv::imshow("Frame " + std::to_string(r1ID), outputImg);
 
         cv::waitKey(0);
