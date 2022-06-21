@@ -151,7 +151,7 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     // Obtain radar images
     RadarImage r1(dataset, r1ID, true);
 
-    std::cout << r1.getImagePolar().size() << std::endl;
+    // std::cout << r1.getImagePolar().size() << std::endl;
 
     // K-filtering
     const size_t K = 12;
