@@ -179,6 +179,8 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
 
         drawPoint(outputImg, pointCV);
     }
+
+    r1.computeOrientedSurfacePoints();
 }
 
 /**

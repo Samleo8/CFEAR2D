@@ -93,14 +93,21 @@ void pointToGridCoordinate(const PointCart2D &aPoint,
  */
 void RadarImage::downsamplePointCloud() {
     // Place filtered points in grid
-    FilteredPointsVec filteredPoints;
+    const FilteredPointsVec &filteredPoints = getFilteredPoints();
 
-    for (size_t i = 0, sz = filteredPoints.size(); i < sz; i++) {
+    const size_t sz = filteredPoints.size();
+    std::cout << "Downsampling point cloud (" << sz << ")..." << std::endl;
+
+    for (size_t i = 0; i < sz; i++) {
+        const FilteredPoint &filtPt = filteredPoints[i];
         PointCart2D gridCoordinate;
-        pointToGridCoordinate(filteredPoints[i], gridCoordinate);
+        pointToGridCoordinate(filtPt, gridCoordinate);
 
         size_t gridX = static_cast<size_t>(gridCoordinate.x);
         size_t gridY = static_cast<size_t>(gridCoordinate.y);
+
+        std::cout << "Raw XY: (" << filtPt.x << ", " << filtPt.y << ") | ";
+        std::cout << "Grid coordinate: " << gridX << ", " << gridY << ")" << std::endl;
 
         mORSPGrid[gridX][gridY].push_back(filteredPoints[i]);
     }
