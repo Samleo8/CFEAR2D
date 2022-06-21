@@ -154,7 +154,7 @@ class RadarImage {
 
     // Generating Oriented Surface Points
     void downsamplePointCloud();
-    void findValidNeighbours(Point2DList aValidNeighbours, const size_t aGridX,
+    void findValidNeighbours(Point2DList &aValidNeighbours, const size_t aGridX,
                              const size_t aGridY);
     void estimatePointDistribution();
     void computeOrientedSurfacePoints();

@@ -129,31 +129,38 @@ void RadarImage::downsamplePointCloud() {
  * @param[in] aGridX Grid x coordinate
  * @param[in] aGridY Grid y coordinate
  */
-void RadarImage::findValidNeighbours(Point2DList aValidNeighbours,
+void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
                                      const size_t aGridX, const size_t aGridY) {
     // Prep valid neighbours
     aValidNeighbours.clear();
 
     const PointCart2D centroid = mORSPCentroidGrid[aGridX][aGridY];
 
-    // Check around the grid square
-    for (ssize_t dx = -ORSP_RESAMPLE_FACTOR; dx <= ORSP_RESAMPLE_FACTOR; dx++) {
-        // Bounds check: X
-        ssize_t neighGridX = static_cast<ssize_t>(aGridX) + dx;
-        if (neighGridX < 0 || neighGridX >= ORSP_GRID_N) continue;
+    // Check around the grid square but only up to sampling factor
+    const ssize_t gridX = static_cast<ssize_t>(aGridX);
+    const ssize_t gridY = static_cast<ssize_t>(aGridY);
+    const ssize_t f = static_cast<ssize_t>(ORSP_RESAMPLE_FACTOR);
+    const ssize_t N = static_cast<ssize_t>(ORSP_GRID_N);
 
-        for (ssize_t dy = -ORSP_RESAMPLE_FACTOR; dy <= ORSP_RESAMPLE_FACTOR;
-             dy++) {
+    for (ssize_t dx = -f; dx <= f; dx++) {
+        // Bounds check: X
+        ssize_t neighGridX = gridX + dx;
+        if (neighGridX < 0 || neighGridX >= N) continue;
+
+        for (ssize_t dy = -f; dy <= f; dy++) {
             // Bounds check: Y
-            ssize_t neighGridY = static_cast<ssize_t>(aGridY) + dy;
-            if (neighGridY < 0 || neighGridY >= ORSP_GRID_N) continue;
+            ssize_t neighGridY = gridY + dy;
+            if (neighGridY < 0 || neighGridY >= N) continue;
 
             // Now look through all filtered points in neighbours
             const Point2DList &potentialNeighbourPoints =
                 mORSPGrid[neighGridX][neighGridY];
+
             for (const PointCart2D &point : potentialNeighbourPoints) {
                 // Check if point is within search radius
-                const size_t dist = point.distance(centroid);
+                // TODO: Extra efficiency constraint: if dx == dy == 0, then guarenteed to be in
+                const double dist = point.distance(centroid);
+
                 if (dist <= ORSP_RADIUS) {
                     aValidNeighbours.push_back(point);
                 }
@@ -175,17 +182,22 @@ void RadarImage::estimatePointDistribution() {
             // First we need to check if this grid space has a valid centroid
             const Point2DList &currPoints = mORSPGrid[i][j];
 
+            // No valid centroid, skip
             if (currPoints.size() == 0) continue;
 
-            // Search around the centroids to find valid neighbours
+            std::cout << "Parsing centroid at " << i << "," << j << "... ";
+            
+            // Search around the grid square to find valid neighbours
             // NOTE: Smart efficiency consideration: search only within the
             // neighbouring grids
             Point2DList validNeighbours;
             findValidNeighbours(validNeighbours, i, j);
 
+            std::cout << "Found " << validNeighbours.size() << " valid neighbours" << std::endl;
+
             // TODO: Check for invalid points
             // Ensure enough neighbours to consider as valid point distribution
-            if (validNeighbours.size() <= ORSP_VALID_NEIGHBOUR_MIN) continue;
+            if (validNeighbours.size() < ORSP_VALID_NEIGHBOUR_MIN) continue;
 
             // After finding valid neighbours
             // Compute mean and covariance
