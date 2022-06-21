@@ -13,4 +13,4 @@ FRAME_RATE=${4:-60}
 
 OUTPUT_BASE_FOLDER=$OUTPUT_NAME/$DATASET_ID
 
-ffmpeg -y -start_number $START_NUM -framerate $FRAME_RATE -i $OUTPUT_BASE_FOLDER/%d.jpg -loop -1 -profile:v high -crf 28 -pix_fmt yuv420p $OUTPUT_BASE_FOLDER/$OUTPUT_NAME.mp4
+ffmpeg -y -start_number $START_NUM -framerate $FRAME_RATE -i $OUTPUT_BASE_FOLDER/%d.jpg -loop -1 -profile:v high -crf 28 $OUTPUT_BASE_FOLDER/$OUTPUT_NAME.mp4
