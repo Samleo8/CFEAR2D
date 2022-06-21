@@ -85,7 +85,7 @@ class RadarImage {
     PointCart2D mORSPCentroidGrid[ORSP_GRID_N][ORSP_GRID_N];
 
     /** @brief Vector of oriented surface points */
-    ORSPVec mORSPVec;
+    ORSPVec mORSPFeaturePoints;
 
     // TODO: Unused for now
     cv::Mat mLogPolarImage; ///< Downsampled log-polar image

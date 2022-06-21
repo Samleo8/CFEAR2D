@@ -207,19 +207,36 @@ void RadarImage::estimatePointDistribution() {
             // After finding valid neighbours
             // Compute mean and covariance
             Eigen::Vector2d mean;
+            Eigen::Vector2d normalVector;
             Eigen::Matrix2d covMatrix;
-            std::cout << "Getting mean covariance..." << std::flush;
+
+            // std::cout << "Getting mean covariance..." << std::flush;
             getMeanCovariance(validNeighbours, mean, covMatrix);
-            std::cout << "Done." << std::endl;
+            // std::cout << "Done." << std::endl;
 
             // From covariance matrix, use SVD to get eigenvectors
             Eigen::EigenSolver<Eigen::Matrix2d> eigenSolver(covMatrix);
 
             // Smallest eigenvector is normal vector
-            Eigen::Vector2cd eigVal = eigenSolver.eigenvalues();
-            Eigen::Matrix2cd eigVec = eigenSolver.eigenvectors();
+            Eigen::Vector2d eigVal = eigenSolver.eigenvalues().real();
+            Eigen::Matrix2d eigVec = eigenSolver.eigenvectors().real();
 
-            std::cout << eigVal << std::endl; 
+            double eigVal1 = eigVal(0);
+            double eigVal2 = eigVal(1);
+
+            if (eigVal1 < eigVal2) {
+                normalVector = eigVec.col(0);
+            }
+            else {
+                normalVector = eigVec.col(1);
+            }
+
+            // Build the oriented feature point and add to list
+            ORSP featurePt;
+            featurePt.center = mean;
+            featurePt.normal = normalVector;
+
+            mORSPFeaturePoints.push_back(featurePt);
         }
     }
 }
