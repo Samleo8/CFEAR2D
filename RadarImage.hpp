@@ -158,6 +158,7 @@ class RadarImage {
     void findValidNeighbours(Point2DList aValidNeighbours, const size_t aGridX,
                              const size_t aGridY);
     void estimatePointDistribution();
+    void computeOrientedSurfacePoints();
 
     // NOTE: UNUSED
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);

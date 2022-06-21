@@ -187,10 +187,23 @@ void RadarImage::estimatePointDistribution() {
             getMeanCovariance(validNeighbours, mean, covMatrix);
 
             // From covariance matrix, use SVD to get eigenvectors
-            EigenSolver<Matrix2d> eigenSolver(covMatrix);
+            Eigen::EigenSolver<Eigen::Matrix2d> eigenSolver(covMatrix);
 
             // Smallest eigenvector is normal vector
-            eigenSolver.eigenvalues();
+            Eigen::Vector2cd eigVal = eigenSolver.eigenvalues();
+            Eigen::Matrix2cd eigVec = eigenSolver.eigenvectors();
+
+            std::cout << eigVal << std::endl; 
         }
     }
+}
+
+/**
+ * @brief Full pipeline for computing surface points
+ * @see estimatePointDistribution()
+ * @see downsamplePointCloud()
+ */
+void RadarImage::computeOrientedSurfacePoints(){
+    downsamplePointCloud();
+    estimatePointDistribution();
 }
