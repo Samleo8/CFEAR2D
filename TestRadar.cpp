@@ -217,6 +217,9 @@ int main(int argc, char **argv) {
         cv::imwrite(outputImgPathStr, outputImg);
     }
     else {
+        const float imgdownscale = 0.1;
+        const cv::Size imgDownSize = cv::Size(outputImg.cols * imgdownscale, outputImg.rows * imgdownscale);
+        cv::resize(outputImg, outputImg, imgDownSize);
         cv::imshow("Frame " + std::to_string(r1ID), outputImg);
 
         cv::waitKey(0);
