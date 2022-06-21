@@ -13,3 +13,5 @@ for (( IMG_IND=$START_IND; IMG_IND<=$END_IND; IMG_IND++ )); do
     echo " > Running on image $IMG_IND"
     ./build/TestRadar $DATASET_ID $IMG_IND 1
 done
+
+./scripts/mp4-from-folder.sh results $DATASET_ID $START_IND

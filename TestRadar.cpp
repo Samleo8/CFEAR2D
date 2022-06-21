@@ -256,7 +256,7 @@ int main(int argc, char **argv) {
     cv::Mat outputImgFiltered, outputImgORSP;
     outputImgFromFrames(dataset, r1ID, outputImgFiltered, outputImgORSP, NORMAL);
 
-    const float imgdownscale = (saveDirectly) ? 1 : 0.05;
+    const float imgdownscale = (saveDirectly) ? 0.5 : 0.05;
     const size_t N_IMGS = 2;
 
  #ifndef ORSP_ONLY
