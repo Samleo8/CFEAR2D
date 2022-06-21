@@ -55,6 +55,9 @@ const size_t ORSP_GRID_N =
  */
 const size_t ORSP_VALID_NEIGHBOUR_MIN = 6;
 
+/** @brief Eigenvalue ratio threshold above which distribution is considered ill defined */
+const double ORSP_EIGENVAL_THRESHOLD = 10e5;
+
 /**
  * @brief Final Oriented Surface Point representation, holds mean and normal
  * vector obtained from covariance

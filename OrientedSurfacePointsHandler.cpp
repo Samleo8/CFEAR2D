@@ -179,8 +179,13 @@ void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
 /**
  * @brief Estimate point distribution
  * @pre @see downsamplePointCloud() to be called first
+ * 
+ * @note Updates internal ORSP feature points list
  */
 void RadarImage::estimatePointDistribution() {
+    // Empty existing list
+    mORSPFeaturePoints.clear();
+
     // For each centroid, search around to find neighbours within radius
     for (size_t i = 0; i < ORSP_GRID_N; i++) {
         for (size_t j = 0; j < ORSP_GRID_N; j++) {
@@ -204,15 +209,13 @@ void RadarImage::estimatePointDistribution() {
             // Ensure enough neighbours to consider as valid point distribution
             if (validNeighbours.size() < ORSP_VALID_NEIGHBOUR_MIN) continue;
 
-            // After finding valid neighbours
+            // After finding valid neighbours, consider this as a potential feature point
             // Compute mean and covariance
             Eigen::Vector2d mean;
             Eigen::Vector2d normalVector;
             Eigen::Matrix2d covMatrix;
 
-            // std::cout << "Getting mean covariance..." << std::flush;
             getMeanCovariance(validNeighbours, mean, covMatrix);
-            // std::cout << "Done." << std::endl;
 
             // From covariance matrix, use SVD to get eigenvectors
             Eigen::EigenSolver<Eigen::Matrix2d> eigenSolver(covMatrix);
@@ -225,9 +228,15 @@ void RadarImage::estimatePointDistribution() {
             double eigVal2 = eigVal(1);
 
             if (eigVal1 < eigVal2) {
+                // Fails condition criteria (ratio too high => ill-defined distribution)
+                if ((eigVal2 / eigVal1) > ORSP_EIGENVAL_THRESHOLD) continue;
+
                 normalVector = eigVec.col(0);
             }
             else {
+                // Fails condition criteria (ratio too high => ill-defined distribution)
+                if ((eigVal1 / eigVal2) > ORSP_EIGENVAL_THRESHOLD) continue;
+
                 normalVector = eigVec.col(1);
             }
 
@@ -249,4 +258,8 @@ void RadarImage::estimatePointDistribution() {
 void RadarImage::computeOrientedSurfacePoints(){
     downsamplePointCloud();
     estimatePointDistribution();
+}
+
+const ORSPVec &RadarImage::getORSPFeaturePoints() {
+    return mORSPFeaturePoints;
 }
