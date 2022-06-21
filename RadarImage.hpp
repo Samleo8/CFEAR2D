@@ -159,6 +159,8 @@ class RadarImage {
     void estimatePointDistribution();
     void computeOrientedSurfacePoints();
 
+    const ORSPVec &getORSPFeaturePoints();
+
     // NOTE: UNUSED
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);
     void performFFTOnImage(const cv::Mat &aSrcImage, cv::Mat &aDestImage);
