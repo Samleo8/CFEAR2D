@@ -96,7 +96,7 @@ void RadarImage::downsamplePointCloud() {
     const FilteredPointsVec &filteredPoints = getFilteredPoints();
 
     const size_t sz = filteredPoints.size();
-    std::cout << "Downsampling point cloud (" << sz << ")..." << std::endl;
+    std::cout << "Downsampling point cloud of size " << sz << " into " << ORSP_GRID_N << " x " << ORSP_GRID_N << " grid..." << std::endl;
 
     for (size_t i = 0; i < sz; i++) {
         const FilteredPoint &filtPt = filteredPoints[i];
@@ -106,8 +106,8 @@ void RadarImage::downsamplePointCloud() {
         size_t gridX = static_cast<size_t>(gridCoordinate.x);
         size_t gridY = static_cast<size_t>(gridCoordinate.y);
 
-        std::cout << "Raw XY: (" << filtPt.x << ", " << filtPt.y << ") | ";
-        std::cout << "Grid coordinate: " << gridX << ", " << gridY << ")" << std::endl;
+        // std::cout << "Raw XY: (" << filtPt.x << ", " << filtPt.y << ") | ";
+        // std::cout << "Grid coordinate: (" << gridX << ", " << gridY << ")" << std::endl;
 
         mORSPGrid[gridX][gridY].push_back(filteredPoints[i]);
     }

@@ -107,6 +107,10 @@ typedef std::pair<double, size_t> ValueIndexPair;
 /** @brief Radar's maximum range in meters */
 #define RADAR_MAX_RANGE_M 165
 
+/** @brief Pre-found value of the number of columns in the range-azimuth polar
+ * image */
+#define RADAR_IMAGE_POLAR_MAX_RANGE_PX 3768
+
 /** @brief Optimisation for checking if distance is less than radar max range */
 #define RADAR_MAX_RANGE_M_2 (0.707 * RADAR_MAX_RANGE_M) // range * 1/sqrt(2)
 
@@ -124,6 +128,10 @@ typedef std::pair<double, size_t> ValueIndexPair;
 
 /** @brief Number of columns in metadata for sweep counter information */
 #define SWEEP_COUNTER_N_COLS 2
+
+/** @brief Range resolution in m per pixel */
+#define RANGE_RESOLUTION                                                       \
+    ((double)RADAR_MAX_RANGE_M / (double)RADAR_IMAGE_POLAR_MAX_RANGE_PX)
 
 // Functions
 bool imagePathFromTimestamp(std::string &aImagePath, unsigned int aSetNumber,

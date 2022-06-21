@@ -139,7 +139,7 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     // Obtain radar images
     RadarImage r1(dataset, r1ID, true);
 
-    // TODO: For now, do nothing with K strongest filtering
+    std::cout << r1.getImagePolar().size() << std::endl;
 
     // K-filtering
     const size_t K = 10;
@@ -156,9 +156,9 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     const cv::Point2d imgCenter =
         cv::Point2d(outputImg.cols, outputImg.rows) / 2;
 
-    std::cout << imgCenter << " "
-              << cv::Point2d(RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M) /
-                     RANGE_RESOLUTION << std::endl;
+    // std::cout << imgCenter << " "
+    //           << cv::Point2d(RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M) /
+    //                  RANGE_RESOLUTION << std::endl;
 
     for (size_t i = 0, sz = filteredPoints.size(); i < sz; i++) {
         FilteredPoint point = filteredPoints[i];

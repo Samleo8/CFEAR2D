@@ -24,8 +24,7 @@
 #define M_TAU 6.2831853071795864769
 #endif
 
-/** @brief Range resolution in m per pixel */
-const double RANGE_RESOLUTION = 0.49107142857142855; // m per px
+// const double RANGE_RESOLUTION = 0.49107142857142855; // m per px
 
 /** @brief Default high-pass filter size */
 const double DEFAULT_FILTER_SIZE = 150;
