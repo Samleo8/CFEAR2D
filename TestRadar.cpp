@@ -49,11 +49,23 @@ void writeText(cv::Mat aImg, const std::string &aText, const int ax,
 /**
  * @brief Draws point on image at specified coordinate. Actually a small circle
  *
- * @param[in,out] aImg Input image
+ * @param[in,out] aImg Input/Output image
+ * @param[in] aCoord Coordinate of point
+ * @param[in] aPointSize Radius of point
+ * @param[in] aColor Color of point
+ */
+void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord, const int aPointSize = 5, const cv::Scalar aColor = CVColor::red) {
+    cv::circle(aImg, aCoord, aPointSize, aColor, cv::FILLED, cv::LINE_8);
+}
+
+/**
+ * @brief Draws point on image at specified coordinate. Actually a small circle
+ *
+ * @param[in,out] aImg Input/Output image
  * @param[in] aCoord Coordinate of point
  */
-void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord, const int pointSize = 5, const cv::Scalar color = CVColor::red) {
-    cv::circle(aImg, aCoord, pointSize, color, cv::FILLED, cv::LINE_8);
+void drawLine(cv::Mat &aImg, const cv::Point2d &aCoordStart, const cv::Point2d &aCoordEnd, const int aLineThickness = 10, const cv::Scalar aColor = CVColor::green) {
+    cv::arrowedLine(aImg, aCoordStart, aCoordEnd, aColor, aLineThickness, cv::LINE_8);
 }
 
 /**
@@ -192,15 +204,25 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
         Eigen::Vector2d featPtEnd = featPtCenter + featPtNormal * VEC_LEN;
 
         // Convert to CV
-        cv::Point2d pointCV(featPtCenter(0), featPtCenter(1));
+        cv::Point2d pointCVStart(featPtCenter(0), featPtCenter(1));
         cv::Point2d pointCVEnd(featPtEnd(0), featPtEnd(1));
 
         // Draw filtered point on image
         // NOTE: Point is in meters, but we want to display it in pixels
         //       It is also with reference to the center of the frame, so we
         //       need to re-center it
-        pointCV /= RANGE_RESOLUTION;
-        pointCV += imgCenterPx;
+        pointCVStart /= RANGE_RESOLUTION;
+        pointCVEnd /= RANGE_RESOLUTION;
+
+        pointCVStart += imgCenterPx;
+        pointCVEnd += imgCenterPx;
+
+        // Draw Corresponding line
+        drawLine(outputImgORSP, pointCVStart, pointCVEnd, 8);
+        
+        // Draw Point
+        drawPoint(outputImgORSP, pointCVStart, 8);
+
     }
 }
 
