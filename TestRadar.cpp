@@ -256,26 +256,34 @@ int main(int argc, char **argv) {
     outputImgFromFrames(dataset, r1ID, outputImgFiltered, outputImgORSP, NORMAL);
 
     const float imgdownscale = 0.1;
-    const cv::Size imgDownSize = cv::Size(outputImgFiltered.cols * imgdownscale, outputImgFiltered.rows * imgdownscale);
     
+    const size_t N_IMGS = 2;
+    cv::Mat outputImg;
+    cv::Mat displayImages[N_IMGS] = {outputImgFiltered, outputImgORSP};
+    const std::string headerTexts[N_IMGS] = {"Filtered Points", "ORSP"};
+    const std::string footerTexts[N_IMGS] = {"",""};
+
+    concatImagesWithText(displayImages, headerTexts, footerTexts, N_IMGS, outputImg, NO_FOOTER);
+    const cv::Size imgDownSize = cv::Size(outputImg.cols * imgdownscale, outputImg.rows * imgdownscale);
+
     // Display or save image
     if (saveDirectly) {
-        std::string outputImgPathStrFiltered, outputImgPathStrORSP;
-        genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStrFiltered);
+        std::string outputImgPathStr;
+        // std::string outputImgPathStrFiltered, outputImgPathStrORSP;
+        genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStr);
+
+        // TODO: Resize to save memory?
+        cv::resize(outputImg, outputImg, imgDownSize);
+        cv::imwrite(outputImgPathStr, outputImg);
+
+        // genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStrFiltered);
         // genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStrORSP, "_ORSP");
 
         // cv::imwrite(outputImgPathStrFiltered, outputImgFiltered);
         // cv::imwrite(outputImgPathStrORSP, outputImgORSP);
-        const size_t N_IMGS = 2;
-        cv::Mat outputImg;
-        cv::Mat displayImages[N_IMGS] = {outputImgFiltered, outputImgORSP};
-        const std::string headerTexts[N_IMGS] = {"Filtered Points", "ORSP"};
-        const std::string footerTexts[N_IMGS] = {"",""};
-
-        concatImagesWithText(displayImages, headerTexts, footerTexts, outputImg, N_IMGS, NO_FOOTER);
     }
     else {
-        const cv::Mat &outputImg = outputImgORSP;
+        // const cv::Mat &outputImg = outputImgORSP;
 
         cv::resize(outputImg, outputImg, imgDownSize);
         cv::imshow("Frame " + std::to_string(r1ID), outputImg);
