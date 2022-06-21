@@ -1,9 +1,10 @@
 #!/bin/bash
 
-IMG_IND=30
-./build/TestRadar 0 $IMG_IND 1
+# IMG_IND=30
+# ./build/TestRadar 0 $IMG_IND 1
 
-# END_IND=5
-# for IMG_IND in {0..$END_IND}; do
-#     ./build/TestRadar 0 $IMG_IND 1
-# done
+END_IND=10
+for (( IMG_IND=$START; IMG_IND<=$END; IMG_IND++ )); do
+    echo $IMG_IND
+    ./build/TestRadar 0 $IMG_IND 1
+done
