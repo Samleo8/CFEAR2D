@@ -43,6 +43,7 @@ target_link_libraries(CeresTest ${CERES_LIBRARIES})
 # Radar Testing Module
 add_executable(
   TestRadar
+  CVColor.cpp
   ImageProcessing.cpp
   PointCart2D.cpp
   PointPolar2D.cpp 

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string>
 
+#include "CVColor.hpp"
 #include "RadarImage.hpp"
 
 #ifndef OUT_BUFFER_SIZE
@@ -51,10 +52,7 @@ void writeText(cv::Mat aImg, const std::string &aText, const int ax,
  * @param[in,out] aImg Input image
  * @param[in] aCoord Coordinate of point
  */
-void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord) {
-    const int pointSize = 5;
-    const cv::Scalar color(0, 0, 255);
-
+void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord, const int pointSize = 5, const cv::Scalar color = CVColor::red) {
     cv::circle(aImg, aCoord, pointSize, color, cv::FILLED, cv::LINE_8);
 }
 
@@ -173,7 +171,6 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
         // NOTE: Point is in meters, but we want to display it in pixels
         //       It is also with reference to the center of the frame, so we
         //       need to re-center it
-        // TODO: Check the resolution stuff
         pointCV /= RANGE_RESOLUTION;
         pointCV += imgCenterPx;
 
@@ -188,12 +185,22 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     const double VEC_LEN = 2;
     for (size_t i = 0, sz = featurePoints.size(); i < sz; i++) {
         const ORSP &featPt = featurePoints[i];
+
+        // Calculate center of point and end of normal vector
         Eigen::Vector2d featPtCenter = featPt.center;
         Eigen::Vector2d featPtNormal = featPt.normal;
         Eigen::Vector2d featPtEnd = featPtCenter + featPtNormal * VEC_LEN;
 
+        // Convert to CV
         cv::Point2d pointCV(featPtCenter(0), featPtCenter(1));
         cv::Point2d pointCVEnd(featPtEnd(0), featPtEnd(1));
+
+        // Draw filtered point on image
+        // NOTE: Point is in meters, but we want to display it in pixels
+        //       It is also with reference to the center of the frame, so we
+        //       need to re-center it
+        pointCV /= RANGE_RESOLUTION;
+        pointCV += imgCenterPx;
     }
 }
 
