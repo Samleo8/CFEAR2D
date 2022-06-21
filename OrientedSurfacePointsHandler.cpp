@@ -59,8 +59,8 @@ void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
     // Use vectorisation to get mean and covariance
     aMean = pointsListMat.colwise().mean();
 
-    std::cout << "aMean size: " << aMean.rows() << "x"
-              << aMean.cols() << std::endl;
+    // std::cout << "aMean size: " << aMean.rows() << "x"
+    //           << aMean.cols() << std::endl;
 
     // Xvec - E[Xvec]
     Eigen::MatrixXd deltaExpected(sz, 2);
@@ -101,7 +101,7 @@ void RadarImage::downsamplePointCloud() {
     const FilteredPointsVec &filteredPoints = getFilteredPoints();
 
     const size_t sz = filteredPoints.size();
-    std::cout << "Downsampling point cloud of size " << sz << " into " << ORSP_GRID_N << " x " << ORSP_GRID_N << " grid..." << std::endl;
+    std::cout << "Downsampling point cloud of size " << sz << " into " << ORSP_GRID_N << " x " << ORSP_GRID_N << " grid... " << std::flush;
 
     for (size_t i = 0; i < sz; i++) {
         const FilteredPoint &filtPt = filteredPoints[i];
@@ -123,6 +123,8 @@ void RadarImage::downsamplePointCloud() {
             mORSPCentroidGrid[i][j] = getCentroid(mORSPGrid[i][j]);
         }
     }
+
+    std::cout << "Done!" << std::endl;
 }
 
 /**
@@ -183,6 +185,8 @@ void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
  * @note Updates internal ORSP feature points list
  */
 void RadarImage::estimatePointDistribution() {
+    std::cout << "Estimating point distribution... " << std::flush;
+
     // Empty existing list
     mORSPFeaturePoints.clear();
 
@@ -195,7 +199,7 @@ void RadarImage::estimatePointDistribution() {
             // No valid centroid, skip
             if (currPoints.size() == 0) continue;
 
-            std::cout << "Parsing centroid at grid (" << i << ", " << j << ")... ";
+            // std::cout << "Parsing centroid at grid (" << i << ", " << j << ")... ";
             
             // Search around the grid square to find valid neighbours
             // NOTE: Smart efficiency consideration: search only within the
@@ -203,7 +207,7 @@ void RadarImage::estimatePointDistribution() {
             Point2DList validNeighbours;
             findValidNeighbours(validNeighbours, i, j);
 
-            std::cout << "Found " << validNeighbours.size() << " valid neighbours!" << std::endl;
+            // std::cout << "Found " << validNeighbours.size() << " valid neighbours!" << std::endl;
 
             // TODO: Check for invalid points
             // Ensure enough neighbours to consider as valid point distribution
@@ -248,6 +252,9 @@ void RadarImage::estimatePointDistribution() {
             mORSPFeaturePoints.push_back(featurePt);
         }
     }
+
+    std::cout << "Done!" << std::endl;
+    std::cout << "Found " << mORSPFeaturePoints.size() << " oriented surface feature points." << std::endl;
 }
 
 /**
