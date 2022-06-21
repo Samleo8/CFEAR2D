@@ -7,6 +7,7 @@ data
 vis_saved_images
 # docs/doxygen
 docs/*.log
+results
 
 # Build files
 build
