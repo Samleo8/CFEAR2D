@@ -7,6 +7,8 @@
 #include "CVColor.hpp"
 #include "RadarImage.hpp"
 
+#define ORSP_ONLY
+
 #ifndef OUT_BUFFER_SIZE
 #define OUT_BUFFER_SIZE 5000
 #endif
@@ -255,14 +257,19 @@ int main(int argc, char **argv) {
     outputImgFromFrames(dataset, r1ID, outputImgFiltered, outputImgORSP, NORMAL);
 
     const float imgdownscale = (saveDirectly) ? 1 : 0.05;
-    
     const size_t N_IMGS = 2;
+
+ #ifndef ORSP_ONLY
     cv::Mat outputImg;
     cv::Mat displayImages[N_IMGS] = {outputImgFiltered, outputImgORSP};
     const std::string headerTexts[N_IMGS] = {"Filtered Points", "ORSP"};
     const std::string footerTexts[N_IMGS] = {"",""};
 
     concatImagesWithText(displayImages, headerTexts, footerTexts, N_IMGS, outputImg, NO_FOOTER);
+#else   
+    cv::Mat outputImg = outputImgORSP;
+#endif
+
     const cv::Size imgDownSize = cv::Size(outputImg.cols * imgdownscale, outputImg.rows * imgdownscale);
 
     // Display or save image
