@@ -132,8 +132,7 @@ void genImagePath(fs::path &basePath, const unsigned int dataset,
                   const unsigned int r1ID, std::string &outPathStr,
                   const std::string &appendStr = "") {
     fs::path outPath(basePath);
-    outPath /= std::to_string(dataset) + "_" + std::to_string(r1ID) +
-               appendStr + ".jpg";
+    outPath /= std::to_string(r1ID) + appendStr + ".jpg";
     outPathStr = outPath.string();
 }
 
@@ -246,7 +245,8 @@ int main(int argc, char **argv) {
 
     // Create path to save images
     fs::path saveImagesPath(".");
-    saveImagesPath /= "results";
+    saveImagesPath /= "results"; 
+    saveImagesPath /= argv[1];
 
     fs::create_directories(saveImagesPath);
 
