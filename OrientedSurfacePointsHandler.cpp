@@ -46,20 +46,25 @@ const PointCart2D getCentroid(const Point2DList &aPoints) {
 void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
                        Eigen::Matrix2d &aCovMatrix) {
     // Convert list of points into Eigen matrix, then use vectorization
+    // NOTe: Eigen is col-major, so colwise access is faster.
     const size_t sz = aPoints.size();
-    Eigen::Matrix2d pointsListMat(
-        sz, 2); // TODO: Eigen is col-major, so colwise is faster?
+    Eigen::MatrixXd pointsListMat(2, sz);
 
     for (size_t i = 0; i < sz; i++) {
-        pointsListMat(i, 0) = aPoints[i].x;
-        pointsListMat(i, 1) = aPoints[i].y;
+        pointsListMat(0, i) = aPoints[i].x;
+        pointsListMat(1, i) = aPoints[i].y;
     }
+    pointsListMat.transposeInPlace();
 
     // Use vectorisation to get mean and covariance
     aMean = pointsListMat.colwise().mean();
 
+    std::cout << "aMean size: " << aMean.rows() << "x"
+              << aMean.cols() << std::endl;
+
     // Xvec - E[Xvec]
-    Eigen::Matrix2d deltaExpected = pointsListMat.colwise() - aMean;
+    Eigen::MatrixXd deltaExpected(sz, 2);
+    deltaExpected = pointsListMat.rowwise() - aMean.transpose();
 
     aCovMatrix = deltaExpected.transpose() * deltaExpected / sz;
 }
@@ -185,7 +190,7 @@ void RadarImage::estimatePointDistribution() {
             // No valid centroid, skip
             if (currPoints.size() == 0) continue;
 
-            std::cout << "Parsing centroid at " << i << "," << j << "... ";
+            std::cout << "Parsing centroid at grid (" << i << ", " << j << ")... ";
             
             // Search around the grid square to find valid neighbours
             // NOTE: Smart efficiency consideration: search only within the
@@ -193,7 +198,7 @@ void RadarImage::estimatePointDistribution() {
             Point2DList validNeighbours;
             findValidNeighbours(validNeighbours, i, j);
 
-            std::cout << "Found " << validNeighbours.size() << " valid neighbours" << std::endl;
+            std::cout << "Found " << validNeighbours.size() << " valid neighbours!" << std::endl;
 
             // TODO: Check for invalid points
             // Ensure enough neighbours to consider as valid point distribution
@@ -203,7 +208,9 @@ void RadarImage::estimatePointDistribution() {
             // Compute mean and covariance
             Eigen::Vector2d mean;
             Eigen::Matrix2d covMatrix;
+            std::cout << "Getting mean covariance..." << std::flush;
             getMeanCovariance(validNeighbours, mean, covMatrix);
+            std::cout << "Done." << std::endl;
 
             // From covariance matrix, use SVD to get eigenvectors
             Eigen::EigenSolver<Eigen::Matrix2d> eigenSolver(covMatrix);
