@@ -13,4 +13,4 @@ FRAME_RATE=${4:-10}
 
 OUTPUT_BASE_FOLDER=$OUTPUT_NAME/$DATASET_ID
 
-ffmpeg -y -start_number $START_NUM -framerate $FRAME_RATE -i $OUTPUT_BASE_FOLDER/%d.jpg -loop -1 -profile:v high -crf 28 $OUTPUT_BASE_FOLDER/$OUTPUT_NAME.mp4
+ffmpeg -y -start_number $START_NUM -framerate $FRAME_RATE -i $OUTPUT_BASE_FOLDER/%d.jpg -vf "scale=trunc(iw/4)*2:trunc(ih/4)*2" -c:v libx265 -loop -1 -crf 32 $OUTPUT_BASE_FOLDER/$OUTPUT_NAME.mp4
