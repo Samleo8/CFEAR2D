@@ -1,6 +1,12 @@
 #!/bin/bash
 
 DATASET_ID=${1:-0}
+
+if [[ ! -d ./data/$DATASET_ID ]]; then
+    echo "Dataset $DATASET_ID not found! Aborting!"
+    exit 1
+fi
+
 echo "[Dataset $DATASET_ID]"
 
 # IMG_IND=0
@@ -12,7 +18,7 @@ END_IND=${3:-10}
 
 for (( IMG_IND=$START_IND; IMG_IND<=$END_IND; IMG_IND++ )); do
     echo " > Running on image $IMG_IND"
-    ./build/TestRadar $DATASET_ID $IMG_IND 1
+    ./build/TestRadar $DATASET_ID $IMG_IND 1 || exit 1
 done
 
-./scripts/mp4-from-folder.sh results $DATASET_ID $START_IND 5
+./scripts/mp4-from-folder.sh results $DATASET_ID $START_IND 10
