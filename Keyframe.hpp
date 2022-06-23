@@ -21,15 +21,17 @@
 
 #include "Eigen/Core"
 #include "RadarImage.hpp"
+#include "OrientedSurfacePointsHandler.hpp"
 
 typedef Eigen::Matrix3d Pose2D;
 
 class Keyframe {
   private:
     const Pose2D mWorldPose;
+    ORSPVec mORSPFeaturePoints;
 
   public:
-    Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
+    Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose);
     ~Keyframe();
 };
 

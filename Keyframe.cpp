@@ -27,5 +27,14 @@
  * keyframe
  * @param[in] aWorldPose
  */
-Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
-    : mWorldPose(aWorldPose) {}
+Keyframe::Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose)
+    : mWorldPose(aWorldPose) {
+    // Copy over ORSP points
+    const ORSPVec &ORSPFeaturePointsRef = aRadarImage.getORSPFeaturePoints();
+    mORSPFeaturePoints.reserve(ORSPFeaturePointsRef.size());
+
+    // TODO: Need to ensure deep copy?
+    for (const ORSP &ORSPFeaturePoint : ORSPFeaturePointsRef) {
+        mORSPFeaturePoints.push_back(ORSPFeaturePoint);
+    }
+}
