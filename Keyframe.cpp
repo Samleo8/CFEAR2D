@@ -1,9 +1,14 @@
 /**
  * @file Keyframe.cpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
- * @brief Handler for keyframes, including class and relevant internal
- * data structures, and functions to register keyframes with the incoming scan
+ * @brief Handler for keyframes, containing class and relevant internal data
+ * structures, and functions to register keyframes with the incoming scan
  * frames.
+ *
+ * Each keyframe has a list of feature points associated with this keyframe
+ * a grid representation containing these feature points transferred
+ * from RadarImage (in local coordinates), and a world pose
+ *
  * @version 0.1
  * @date 2022-06-23
  *
@@ -11,15 +16,16 @@
  *
  */
 
-/**
- * @brief Constructor for Keyframe
- * 
- * @param[in] aRadarImage 
- * @param[in] aWorldPose 
- */
-
 #include "Keyframe.hpp"
 
-Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose) : mWorldPose(aWorldPose) {
-
-        }
+/**
+ * @brief Constructor for Keyframe class. Handles transferring of relevant data
+ * structures (specifically grid representations and points) from RadarImage
+ * into the class
+ *
+ * @param[in] aRadarImage Reference to radar image to be used to construct
+ * keyframe
+ * @param[in] aWorldPose
+ */
+Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
+    : mWorldPose(aWorldPose) {}

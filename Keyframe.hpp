@@ -1,15 +1,21 @@
 /**
  * @file Keyframe.hpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
- * @brief Handler for keyframes, including class and relevant internal data
+ * @brief Handler for keyframes, containing class and relevant internal data
  * structures, and functions to register keyframes with the incoming scan
  * frames.
+ *
+ * Each keyframe has a list of feature points associated with this keyframe
+ * a grid representation containing these feature points transferred
+ * from RadarImage (in local coordinates), and a world pose
+ *
  * @version 0.1
  * @date 2022-06-23
  *
  * @copyright Copyright (c) 2022
  *
  */
+
 #ifndef __KEYFRAME_H__
 #define __KEYFRAME_H__
 
