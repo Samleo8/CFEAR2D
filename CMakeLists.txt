@@ -50,6 +50,7 @@ add_executable(
   RadarImageHandler.cpp
   OrientedSurfacePointsHandler.cpp
   RadarImage.cpp
+  Keyframe.cpp
   TestRadar.cpp
 )
 set_property(TARGET TestRadar PROPERTY C_STANDARD 11)
