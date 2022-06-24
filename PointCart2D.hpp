@@ -27,7 +27,7 @@ class PointCart2D : public cv::Point2d {
   public:
     PointCart2D();
     PointCart2D(const double aX, const double aY);
-    PointCart2D::PointCart2D(const Eigen::Vector2d &aEigenPoint);
+    PointCart2D(const Eigen::Vector2d &aEigenPoint);
 
     const size_t distance(const PointCart2D &aPoint,
                           const size_t norm = 2) const;
