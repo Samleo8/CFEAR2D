@@ -27,8 +27,8 @@ typedef Eigen::Matrix3d Pose2D;
 
 class Keyframe {
   private:
-    /** @brief World pose TODO: convert to transformation matrix? */
-    const Pose2D mWorldPose;
+    /** @brief World pose as transformation matrix */
+    const Pose2D mWorldPoseTransform;
 
     /** @brief ORSP feature points in LOCAL coordinates @todo maybe make this global? */
     ORSPVec mORSPFeaturePoints; 
@@ -47,6 +47,9 @@ class Keyframe {
   public:
     Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose);
     ~Keyframe();
+
+    Keyframe::localToWorldCoordinate(const ORSP &aLocalORSPPoint,
+                                     ORSP &aWorlORSPPoint);
 };
 
 #endif // __KEYFRAME_H__
