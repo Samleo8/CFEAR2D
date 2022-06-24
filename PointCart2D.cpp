@@ -7,6 +7,9 @@ PointCart2D::PointCart2D() : cv::Point2d(0, 0) {
 PointCart2D::PointCart2D(const double aX, const double aY) : cv::Point2d(aX, aY) {
 }
 
+PointCart2D::PointCart2D(const Eigen::Vector2d &aEigenPoint)
+    : cv::Point2d(aEigenPoint[0], aEigenPoint[1]) {}
+
 PointCart2D& PointCart2D::operator/=(size_t aScalar){
     this->x /= aScalar;
     this->y /= aScalar;
