@@ -29,12 +29,25 @@
  */
 Keyframe::Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose)
     : mWorldPose(aWorldPose) {
-    // Copy over ORSP points
+    // Copy over ORSP points and populate grid
     const ORSPVec &ORSPFeaturePointsRef = aRadarImage.getORSPFeaturePoints();
     mORSPFeaturePoints.reserve(ORSPFeaturePointsRef.size());
 
+    // Populate grid with -1 to indicate no ORSP point in this grid cell
+    for (size_t i = 0; i < ORSP_GRID_N; i++) {
+        for (size_t j = 0; j < ORSP_GRID_N; j++) {
+            mORSPIndexGrid[i][j] = -1;
+        }
+    }
+
     // TODO: Need to ensure deep copy?
     for (const ORSP &ORSPFeaturePoint : ORSPFeaturePointsRef) {
+        // Populate grid accordingly, note we are still in local coordinates
+        PointCart2D centerPoint(ORSPFeaturePoint.center);
+        PointCart2D gridCoord;   
+        pointToGridCoordinate(centerPoint, gridCoord);
+
+        // Copy over ORSP point
         mORSPFeaturePoints.push_back(ORSPFeaturePoint);
     }
 }

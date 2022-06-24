@@ -20,15 +20,29 @@
 #define __KEYFRAME_H__
 
 #include "Eigen/Core"
-#include "RadarImage.hpp"
 #include "OrientedSurfacePointsHandler.hpp"
+#include "RadarImage.hpp"
 
 typedef Eigen::Matrix3d Pose2D;
 
 class Keyframe {
   private:
+    /** @brief World pose TODO: convert to transformation matrix? */
     const Pose2D mWorldPose;
-    ORSPVec mORSPFeaturePoints;
+
+    /** @brief ORSP feature points in LOCAL coordinates @todo maybe make this global? */
+    ORSPVec mORSPFeaturePoints; 
+
+    /**
+     * @brief Caching of grid representation of ORSP feature points, with r/f as
+     * the length of the grid. Allows very quick checking of surrounding ORSP
+     * points. Value of the grid contains the index to the exact ORSP point,
+     * indexed to mORSPFeaturePoints. -1 implies no coordinate there.
+     * @todo Make this a sparse representation instead
+     * @todo Make it store index+1, so 0s are default as no coordinate
+     * @see pointToGridCoordinate()
+     */
+    ssize_t mORSPIndexGrid[ORSP_GRID_N][ORSP_GRID_N];
 
   public:
     Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose);
