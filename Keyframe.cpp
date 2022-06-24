@@ -86,4 +86,10 @@ void Keyframe::localToWorldCoordinate(const ORSP &aLocalORSPPoint,
 
     Eigen::Vector3d normalHomo;
     normalHomo << aLocalORSPPoint.normal, 0; // note: 0 cos vector
+
+    Eigen::Vector3d centerWorldHomo = mWorldPoseTransform * centerHomo;
+    Eigen::Vector3d normalWorldHomo = mWorldPoseTransform * normalHomo;
+
+    aWorlORSPPoint.center = centerWorldHomo.head(2);
+    aWorlORSPPoint.normal = normalWorldHomo.head(2);
 }
