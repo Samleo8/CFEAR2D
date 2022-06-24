@@ -48,8 +48,11 @@ class Keyframe {
     Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose);
     ~Keyframe();
 
-    Keyframe::localToWorldCoordinate(const ORSP &aLocalORSPPoint,
+    void localToWorldCoordinate(const ORSP &aLocalORSPPoint,
                                      ORSP &aWorlORSPPoint);
 };
+
+const Eigen::Matrix3d poseToTransform(const Eigen::Matrix2d &aRotMat,
+                                      const Eigen::Vector2d &aTrans);
 
 #endif // __KEYFRAME_H__

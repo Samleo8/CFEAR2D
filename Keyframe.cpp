@@ -45,7 +45,7 @@ Keyframe::Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose)
     for (const ORSP &ORSPFeaturePoint : ORSPFeaturePointsRef) {
         // Populate grid accordingly, note we are still in local coordinates
         PointCart2D centerPoint(ORSPFeaturePoint.center);
-        PointCart2D gridCoord;   
+        PointCart2D gridCoord;
         pointToGridCoordinate(centerPoint, gridCoord);
 
         // Copy over ORSP point
@@ -53,18 +53,36 @@ Keyframe::Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose)
     }
 }
 
-const Eigen::Matrix3d Keyframe::poseToTransform(const ) {
-    return mWorldPoseTransform;
+/**
+ * @brief Convert rotation and translation to transformation matrix
+ * 
+ * @param[in] aRotMat Rotation matrix
+ * @param[in] aTrans Translation vector
+ * @return const Eigen::Matrix3d Homogeneous transformation matrix
+ */
+const Eigen::Matrix3d poseToTransform(const Eigen::Matrix2d &aRotMat,
+                                      const Eigen::Vector2d &aTrans) {
+    Eigen::Matrix3d transform;
+    transform << aRotMat(0, 0), aRotMat(0, 1), aTrans(0), aRotMat(1, 0),
+        aRotMat(1, 1), aTrans(1), 0, 0, 1;
+    return transform;
 }
 
 /**
  * @brief Convert a local to a world coordinate, using locally stored world pose
  * @note (0,0) in local coordinates is center of keyframe
- * 
+ *
  * @param[in] aLocalPoint Local point to be converted to world coordinate
  * @param[out] aWorldPoint World coordinate of local point
  */
 void Keyframe::localToWorldCoordinate(const ORSP &aLocalORSPPoint,
                                       ORSP &aWorlORSPPoint) {
-    
+    // Eigen::Vector2d center(aLocalORSPPoint.center);
+    // Eigen::Vector2d normal(aLocalORSPPoint.normal);
+
+    Eigen::Vector3d centerHomo;
+    centerHomo << aLocalORSPPoint.center, 1;
+
+    Eigen::Vector3d normalHomo;
+    normalHomo << aLocalORSPPoint.normal, 0; // note: 0 cos vector
 }
