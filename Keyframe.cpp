@@ -63,8 +63,9 @@ Keyframe::Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose)
 const Eigen::Matrix3d poseToTransform(const Eigen::Matrix2d &aRotMat,
                                       const Eigen::Vector2d &aTrans) {
     Eigen::Matrix3d transform;
-    transform << aRotMat(0, 0), aRotMat(0, 1), aTrans(0), aRotMat(1, 0),
-        aRotMat(1, 1), aTrans(1), 0, 0, 1;
+    // transform << aRotMat(0, 0), aRotMat(0, 1), aTrans(0), aRotMat(1, 0),
+    //     aRotMat(1, 1), aTrans(1), 0, 0, 1;
+    transform << aRotMat, aTrans, 0, 0, 1;
     return transform;
 }
 
