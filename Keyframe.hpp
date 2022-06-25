@@ -50,7 +50,8 @@ class Keyframe {
     Keyframe(RadarImage &aRadarImage, const PoseTransform2D &aWorldPose);
     ~Keyframe();
 
-    void kfLocalToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint);
+    void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint);
+    void worldToLocalORSP(const ORSP &aWorldORSPPoint, ORSP &aLocalORSPPoint);
 };
 
 #endif // __KEYFRAME_H__

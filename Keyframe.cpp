@@ -22,7 +22,6 @@
  * @brief Constructor for Keyframe class. Handles transferring of relevant data
  * structures (specifically grid representations and points) from RadarImage
  * into the class
- * TODO: Use transformation matrix instead
  *
  * @param[in] aRadarImage Reference to radar image to be used to construct
  * keyframe
@@ -59,7 +58,7 @@ Keyframe::Keyframe(RadarImage &aRadarImage, const PoseTransform2D &aWorldPose)
  * @param[in] aLocalORSPPoint Local ORSP point to be converted 
  * @param[out] aWorldORSPPoint Output world ORSP point
  */
-void Keyframe::kfLocalToWorldORSP(const ORSP &aLocalORSPPoint,
+void Keyframe::localToWorldORSP(const ORSP &aLocalORSPPoint,
                                       ORSP &aWorldORSPPoint) {
     // Use pose transform handler library and internal world pose to convert to world coordinate
     convertORSPCoordinates(aLocalORSPPoint, aWorldORSPPoint, mLocalToWorldTransform);
@@ -71,10 +70,10 @@ void Keyframe::kfLocalToWorldORSP(const ORSP &aLocalORSPPoint,
  * @param[in] aWorldORSPPoint World ORSP point to be converted
  * @param[out] aLocalORSPPoint Output local ORSP point
  */
-void Keyframe::kfWorldToLocalORSP(const ORSP &aWorldORSPPoint,
+void Keyframe::worldToLocalORSP(const ORSP &aWorldORSPPoint,
                                   ORSP &aLocalORSPPoint) {
     // Use pose transform handler library and internal world pose to convert to
     // world coordinate
-    // NOTE: Same function, just different pose transform
+    // NOTE: Same function, but different pose transform and parameter order
     convertORSPCoordinates(aWorldORSPPoint, aLocalORSPPoint, mWorldToLocalTransform);
 }
