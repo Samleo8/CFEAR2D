@@ -26,8 +26,11 @@
 
 class Keyframe {
   private:
-    /** @brief World pose as transformation matrix */
-    const PoseTransform2D mWorldPoseTransform;
+    /** @brief World pose as homogeneous transformation matrix that converts from local to world coordinates */
+    const PoseTransform2D mLocalToWorldTransform;
+
+    /** @brief Homogeneous transform matrix that converts world to local coordinates */
+    const PoseTransform2D mWorldToLocalTransform;
 
     /** @brief ORSP feature points in LOCAL coordinates @todo maybe make this global? */
     ORSPVec mORSPFeaturePoints; 

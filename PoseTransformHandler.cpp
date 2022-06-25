@@ -46,10 +46,10 @@ const Eigen::MatrixXd poseToTransformInverted(const Eigen::MatrixXd &aRotMat,
  * dynamic dimensions.
  * @pre Dimensions must be consistent:
  *      - aLocalCoordinate.rows == aWorldCoordinate.rows
- *      - aLocalCoordinate.rows + 1 == aWorldPoseTransform.rows
+ *      - aLocalCoordinate.rows + 1 == aConversionTransform.rows
  *
  * @param[in] aLocalCoordinate Local Coordinate (N x 1)
- * @param[in] aWorldPoseTransform Homogeneous pose transform matrix from local
+ * @param[in] aConversionTransform Homogeneous pose transform matrix from local
  * to world coordinates (N+1 x N+1)
  * @param[in] isVector Whether or not coordinate is a vector (affects
  * homogeneous value)
@@ -57,9 +57,8 @@ const Eigen::MatrixXd poseToTransformInverted(const Eigen::MatrixXd &aRotMat,
  * @return World coordinate (N x 1)
  */
 const Eigen::VectorXd
-localToWorldCoordinate(const Eigen::VectorXd &aLocalCoordinate,
-                       const PoseTransformXD &aWorldPoseTransform,
-                       bool isVector) {
+convertCoordinate(const Eigen::VectorXd &aLocalCoordinate,
+                  const PoseTransformXD &aConversionTransform, bool isVector) {
     // TODO: Check for consistent dimensions
     const size_t outputDimension = aLocalCoordinate.rows();
 
@@ -68,22 +67,22 @@ localToWorldCoordinate(const Eigen::VectorXd &aLocalCoordinate,
 
     coordHomo << aLocalCoordinate, homoVal;
 
-    return (aWorldPoseTransform * coordHomo).head(outputDimension);
+    return (aConversionTransform * coordHomo).head(outputDimension);
 }
 
 /**
  * @brief Convert a local to a world coordinate, using locally stored world pose
  * @note (0,0) in local coordinates is center of keyframe
  *
- * @param[in] aLocalORSPPoint Local ORSP point to be converted to world
- * coordinate
- * @param[out] aWorldORSPPoint World ORSP coordinate of local point
- * @param[in] aWorldPoseTransform Transformation matrix of world pose
+ * @param[in] aInputORSPPoint ORSP point to be converted to different coordinate
+ * @param[out] aOutputORSPPoint ORSP point in new coordinate
+ * @param[in] aConversionTransform Transformation matrix used in coordinate
+ * conversion
  */
-void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint,
-                      const PoseTransform2D &aWorldPoseTransform) {
-    aWorldORSPPoint.center = localToWorldCoordinate(aLocalORSPPoint.center,
-                                                    aWorldPoseTransform, false);
-    aWorldORSPPoint.normal = localToWorldCoordinate(aLocalORSPPoint.normal,
-                                                    aWorldPoseTransform, true);
+void convertORSPCoordinates(const ORSP &aInputORSPPoint, ORSP &aOutputORSPPoint,
+                            const PoseTransform2D &aConversionTransform) {
+    aOutputORSPPoint.center =
+        convertCoordinate(aInputORSPPoint.center, aConversionTransform, false);
+    aOutputORSPPoint.normal =
+        convertCoordinate(aInputORSPPoint.normal, aConversionTransform, true);
 }
