@@ -8,11 +8,12 @@ typedef Eigen::MatrixXd PoseTransformXD;
 typedef Eigen::Matrix3d PoseTransform2D;
 typedef Eigen::Matrix4d PoseTransform3D;
 
-const Eigen::MatrixXd poseToTransform(const Eigen::MatrixXd &aRotMat,
+const Eigen::MatrixXd rotTransToTransform(const Eigen::MatrixXd &aRotMat,
                                       const Eigen::VectorXd &aTrans);
 
-const Eigen::MatrixXd poseToTransformInverted(const Eigen::MatrixXd &aRotMat,
+const Eigen::MatrixXd rotTransToTransformInverted(const Eigen::MatrixXd &aRotMat,
                                               const Eigen::VectorXd &aTrans);
+
 
 const Eigen::VectorXd convertCoordinate(
     const Eigen::VectorXd &aLocalCoordinate,

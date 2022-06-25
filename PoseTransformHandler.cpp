@@ -17,7 +17,7 @@
  * @param[in] aTrans Translation vector (N x 1)
  * @return Homogeneous transformation matrix (N+1 x N+1)
  */
-const Eigen::MatrixXd poseToTransform(const Eigen::MatrixXd &aRotMat,
+const Eigen::MatrixXd rotTransToTransform(const Eigen::MatrixXd &aRotMat,
                                       const Eigen::VectorXd &aTrans) {
     Eigen::MatrixXd transform(aRotMat.rows() + 1, aRotMat.cols() + 1);
     transform << aRotMat, aTrans, 0, 0, 1;
@@ -26,13 +26,13 @@ const Eigen::MatrixXd poseToTransform(const Eigen::MatrixXd &aRotMat,
 
 /**
  * @brief Convert rotation and translation to INVERTED transformation matrix
- * Uses known formula to compute inverse of transformation matrix
+ * @note Uses known formula to compute inverse of transformation matrix for efficiency
  *
  * @param[in] aRotMat Rotation matrix (N x N)
  * @param[in] aTrans Translation vector (N x 1)
  * @return Homogeneous transformation matrix (N+1 x N+1)
  */
-const Eigen::MatrixXd poseToTransformInverted(const Eigen::MatrixXd &aRotMat,
+const Eigen::MatrixXd rotTransToTransformInverted(const Eigen::MatrixXd &aRotMat,
                                               const Eigen::VectorXd &aTrans) {
     Eigen::MatrixXd transform(aRotMat.rows() + 1, aRotMat.cols() + 1);
     const Eigen::MatrixXd rotMatTrans = aRotMat.transpose();
