@@ -1,7 +1,7 @@
 #ifndef __POSE_TRANSFORM_H__
 #define __POSE_TRANSFORM_H__
 
-#include "Eigen/Core"
+#include "Eigen/Geometry"
 #include "OrientedSurfacePointsHandler.hpp"
 
 typedef Eigen::MatrixXd PoseTransformXD;
