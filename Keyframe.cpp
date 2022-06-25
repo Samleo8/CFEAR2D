@@ -57,11 +57,11 @@ Keyframe::Keyframe(RadarImage &aRadarImage, const PoseTransform2D &aWorldPose)
  * @brief Convert local ORSP point to world coordinate
  * 
  * @param[in] aLocalORSPPoint Local ORSP point to be converted 
- * @param[out] aWorlORSPPoint Output world ORSP point
+ * @param[out] aWorldORSPPoint Output world ORSP point
  */
 void Keyframe::localToWorldORSP(const ORSP &aLocalORSPPoint,
-                                      ORSP &aWorlORSPPoint) {
+                                      ORSP &aWorldORSPPoint) {
     // Use pose transform handler library and internal world pose to convert to world coordinate
-    localToWorldORSP(aLocalORSPPoint, aWorlORSPPoint,
+    localToWorldORSP(aLocalORSPPoint, aWorldORSPPoint,
                            mWorldPoseTransform);
 }

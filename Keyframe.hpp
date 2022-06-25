@@ -48,7 +48,7 @@ class Keyframe {
     ~Keyframe();
 
     void localToWorldORSP(const ORSP &aLocalORSPPoint,
-                                     ORSP &aWorlORSPPoint);
+                                     ORSP &aWorldORSPPoint);
 };
 
 const Eigen::Matrix3d poseToTransform(const Eigen::Matrix2d &aRotMat,

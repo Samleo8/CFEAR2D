@@ -14,7 +14,7 @@ void localToWorldCoordinate(const Eigen::Vector2d &aLocalCoordinate,
                             const PoseTransform2D &aWorldPoseTransform,
                             bool isVector = false);
 
-void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorlORSPPoint,
+void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint,
                       const PoseTransform2D &aWorldPoseTransform);
 
 #endif // __POSE_TRANSFORM_H__

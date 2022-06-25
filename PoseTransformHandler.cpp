@@ -35,7 +35,9 @@ void localToWorldCoordinate(const Eigen::Vector2d &aLocalCoordinate,
 
     coordHomo << aLocalCoordinate, homoVal;
 
-    aWorldCoordinate = aWorldPoseTransform * coordHomo;
+    // TODO: If dimension changes, this will change to 3
+    const int outputDimension = 2;
+    aWorldCoordinate = (aWorldPoseTransform * coordHomo).head(outputDimension);
 }
 
 /**
@@ -46,20 +48,25 @@ void localToWorldCoordinate(const Eigen::Vector2d &aLocalCoordinate,
  * @param[out] aWorldPoint World coordinate of local point
  * @param[in] aWorldPoseTransform Transformation matrix of world pose
  */
-void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorlORSPPoint,
+void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint,
                       const PoseTransform2D &aWorldPoseTransform) {
     // Eigen::Vector2d center(aLocalORSPPoint.center);
     // Eigen::Vector2d normal(aLocalORSPPoint.normal);
 
-    Eigen::Vector3d centerHomo;
-    centerHomo << aLocalORSPPoint.center, 1;
+    // Eigen::Vector3d centerHomo;
+    // centerHomo << aLocalORSPPoint.center, 1;
 
-    Eigen::Vector3d normalHomo;
-    normalHomo << aLocalORSPPoint.normal, 0; // note: 0 cos vector
+    // Eigen::Vector3d normalHomo;
+    // normalHomo << aLocalORSPPoint.normal, 0; // note: 0 cos vector
 
-    Eigen::Vector3d centerWorldHomo = aWorldPoseTransform * centerHomo;
-    Eigen::Vector3d normalWorldHomo = aWorldPoseTransform * normalHomo;
+    // Eigen::Vector3d centerWorldHomo = aWorldPoseTransform * centerHomo;
+    // Eigen::Vector3d normalWorldHomo = aWorldPoseTransform * normalHomo;
 
-    aWorlORSPPoint.center = centerWorldHomo.head(2);
-    aWorlORSPPoint.normal = normalWorldHomo.head(2);
+    // aWorldORSPPoint.center = centerWorldHomo.head(2);
+    // aWorldORSPPoint.normal = normalWorldHomo.head(2);
+
+    localToWorldCoordinate(aLocalORSPPoint.center, aWorldORSPPoint.center,
+                           aWorldPoseTransform, false);
+    localToWorldCoordinate(aLocalORSPPoint.normal, aWorldORSPPoint.normal,
+                           aWorldPoseTransform, true);
 }
