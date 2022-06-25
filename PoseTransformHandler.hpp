@@ -4,15 +4,19 @@
 #include "Eigen/Core"
 #include "OrientedSurfacePointsHandler.hpp"
 
+typedef Eigen::MatrixXd PoseTransformXD;
 typedef Eigen::Matrix3d PoseTransform2D;
+typedef Eigen::Matrix4d PoseTransform3D;
 
-const Eigen::Matrix3d poseToTransform(const Eigen::Matrix2d &aRotMat,
-                                      const Eigen::Vector2d &aTrans);
+const Eigen::MatrixXd poseToTransform(const Eigen::MatrixXd &aRotMat,
+                                      const Eigen::VectorXd &aTrans);
 
-void localToWorldCoordinate(const Eigen::Vector2d &aLocalCoordinate,
-                            Eigen::Vector2d &aWorldCoordinate,
-                            const PoseTransform2D &aWorldPoseTransform,
-                            bool isVector = false);
+const Eigen::MatrixXd poseToTransformInverted(const Eigen::MatrixXd &aRotMat,
+                                              const Eigen::VectorXd &aTrans);
+
+const Eigen::VectorXd localToWorldCoordinate(
+    const Eigen::VectorXd &aLocalCoordinate,
+    const PoseTransformXD &aWorldPoseTransform, bool isVector = false);
 
 void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint,
                       const PoseTransform2D &aWorldPoseTransform);

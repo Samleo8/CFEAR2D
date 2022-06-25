@@ -13,60 +13,77 @@
 /**
  * @brief Convert rotation and translation to transformation matrix
  *
- * @param[in] aRotMat Rotation matrix
- * @param[in] aTrans Translation vector
- * @return const Eigen::Matrix3d Homogeneous transformation matrix
+ * @param[in] aRotMat Rotation matrix (N x N)
+ * @param[in] aTrans Translation vector (N x 1)
+ * @return Homogeneous transformation matrix (N+1 x N+1)
  */
-const Eigen::Matrix3d poseToTransform(const Eigen::Matrix2d &aRotMat,
-                                      const Eigen::Vector2d &aTrans) {
-    Eigen::Matrix3d transform;
-    // transform << aRotMat(0, 0), aRotMat(0, 1), aTrans(0), aRotMat(1, 0),
-    //     aRotMat(1, 1), aTrans(1), 0, 0, 1;
+const Eigen::MatrixXd poseToTransform(const Eigen::MatrixXd &aRotMat,
+                                      const Eigen::VectorXd &aTrans) {
+    Eigen::MatrixXd transform(aRotMat.rows() + 1, aRotMat.cols() + 1);
     transform << aRotMat, aTrans, 0, 0, 1;
     return transform;
 }
 
-void localToWorldCoordinate(const Eigen::Vector2d &aLocalCoordinate,
-                            Eigen::Vector2d &aWorldCoordinate,
-                            const PoseTransform2D &aWorldPoseTransform,
-                            bool isVector) {
-    Eigen::Vector3d coordHomo;
+/**
+ * @brief Convert rotation and translation to INVERTED transformation matrix
+ * Uses known formula to compute inverse of transformation matrix
+ *
+ * @param[in] aRotMat Rotation matrix (N x N)
+ * @param[in] aTrans Translation vector (N x 1)
+ * @return Homogeneous transformation matrix (N+1 x N+1)
+ */
+const Eigen::MatrixXd poseToTransformInverted(const Eigen::MatrixXd &aRotMat,
+                                              const Eigen::VectorXd &aTrans) {
+    Eigen::MatrixXd transform(aRotMat.rows() + 1, aRotMat.cols() + 1);
+    const Eigen::MatrixXd rotMatTrans = aRotMat.transpose();
+
+    transform << rotMatTrans, (-rotMatTrans * aTrans), 0, 0, 1;
+    return transform;
+}
+
+/**
+ * @brief Convert local to world coordinate using homogeneous transforms,
+ * dynamic dimensions.
+ * @pre Dimensions must be consistent:
+ *      - aLocalCoordinate.rows == aWorldCoordinate.rows
+ *      - aLocalCoordinate.rows + 1 == aWorldPoseTransform.rows
+ *
+ * @param[in] aLocalCoordinate Local Coordinate (N x 1)
+ * @param[in] aWorldPoseTransform Homogeneous pose transform matrix from local
+ * to world coordinates (N+1 x N+1)
+ * @param[in] isVector Whether or not coordinate is a vector (affects
+ * homogeneous value)
+ *
+ * @return World coordinate (N x 1)
+ */
+const Eigen::VectorXd
+localToWorldCoordinate(const Eigen::VectorXd &aLocalCoordinate,
+                       const PoseTransformXD &aWorldPoseTransform,
+                       bool isVector) {
+    // TODO: Check for consistent dimensions
+    const size_t outputDimension = aLocalCoordinate.rows();
+
+    Eigen::VectorXd coordHomo(outputDimension + 1);
     double homoVal = (isVector) ? 0.0 : 1.0;
 
     coordHomo << aLocalCoordinate, homoVal;
 
-    // TODO: If dimension changes, this will change to 3
-    const int outputDimension = 2;
-    aWorldCoordinate = (aWorldPoseTransform * coordHomo).head(outputDimension);
+    return (aWorldPoseTransform * coordHomo).head(outputDimension);
 }
 
 /**
  * @brief Convert a local to a world coordinate, using locally stored world pose
  * @note (0,0) in local coordinates is center of keyframe
  *
- * @param[in] aLocalPoint Local point to be converted to world coordinate
- * @param[out] aWorldPoint World coordinate of local point
+ * @param[in] aLocalORSPPoint Local ORSP point to be converted to world
+ * coordinate
+ * @param[out] aWorldORSPPoint World ORSP coordinate of local point
  * @param[in] aWorldPoseTransform Transformation matrix of world pose
  */
 void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint,
                       const PoseTransform2D &aWorldPoseTransform) {
-    // Eigen::Vector2d center(aLocalORSPPoint.center);
-    // Eigen::Vector2d normal(aLocalORSPPoint.normal);
-
-    // Eigen::Vector3d centerHomo;
-    // centerHomo << aLocalORSPPoint.center, 1;
-
-    // Eigen::Vector3d normalHomo;
-    // normalHomo << aLocalORSPPoint.normal, 0; // note: 0 cos vector
-
-    // Eigen::Vector3d centerWorldHomo = aWorldPoseTransform * centerHomo;
-    // Eigen::Vector3d normalWorldHomo = aWorldPoseTransform * normalHomo;
-
-    // aWorldORSPPoint.center = centerWorldHomo.head(2);
-    // aWorldORSPPoint.normal = normalWorldHomo.head(2);
-
-    localToWorldCoordinate(aLocalORSPPoint.center, aWorldORSPPoint.center,
-                           aWorldPoseTransform, false);
-    localToWorldCoordinate(aLocalORSPPoint.normal, aWorldORSPPoint.normal,
-                           aWorldPoseTransform, true);
+    aWorldORSPPoint.center = localToWorldCoordinate(aLocalORSPPoint.center,
+                                                    aWorldPoseTransform, false);
+    aWorldORSPPoint.normal = localToWorldCoordinate(aLocalORSPPoint.normal,
+                                                    aWorldPoseTransform, true);
 }

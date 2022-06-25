@@ -47,10 +47,10 @@ add_executable(
   ImageProcessing.cpp
   PointCart2D.cpp
   PointPolar2D.cpp 
+  PoseTransformHandler.cpp
   RadarImageHandler.cpp
   OrientedSurfacePointsHandler.cpp
   RadarImage.cpp
-  PoseTransformHandler.cpp
   Keyframe.cpp
   TestRadar.cpp
 )
