@@ -28,7 +28,7 @@
  * keyframe
  * @param[in] aWorldPose
  */
-Keyframe::Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose)
+Keyframe::Keyframe(RadarImage &aRadarImage, const PoseTransform2D &aWorldPose)
     : mWorldPoseTransform(aWorldPose) {
     // Copy over ORSP points and populate grid
     const ORSPVec &ORSPFeaturePointsRef = aRadarImage.getORSPFeaturePoints();
@@ -54,42 +54,14 @@ Keyframe::Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose)
 }
 
 /**
- * @brief Convert rotation and translation to transformation matrix
+ * @brief Convert local ORSP point to world coordinate
  * 
- * @param[in] aRotMat Rotation matrix
- * @param[in] aTrans Translation vector
- * @return const Eigen::Matrix3d Homogeneous transformation matrix
+ * @param[in] aLocalORSPPoint Local ORSP point to be converted 
+ * @param[out] aWorlORSPPoint Output world ORSP point
  */
-const Eigen::Matrix3d poseToTransform(const Eigen::Matrix2d &aRotMat,
-                                      const Eigen::Vector2d &aTrans) {
-    Eigen::Matrix3d transform;
-    // transform << aRotMat(0, 0), aRotMat(0, 1), aTrans(0), aRotMat(1, 0),
-    //     aRotMat(1, 1), aTrans(1), 0, 0, 1;
-    transform << aRotMat, aTrans, 0, 0, 1;
-    return transform;
-}
-
-/**
- * @brief Convert a local to a world coordinate, using locally stored world pose
- * @note (0,0) in local coordinates is center of keyframe
- *
- * @param[in] aLocalPoint Local point to be converted to world coordinate
- * @param[out] aWorldPoint World coordinate of local point
- */
-void Keyframe::localToWorldCoordinate(const ORSP &aLocalORSPPoint,
+void Keyframe::localToWorldORSP(const ORSP &aLocalORSPPoint,
                                       ORSP &aWorlORSPPoint) {
-    // Eigen::Vector2d center(aLocalORSPPoint.center);
-    // Eigen::Vector2d normal(aLocalORSPPoint.normal);
-
-    Eigen::Vector3d centerHomo;
-    centerHomo << aLocalORSPPoint.center, 1;
-
-    Eigen::Vector3d normalHomo;
-    normalHomo << aLocalORSPPoint.normal, 0; // note: 0 cos vector
-
-    Eigen::Vector3d centerWorldHomo = mWorldPoseTransform * centerHomo;
-    Eigen::Vector3d normalWorldHomo = mWorldPoseTransform * normalHomo;
-
-    aWorlORSPPoint.center = centerWorldHomo.head(2);
-    aWorlORSPPoint.normal = normalWorldHomo.head(2);
+    // Use pose transform handler library and internal world pose to convert to world coordinate
+    localToWorldORSP(aLocalORSPPoint, aWorlORSPPoint,
+                           mWorldPoseTransform);
 }

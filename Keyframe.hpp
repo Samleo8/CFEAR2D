@@ -22,13 +22,12 @@
 #include "Eigen/Core"
 #include "OrientedSurfacePointsHandler.hpp"
 #include "RadarImage.hpp"
-
-typedef Eigen::Matrix3d Pose2D;
+#include "PoseTransformHandler.hpp"
 
 class Keyframe {
   private:
     /** @brief World pose as transformation matrix */
-    const Pose2D mWorldPoseTransform;
+    const PoseTransform2D mWorldPoseTransform;
 
     /** @brief ORSP feature points in LOCAL coordinates @todo maybe make this global? */
     ORSPVec mORSPFeaturePoints; 
@@ -45,10 +44,10 @@ class Keyframe {
     ssize_t mORSPIndexGrid[ORSP_GRID_N][ORSP_GRID_N];
 
   public:
-    Keyframe(RadarImage &aRadarImage, const Pose2D &aWorldPose);
+    Keyframe(RadarImage &aRadarImage, const PoseTransform2D &aWorldPose);
     ~Keyframe();
 
-    void localToWorldCoordinate(const ORSP &aLocalORSPPoint,
+    void localToWorldORSP(const ORSP &aLocalORSPPoint,
                                      ORSP &aWorlORSPPoint);
 };
 
