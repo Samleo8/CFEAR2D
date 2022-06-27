@@ -47,11 +47,11 @@ class Keyframe {
     ssize_t mORSPIndexGrid[ORSP_GRID_N][ORSP_GRID_N];
 
   public:
-    Keyframe(RadarImage &aRadarImage, const PoseTransform2D &aWorldPose);
+    Keyframe(const RadarImage &aRadarImage, const PoseTransform2D &aWorldPose);
     ~Keyframe();
 
-    void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint);
-    void worldToLocalORSP(const ORSP &aWorldORSPPoint, ORSP &aLocalORSPPoint);
+    void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint) const;
+    void worldToLocalORSP(const ORSP &aWorldORSPPoint, ORSP &aLocalORSPPoint) const;
 };
 
 #endif // __KEYFRAME_H__

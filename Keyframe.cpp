@@ -27,7 +27,7 @@
  * keyframe
  * @param[in] aWorldPose
  */
-Keyframe::Keyframe(RadarImage &aRadarImage, const PoseTransform2D &aWorldPose)
+Keyframe::Keyframe(const RadarImage &aRadarImage, const PoseTransform2D &aWorldPose)
     : mLocalToWorldTransform(aWorldPose) {
     // Copy over ORSP points and populate grid
     const ORSPVec &ORSPFeaturePointsRef = aRadarImage.getORSPFeaturePoints();
@@ -59,7 +59,7 @@ Keyframe::Keyframe(RadarImage &aRadarImage, const PoseTransform2D &aWorldPose)
  * @param[out] aWorldORSPPoint Output world ORSP point
  */
 void Keyframe::localToWorldORSP(const ORSP &aLocalORSPPoint,
-                                      ORSP &aWorldORSPPoint) {
+                                      ORSP &aWorldORSPPoint) const {
     // Use pose transform handler library and internal world pose to convert to world coordinate
     convertORSPCoordinates(aLocalORSPPoint, aWorldORSPPoint, mLocalToWorldTransform);
 }
@@ -71,7 +71,7 @@ void Keyframe::localToWorldORSP(const ORSP &aLocalORSPPoint,
  * @param[out] aLocalORSPPoint Output local ORSP point
  */
 void Keyframe::worldToLocalORSP(const ORSP &aWorldORSPPoint,
-                                  ORSP &aLocalORSPPoint) {
+                                  ORSP &aLocalORSPPoint) const {
     // Use pose transform handler library and internal world pose to convert to
     // world coordinate
     // NOTE: Same function, but different pose transform and parameter order
