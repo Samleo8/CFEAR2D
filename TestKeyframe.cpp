@@ -5,8 +5,9 @@
 #include <string>
 
 #include "CVColor.hpp"
-#include "RadarImage.hpp"
 #include "RadarFeed.hpp"
+#include "RadarImage.hpp"
+#include "Keyframe.hpp"
 
 #define ORSP_ONLY
 
@@ -57,7 +58,9 @@ void writeText(cv::Mat aImg, const std::string &aText, const int ax,
  * @param[in] aPointSize Radius of point
  * @param[in] aColor Color of point
  */
-void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord, const int aPointSize = 5, const cv::Scalar aColor = CVColor::red) {
+void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord,
+               const int aPointSize = 5,
+               const cv::Scalar aColor = CVColor::red) {
     cv::circle(aImg, aCoord, aPointSize, aColor, cv::FILLED, cv::LINE_8);
 }
 
@@ -67,8 +70,11 @@ void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord, const int aPointSize = 
  * @param[in,out] aImg Input/Output image
  * @param[in] aCoord Coordinate of point
  */
-void drawLine(cv::Mat &aImg, const cv::Point2d &aCoordStart, const cv::Point2d &aCoordEnd, const int aLineThickness = 10, const cv::Scalar aColor = CVColor::green) {
-    cv::arrowedLine(aImg, aCoordStart, aCoordEnd, aColor, aLineThickness, cv::LINE_8);
+void drawLine(cv::Mat &aImg, const cv::Point2d &aCoordStart,
+              const cv::Point2d &aCoordEnd, const int aLineThickness = 10,
+              const cv::Scalar aColor = CVColor::green) {
+    cv::arrowedLine(aImg, aCoordStart, aCoordEnd, aColor, aLineThickness,
+                    cv::LINE_8);
 }
 
 /**
@@ -91,7 +97,10 @@ void concatImagesWithText(cv::Mat displayImages[],
     const int numberOfEndl = (outStyle == NORMAL) ? 7 : 0;
 
     const int padding_top = newlineSpaceDefault * defaultFontScale;
-    const int padding_bottom = (outStyle == NORMAL) ? (newlineSpaceDefault * defaultFontScale * (numberOfEndl + 1)) : 0;
+    const int padding_bottom =
+        (outStyle == NORMAL)
+            ? (newlineSpaceDefault * defaultFontScale * (numberOfEndl + 1))
+            : 0;
     const int padding_left = 5;
     const int padding_right = 5;
 
@@ -145,42 +154,21 @@ void genImagePath(fs::path &basePath, const unsigned int dataset,
  * @param[out] outputImgFiltered Output image for filtered points
  * @param[out] outputImgORSP Output image for ORSP visualization
  */
-void outputImgFromRImg(const RadarImage &aRImg,
-                         cv::Mat &outputImgORSP,
-                         enum OutputStyle outStyle = NORMAL) {
-
-    // Get filtered points and display them on image
-    FilteredPointsVec filteredPoints = aRImg.getFilteredPoints();
-
-    // Draw filtered points
+void outputImgFromRImg(const RadarImage &aRImg, cv::Mat &outputImgORSP,
+                       enum OutputStyle outStyle = NORMAL) {
+    // Prepare for drawing
     const cv::Mat outputImgGray = aRImg.getImage(aRImg.RIMG_CART);
     // TODO: Make the background lighter?
     const float BACKGROUND_LIGHTNESS_FACTOR = 1;
-    if (BACKGROUND_LIGHTNESS_FACTOR > 1) outputImgGray /= BACKGROUND_LIGHTNESS_FACTOR;
+    if (BACKGROUND_LIGHTNESS_FACTOR > 1)
+        outputImgGray /= BACKGROUND_LIGHTNESS_FACTOR;
 
     cv::cvtColor(outputImgGray, outputImgORSP, cv::COLOR_GRAY2BGR);
 
     const cv::Point2d imgCenterPx =
-        cv::Point2d(outputImgFiltered.cols, outputImgFiltered.rows) / 2;
-
-    for (size_t i = 0, sz = filteredPoints.size(); i < sz; i++) {
-        FilteredPoint point = filteredPoints[i];
-
-        cv::Point2d pointCV;
-        point.toCV(pointCV);
-
-        // Draw filtered point on image
-        // NOTE: Point is in meters, but we want to display it in pixels
-        //       It is also with reference to the center of the frame, so we
-        //       need to re-center it
-        pointCV /= RANGE_RESOLUTION;
-        pointCV += imgCenterPx;
-
-        drawPoint(outputImgFiltered, pointCV);
-    }
+        cv::Point2d(outputImgORSP.cols, outputImgORSP.rows) / 2;
 
     // Compute ORSP and draw those points with vectors
-    aRImg.computeOrientedSurfacePoints();
     const ORSPVec &featurePoints = aRImg.getORSPFeaturePoints();
 
     // Draw ORSP points
@@ -209,10 +197,9 @@ void outputImgFromRImg(const RadarImage &aRImg,
 
         // Draw Corresponding line
         drawLine(outputImgORSP, pointCVStart, pointCVEnd, 8);
-        
+
         // Draw Point
         drawPoint(outputImgORSP, pointCVStart, 8);
-
     }
 }
 
@@ -224,8 +211,9 @@ void outputImgFromRImg(const RadarImage &aRImg,
  */
 int main(int argc, char **argv) {
     if (argc < 4 || argc > 5) {
-        printf("Usage: %s <dataset> <startID> [endID] [0|1:saveDirectToFile]]\n",
-               argv[0]);
+        printf(
+            "Usage: %s <dataset> <startID> [endID] [0|1:saveDirectToFile]]\n",
+            argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -236,7 +224,7 @@ int main(int argc, char **argv) {
 
     // Create path to save images
     fs::path saveImagesPath(".");
-    saveImagesPath /= "results"; 
+    saveImagesPath /= "results";
     saveImagesPath /= argv[1];
 
     fs::create_directories(saveImagesPath);
@@ -244,7 +232,7 @@ int main(int argc, char **argv) {
     /**********************************************************************
      * @section TestRadar-KeyframeToKeyframe Compute keyframe to keyframe
      **********************************************************************/
-    // TODO: Use the RadarFeed class
+    // TODO: Refactor the RadarFeed class so that it only saves the current and maybe previous image
     fs::path dataPath(".");
     dataPath /= "data";
     dataPath /= std::to_string(dataset);
@@ -255,6 +243,16 @@ int main(int argc, char **argv) {
     RadarImage prevRImg, currRImg;
     feed.getCurrentRadarImage(prevRImg);
 
+    std::vector<Keyframe> keyframeList;
+
+    // First image is always a keyframe
+    const PoseTransform2D initWorldPose(0,0);
+
+    // TODO: Keyframe handling
+    Keyframe keyframe(currRImg, initWorldPose);
+    keyframeList.push_back(keyframe);
+
+    // Keep finding frames
     while (feed.nextFrame()) {
         if (feed.getCurrentFrame() == endID) break;
 
@@ -263,13 +261,16 @@ int main(int argc, char **argv) {
         // K-filtering and ORSP
         const size_t K = 12;
         const double Z_min = 55;
-        
+
         currRImg.performKStrong(K, Z_min);
         currRImg.computeOrientedSurfacePoints();
-        
+
         // Output image
         cv::Mat outputImgORSP;
         outputImgFromRImg(currRImg, outputImgORSP);
+
+        // TODO: Add keyframe if necessary
+        // Keyframe keyframe2(currRImg);
     }
 
     return 0;

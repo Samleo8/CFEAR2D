@@ -70,6 +70,7 @@ add_executable(
   RadarImage.cpp
   Keyframe.cpp
   OdometryVisualiser.cpp
+  RadarFeedHandler.cpp
   RadarFeed.cpp
   TestKeyframe.cpp
 )

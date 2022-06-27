@@ -23,7 +23,7 @@ BasedOnStyle:  LLVM
 
 # Use 4 spaces as our indent width
 IndentWidth:   4
-Tabwidth: 4
+TabWidth: 4
 
 # Reformat lines to be under 80 characters
 ColumnLimit:   80

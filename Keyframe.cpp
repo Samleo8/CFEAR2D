@@ -53,6 +53,12 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const PoseTransform2D &aWorldP
 }
 
 /**
+ * @brief Destructor for Keyframe::Keyframe
+ * Currently empty.
+ */
+Keyframe::~Keyframe() {}
+
+/**
  * @brief Convert local ORSP point to world coordinate
  * 
  * @param[in] aLocalORSPPoint Local ORSP point to be converted 
