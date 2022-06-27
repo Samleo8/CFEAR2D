@@ -110,8 +110,8 @@ class RadarImage {
                bool aPreprocess = true);
 
     // Getters Setters
-    bool isLoaded();
-    bool isProcessed();
+    bool isLoaded() const;
+    bool isProcessed() const;
 
     /**
      * @brief Interface to images. Used for specifying image type.
@@ -128,29 +128,29 @@ class RadarImage {
         // subCart
     };
 
-    const cv::Mat &getImage(ImageType aType);
-    const cv::Mat &getImageRaw();
-    const cv::Mat &getImageMetaData();
-    const cv::Mat &getImagePolar();
-    const cv::Mat &getImageCart();
-    const cv::Mat &getImageLogPolar();
+    const cv::Mat &getImage(ImageType aType) const;
+    const cv::Mat &getImageRaw() const;
+    const cv::Mat &getImageMetaData() const;
+    const cv::Mat &getImagePolar() const;
+    const cv::Mat &getImageCart() const;
+    const cv::Mat &getImageLogPolar() const;
     // const cv::Mat &getImageSubFullCart();
 
     // Image Display
     void displayImage(ImageType aType, const bool aWaitKey = true,
-                      const bool aDestroy = true);
+                      const bool aDestroy = true) const;
     void displayImage(ImageType aType, const std::string &aTitle,
-                      bool aWaitKey = true, const bool aDestroy = true);
+                      bool aWaitKey = true, const bool aDestroy = true) const;
 
     // Image (pre-)processing
     void preprocessImages();
 
     // Filtering process
     void getTopK(const uint8_t *aAzim, const size_t aSize, const size_t aK,
-                 std::vector<ValueIndexPair> &aTopKVec);
+                 std::vector<ValueIndexPair> &aTopKVec) const;
     void performKStrong(const size_t aK, const double aZmin,
                         const bool aClearOld = true);
-    const FilteredPointsVec &getFilteredPoints();
+    const FilteredPointsVec &getFilteredPoints() const;
 
     // Generating Oriented Surface Points
     void downsamplePointCloud();
@@ -159,7 +159,7 @@ class RadarImage {
     void estimatePointDistribution();
     void computeOrientedSurfacePoints();
 
-    const ORSPVec &getORSPFeaturePoints();
+    const ORSPVec &getORSPFeaturePoints() const;
 
     // NOTE: UNUSED
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);

@@ -143,14 +143,14 @@ RadarImage::RadarImage(unsigned int aSetNumber, unsigned int aImageNumber,
 /**
  * @brief Checks if image is loaded
  */
-bool RadarImage::isLoaded() {
+bool RadarImage::isLoaded() const {
     return mLoaded;
 }
 
 /**
  * @brief Checks if image has been preprocessed
  */
-bool RadarImage::isProcessed() {
+bool RadarImage::isProcessed() const {
     return mPreprocessed;
 }
 
@@ -162,7 +162,7 @@ bool RadarImage::isProcessed() {
  * @brief Get raw image (includes metadata)
  * @return Get raw image
  */
-const cv::Mat &RadarImage::getImageRaw() {
+const cv::Mat &RadarImage::getImageRaw() const {
     return mRawImage;
 }
 
@@ -170,7 +170,7 @@ const cv::Mat &RadarImage::getImageRaw() {
  * @brief Get polar image (i.e. range-azimuth image)
  * @return Get polar (range-azimuth) image
  */
-const cv::Mat &RadarImage::getImagePolar() {
+const cv::Mat &RadarImage::getImagePolar() const {
     return mPolarImage;
 }
 
@@ -178,7 +178,7 @@ const cv::Mat &RadarImage::getImagePolar() {
  * @brief Get polar image (i.e. range-azimuth image)
  * @return Get polar (range-azimuth) image
  */
-const cv::Mat &RadarImage::getImageMetaData() {
+const cv::Mat &RadarImage::getImageMetaData() const {
     return mMetaDataImage;
 }
 
@@ -188,7 +188,7 @@ const cv::Mat &RadarImage::getImageMetaData() {
  *
  * @return Coarse cartesian aImage
  */
-const cv::Mat &RadarImage::getImageCart() {
+const cv::Mat &RadarImage::getImageCart() const {
     return mCartImage;
 }
 
@@ -202,7 +202,7 @@ const cv::Mat &RadarImage::getImageCart() {
  *
  * @return Coarse log-polar aImage
  */
-const cv::Mat &RadarImage::getImageLogPolar() {
+const cv::Mat &RadarImage::getImageLogPolar() const {
     return mLogPolarImage;
 }
 
@@ -214,7 +214,7 @@ const cv::Mat &RadarImage::getImageLogPolar() {
  *
  * @returns Reference to aImage of specified type; raw image if error
  */
-const cv::Mat &RadarImage::getImage(ImageType aType) {
+const cv::Mat &RadarImage::getImage(ImageType aType) const {
     switch (aType) {
         case RIMG_RAW:
             return getImageRaw();
@@ -243,7 +243,7 @@ const cv::Mat &RadarImage::getImage(ImageType aType) {
  * valid if aWaitKey = true
  */
 void RadarImage::displayImage(ImageType aType, const std::string &aTitle,
-                              const bool aWaitKey, const bool aDestroy) {
+                              const bool aWaitKey, const bool aDestroy) const {
     const cv::Mat img = getImage(aType);
     cv::Mat imgToShow;
 
@@ -275,7 +275,7 @@ void RadarImage::displayImage(ImageType aType, const std::string &aTitle,
  * valid if aWaitKey = true
  */
 void RadarImage::displayImage(ImageType aType, const bool aWaitKey,
-                              const bool aDestroy) {
+                              const bool aDestroy) const {
     const std::string title = "Display Radar Image";
 
     displayImage(aType, title, aWaitKey, aDestroy);
@@ -346,7 +346,7 @@ void RadarImage::preprocessImages() {
  */
 void RadarImage::getTopK(const uint8_t *aAzim, const size_t aSize,
                          const size_t aK,
-                         std::vector<ValueIndexPair> &aTopKVec) {
+                         std::vector<ValueIndexPair> &aTopKVec) const {
     std::priority_queue<ValueIndexPair> pq;
 
     // Push relevant ValueIndexPairs into the PQ (fast)
@@ -451,7 +451,7 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
  *
  * @return Vector of filtered points
  */
-const FilteredPointsVec &RadarImage::getFilteredPoints() {
+const FilteredPointsVec &RadarImage::getFilteredPoints() const {
     return mFilteredPoints;
 }
 
