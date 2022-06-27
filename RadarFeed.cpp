@@ -525,7 +525,7 @@ void RadarFeed::run(const int aStartFrame, const int aEndFrame,
 
     if (success) {
         if (aVisualise) {
-            prevImage.displayImage(RadarImage::coarseCart, radarImageTitle,
+            prevImage.displayImage(RadarImage::RIMG_CART, radarImageTitle,
                                    false, false);
         }
     }
@@ -675,7 +675,7 @@ void RadarFeed::run(const int aStartFrame, const int aEndFrame,
             mVis.display();
 
             // Display radar image
-            currImage.displayImage(RadarImage::coarseCart, radarImageTitle,
+            currImage.displayImage(RadarImage::RIMG_CART, radarImageTitle,
                                    false, false);
         }
 

@@ -258,13 +258,17 @@ int main(int argc, char **argv) {
     // TODO: Use the RadarFeed class
     fs::path dataPath(".");
     dataPath /= "data";
-    dataPath /= dataset;
+    dataPath /= std::to_string(dataset);
 
     RadarFeed feed(dataPath);
 
     feed.loadFrame(startID);
+    RadarImage prevRImg, currRImg;
+    feed.getCurrentRadarImage(prevRImg);
+
     while (feed.nextFrame()) {
-        return 0;
+        if (feed.getCurrentFrame() == endID) break;
+        feed.getCurrentRadarImage(currRImg);
     }
 
     return 0;
