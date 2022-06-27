@@ -69,6 +69,7 @@ add_executable(
   OrientedSurfacePointsHandler.cpp
   RadarImage.cpp
   Keyframe.cpp
+  OdometryVisualiser.cpp
   RadarFeed.cpp
   TestKeyframe.cpp
 )

@@ -29,7 +29,7 @@
 #include <vector>
 
 #include "OdometryVisualiser.hpp" // needed for visualiser
-#include "PoseGraph.hpp"          // needed for pose graph optimisation
+// #include "PoseGraph.hpp"          // needed for pose graph optimisation
 #include "RadarFeedHandler.hpp"   // needed to handle file path and data
 
 /**
@@ -118,15 +118,13 @@ class RadarFeed {
 
     // Getters/Setters
     bool isWithinBounds(const size_t aFrameIndex,
-                        const bool aPrintError = false);
-    const std::vector<RadarImage> &getCurrentFeed();
-    const std::vector<RotTransData> &getGroundTruthFeed();
-    bool getVisualiser(OdometryVisualiser &aVis);
-    int getFilterSize();
-    void setFilterSize(const int aFilterSize);
+                        const bool aPrintError = false) const;
+    const std::vector<RadarImage> &getCurrentFeed() const;
+    const std::vector<RotTransData> &getGroundTruthFeed() const;
+    bool getVisualiser(OdometryVisualiser &aVis) const;
 
     // Frames
-    size_t getCurrentFrame();
+    size_t getCurrentFrame() const;
     bool setCurrentFrame(const size_t aFrameIndex, const bool aLoad = false);
     bool loadFrame(const size_t aFrameIndex,
                    const bool aSetCurrentFrame = true);
@@ -136,8 +134,8 @@ class RadarFeed {
 
     // Radar Images
     bool getRadarImage(RadarImage &aRImage, const size_t aFrameIndex,
-                       bool aPrintErrors = false);
-    bool getCurrentRadarImage(RadarImage &aRImage);
+                       bool aPrintErrors = false) const;
+    bool getCurrentRadarImage(RadarImage &aRImage) const;
 
     void pushRadarImage(const RadarImage &aRImage,
                         const bool aOverwrite = false);
@@ -147,15 +145,13 @@ class RadarFeed {
                        bool aOverwrite = false);
 
     // Ground truth and other data
-    bool getGroundTruth(RotTransData &aGroundTruth);
-    bool getGroundTruth(RotTransData &aGroundTruth, const size_t aIndex);
-
-    void negateData(RotTransData &aNegateData);
+    bool getGroundTruth(RotTransData &aGroundTruth) const;
+    bool getGroundTruth(RotTransData &aGroundTruth, const size_t aIndex) const;
 
     // Sequential Processing or Feed
     void updateRotMatTransVec(const RotTransData &aPredData,
                               Eigen::Rotation2D<double> &aRotMat,
-                              Eigen::Vector2d &aTransVec);
+                              Eigen::Vector2d &aTransVec) const;
 
     void run(int aStartFrame = 0, int aEndFrame = -1,
              const bool aVisualise = true,

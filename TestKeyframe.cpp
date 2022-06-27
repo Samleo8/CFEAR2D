@@ -145,30 +145,19 @@ void genImagePath(fs::path &basePath, const unsigned int dataset,
  * @param[out] outputImgFiltered Output image for filtered points
  * @param[out] outputImgORSP Output image for ORSP visualization
  */
-void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
-                         cv::Mat &outputImgFiltered, 
+void outputImgFromRImg(const RadarImage &aRImg,
                          cv::Mat &outputImgORSP,
                          enum OutputStyle outStyle = NORMAL) {
-    // Obtain radar images
-    RadarImage r1(dataset, r1ID, true);
-
-    // std::cout << r1.getImagePolar().size() << std::endl;
-
-    // K-filtering
-    const size_t K = 12;
-    const double Z_min = 55;
-    r1.performKStrong(K, Z_min);
 
     // Get filtered points and display them on image
-    FilteredPointsVec filteredPoints = r1.getFilteredPoints();
+    FilteredPointsVec filteredPoints = aRImg.getFilteredPoints();
 
     // Draw filtered points
-    const cv::Mat outputImgGray = r1.getImage(r1.RIMG_CART);
+    const cv::Mat outputImgGray = aRImg.getImage(aRImg.RIMG_CART);
     // TODO: Make the background lighter?
     const float BACKGROUND_LIGHTNESS_FACTOR = 1;
     if (BACKGROUND_LIGHTNESS_FACTOR > 1) outputImgGray /= BACKGROUND_LIGHTNESS_FACTOR;
 
-    cv::cvtColor(outputImgGray, outputImgFiltered, cv::COLOR_GRAY2BGR);
     cv::cvtColor(outputImgGray, outputImgORSP, cv::COLOR_GRAY2BGR);
 
     const cv::Point2d imgCenterPx =
@@ -191,8 +180,8 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     }
 
     // Compute ORSP and draw those points with vectors
-    r1.computeOrientedSurfacePoints();
-    const ORSPVec &featurePoints = r1.getORSPFeaturePoints();
+    aRImg.computeOrientedSurfacePoints();
+    const ORSPVec &featurePoints = aRImg.getORSPFeaturePoints();
 
     // Draw ORSP points
     const double VEC_LEN = 2;
@@ -268,7 +257,19 @@ int main(int argc, char **argv) {
 
     while (feed.nextFrame()) {
         if (feed.getCurrentFrame() == endID) break;
+
         feed.getCurrentRadarImage(currRImg);
+
+        // K-filtering and ORSP
+        const size_t K = 12;
+        const double Z_min = 55;
+        
+        currRImg.performKStrong(K, Z_min);
+        currRImg.computeOrientedSurfacePoints();
+        
+        // Output image
+        cv::Mat outputImgORSP;
+        outputImgFromRImg(currRImg, outputImgORSP);
     }
 
     return 0;
