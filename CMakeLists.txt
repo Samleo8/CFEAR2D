@@ -39,10 +39,27 @@ target_link_libraries(CeresTest ${CERES_LIBRARIES})
 # set_property(TARGET TestPoseGraph PROPERTY CXX_STANDARD 17)
 # target_link_libraries(TestPoseGraph ${CERES_LIBRARIES} ${OpenCV_LIBS})
 
-
 # Radar Testing Module
 add_executable(
   TestRadar
+  CVColor.cpp
+  ImageProcessing.cpp
+  PointCart2D.cpp
+  PointPolar2D.cpp 
+  # PoseTransformHandler.cpp
+  RadarImageHandler.cpp
+  OrientedSurfacePointsHandler.cpp
+  RadarImage.cpp
+  # Keyframe.cpp
+  TestRadar.cpp
+)
+set_property(TARGET TestRadar PROPERTY C_STANDARD 11)
+set_property(TARGET TestRadar PROPERTY CXX_STANDARD 17)
+target_link_libraries(TestRadar ${OpenCV_LIBS})
+
+# Keyframe Testing Module
+add_executable(
+  TestKeyframe
   CVColor.cpp
   ImageProcessing.cpp
   PointCart2D.cpp
@@ -52,12 +69,11 @@ add_executable(
   OrientedSurfacePointsHandler.cpp
   RadarImage.cpp
   Keyframe.cpp
-  TestRadar.cpp
+  TestKeyframe.cpp
 )
-set_property(TARGET TestRadar PROPERTY C_STANDARD 11)
-set_property(TARGET TestRadar PROPERTY CXX_STANDARD 17)
-target_link_libraries(TestRadar ${OpenCV_LIBS})
-
+set_property(TARGET TestKeyframe PROPERTY C_STANDARD 11)
+set_property(TARGET TestKeyframe PROPERTY CXX_STANDARD 17)
+target_link_libraries(TestKeyframe ${OpenCV_LIBS})
 
 # Main Visualiser Testing module
 # add_executable(
