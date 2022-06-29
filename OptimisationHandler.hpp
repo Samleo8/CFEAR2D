@@ -31,9 +31,10 @@ typedef struct {
 /** @brief Angle tolerance threshold in radians */
 const double angleToleranceRad = 30 * ANGLE_DEG_TO_RAD;
 
-// TODO: See
+// TODO: Create a cost functor for computing cost function. See
 // http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
 
 double angleBetweenVectors(const Eigen::VectorXd &aVec1, const Eigen::VectorXd &aVec2);
+
 
 #endif // __OPTIMISATION_HANDLER_H__
