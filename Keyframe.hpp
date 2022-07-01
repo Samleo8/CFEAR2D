@@ -27,6 +27,9 @@
 
 class Keyframe {
   private:
+    /** @brief World pose, probably mainly for plotting */
+    const Pose2D mWorldPose;
+
     /** @brief World pose as homogeneous transformation matrix that converts
      * from local to world coordinates */
     const PoseTransform2D mLocalToWorldTransform;
@@ -55,6 +58,8 @@ class Keyframe {
     ~Keyframe();
 
     // Getters
+    const Pose2D &getPose() const;
+    const Pose2D &getWorldPose() const;
     const ORSPVec &getORSPFeaturePoints() const;
     const PoseTransform2D &getLocalToWorldTransform() const;
     const PoseTransform2D &getWorldToLocalTransform() const;

@@ -253,6 +253,7 @@ int main(int argc, char **argv) {
     Keyframe keyframe(prevRImg, initWorldPose);
     keyframeList.push_back(keyframe);
 
+    std::cout << keyframe.getPose() << std::endl;
     std::cout << keyframe.getLocalToWorldTransform().matrix() << std::endl;
     std::cout << keyframe.getWorldToLocalTransform().matrix() << std::endl;
 
