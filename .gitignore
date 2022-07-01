@@ -1,6 +1,7 @@
 # Large files
 .vs
 .vscode
+.cache
 *.zip
 *.mp4
 data
