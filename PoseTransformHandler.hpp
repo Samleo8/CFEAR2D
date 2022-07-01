@@ -1,25 +1,29 @@
 #ifndef __POSE_TRANSFORM_H__
 #define __POSE_TRANSFORM_H__
 
-#include "Eigen/Geometry"
+#include <Eigen/Geometry>
+#include <Eigen/LU>
+
 #include "OrientedSurfacePointsHandler.hpp"
 
-typedef Eigen::MatrixXd PoseTransformXD;
-typedef Eigen::Matrix3d PoseTransform2D;
-typedef Eigen::Matrix4d PoseTransform3D;
+/** @brief Typedef for 3D pose transform as Eigen isometric transform. Slightly more memory but more natural. */
+typedef Eigen::Isometry3d PoseTransform3D;
 
-const Eigen::MatrixXd rotTransToTransform(const Eigen::MatrixXd &aRotMat,
-                                      const Eigen::VectorXd &aTrans);
+/** @brief Typedef for 2D pose transform as Eigen isometric transform. Slightly more memory but more natural. */
+typedef Eigen::Isometry2d PoseTransform2D;
 
-const Eigen::MatrixXd rotTransToTransformInverted(const Eigen::MatrixXd &aRotMat,
-                                              const Eigen::VectorXd &aTrans);
+const PoseTransform2D rotTransToTransform(const Eigen::Rotation2Dd &aRotMat,
+                                          const Eigen::Vector2d &aTrans);
 
+const PoseTransform2D rotTransToTransform(const double aAngleRad,
+                                          const Eigen::Vector2d &aTrans);
 
-const Eigen::VectorXd convertCoordinate(
-    const Eigen::VectorXd &aLocalCoordinate,
-    const PoseTransformXD &aWorldPoseTransform, bool isVector = false);
+const Eigen::Vector2d
+convertCoordinate(const Eigen::Vector2d &aLocalCoordinate,
+                  const PoseTransform2D &aWorldPoseTransform,
+                  bool isVector = false);
 
 void convertORSPCoordinates(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint,
-                      const PoseTransform2D &aWorldPoseTransform);
+                            const PoseTransform2D &aWorldPoseTransform);
 
 #endif // __POSE_TRANSFORM_H__

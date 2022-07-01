@@ -17,28 +17,18 @@
  * @param[in] aTrans Translation vector (N x 1)
  * @return Homogeneous transformation matrix (N+1 x N+1)
  */
-const Eigen::MatrixXd rotTransToTransform(const Eigen::MatrixXd &aRotMat,
-                                      const Eigen::VectorXd &aTrans) {
-    Eigen::MatrixXd transform(aRotMat.rows() + 1, aRotMat.cols() + 1);
-    transform << aRotMat, aTrans, 0, 0, 1;
+const PoseTransform2D rotTransToTransform(const Eigen::Rotation2Dd &aRotMat,
+                                          const Eigen::Vector2d &aTrans) {
+    PoseTransform2D transform;
+    transform.fromPositionOrientationScale(aTrans, aRotMat, 1);
+
     return transform;
 }
 
-/**
- * @brief Convert rotation and translation to INVERTED transformation matrix
- * @note Uses known formula to compute inverse of transformation matrix for efficiency
- *
- * @param[in] aRotMat Rotation matrix (N x N)
- * @param[in] aTrans Translation vector (N x 1)
- * @return Homogeneous transformation matrix (N+1 x N+1)
- */
-const Eigen::MatrixXd rotTransToTransformInverted(const Eigen::MatrixXd &aRotMat,
-                                              const Eigen::VectorXd &aTrans) {
-    Eigen::MatrixXd transform(aRotMat.rows() + 1, aRotMat.cols() + 1);
-    const Eigen::MatrixXd rotMatTrans = aRotMat.transpose();
-
-    transform << rotMatTrans, (-rotMatTrans * aTrans), 0, 0, 1;
-    return transform;
+const PoseTransform2D rotTransToTransform(const double aAngleRad,
+                                          const Eigen::Vector2d &aTrans) {
+    const Eigen::Rotation2Dd rotMat(aAngleRad);
+    return rotTransToTransform(rotMat, aTrans);
 }
 
 /**
@@ -56,18 +46,10 @@ const Eigen::MatrixXd rotTransToTransformInverted(const Eigen::MatrixXd &aRotMat
  *
  * @return World coordinate (N x 1)
  */
-const Eigen::VectorXd
-convertCoordinate(const Eigen::VectorXd &aLocalCoordinate,
-                  const PoseTransformXD &aConversionTransform, bool isVector) {
-    // TODO: Check for consistent dimensions
-    const size_t outputDimension = aLocalCoordinate.rows();
-
-    Eigen::VectorXd coordHomo(outputDimension + 1);
-    double homoVal = (isVector) ? 0.0 : 1.0;
-
-    coordHomo << aLocalCoordinate, homoVal;
-
-    return (aConversionTransform * coordHomo).head(outputDimension);
+const Eigen::Vector2d
+convertCoordinate(const Eigen::Vector2d &aLocalCoordinate,
+                  const PoseTransform2D &aConversionTransform, bool isVector) {
+    return Eigen::Vector2d::Zero(aLocalCoordinate.rows());
 }
 
 /**
