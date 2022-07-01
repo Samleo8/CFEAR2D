@@ -40,20 +40,19 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose) {
         }
     }
 
-    // TODO: Need to ensure deep copy?
     for (const ORSP &ORSPFeaturePoint : ORSPFeaturePointsRef) {
         // Populate grid accordingly, note we are still in local coordinates
         PointCart2D centerPoint(ORSPFeaturePoint.center);
         PointCart2D gridCoord;
         pointToGridCoordinate(centerPoint, gridCoord);
 
+        // TODO: Need to ensure deep copy?
         // Copy over ORSP point
         mORSPFeaturePoints.push_back(ORSPFeaturePoint);
     }
 
     // TODO: Use Eigen::Map if necessary to convert a set of coordinates from world to local or vice versa
-
-
+    
 }
 
 /**
