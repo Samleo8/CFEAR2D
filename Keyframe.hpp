@@ -54,10 +54,16 @@ class Keyframe {
     Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
     ~Keyframe();
 
+    // Getters
+    const ORSPVec &getORSPFeaturePoints() const;
+    const PoseTransform2D &getLocalToWorldTransform() const;
+    const PoseTransform2D &getWorldToLocalTransform() const;
+
+    // Conversion functions for ORSP
     void localToWorldORSP(const ORSP &aLocalORSPPoint,
                           ORSP &aWorldORSPPoint) const;
     void worldToLocalORSP(const ORSP &aWorldORSPPoint,
                           ORSP &aLocalORSPPoint) const;
-};
+    };
 
 #endif // __KEYFRAME_H__

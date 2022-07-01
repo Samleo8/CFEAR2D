@@ -27,8 +27,8 @@
  * keyframe
  * @param[in] aWorldPose 
  */
-Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose) {
-    // : mLocalToWorldTransform(poseToTransform(aWorldPose)) {
+Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
+    : mLocalToWorldTransform(poseToTransform(aWorldPose)), mWorldToLocalTransform(mLocalToWorldTransform.inverse()) {
     // Copy over ORSP points and populate grid
     const ORSPVec &ORSPFeaturePointsRef = aRadarImage.getORSPFeaturePoints();
     mORSPFeaturePoints.reserve(ORSPFeaturePointsRef.size());
@@ -60,6 +60,30 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose) {
  * Currently empty.
  */
 Keyframe::~Keyframe() {}
+
+/**
+ * @brief Get vector of ORSP feature points
+ * @return Vector of ORSP feature points, in LOCAL coordinates
+ */
+const ORSPVec &Keyframe::getORSPFeaturePoints() const {
+    return mORSPFeaturePoints;
+}
+
+/**
+ * @brief Get local to world transform
+ * @return Transform class of local to world coordinate transform
+ */
+const PoseTransform2D &Keyframe::getLocalToWorldTransform() const {
+    return mLocalToWorldTransform;
+}
+
+/**
+ * @brief Get world to local transform
+ * @return Transform class of world to local coordinate transform
+ */
+const PoseTransform2D &Keyframe::getWorldToLocalTransform() const {
+    return mWorldToLocalTransform;
+}
 
 /**
  * @brief Convert local ORSP point to world coordinate
