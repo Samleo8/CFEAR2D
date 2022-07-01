@@ -49,7 +49,7 @@ add_executable(
   # PoseTransformHandler.cpp
   RadarImageHandler.cpp
   RadarImage.cpp
-  Keyframe.cpp
+  # Keyframe.cpp
   OrientedSurfacePointsHandler.cpp
   TestRadar.cpp
 )

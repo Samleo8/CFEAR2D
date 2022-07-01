@@ -9,6 +9,7 @@
  * @copyright Copyright (c) 2022
  */
 
+#include "RadarImage.hpp"
 #include "OrientedSurfacePointsHandler.hpp"
 
 /**
