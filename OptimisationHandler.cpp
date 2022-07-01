@@ -11,9 +11,12 @@
  */
 
 #include "OptimisationHandler.hpp"
-#include "Keyframe.hpp"
-#include "PoseTransformHandler.hpp"
-#include "RadarImage.hpp"
+
+const double constrainAngle(const double aAngleRad) {
+    double constAngle = std::fmod(aAngleRad + M_PI, M_TAU);
+    if (constAngle < 0) constAngle += M_TAU;
+    return constAngle - M_PI;
+}
 
 /**
  * @brief Obtain the angle between two vectors. Used for comparing angle
@@ -21,11 +24,14 @@
  *
  * @param[in] aVec1 Vector 1 of arbitrary dimenion k
  * @param[in] aVec2 Vector 2 of arbitrary dimenion k
- * @return Angle between the two vectors in radians
+ * @return Constrained Angle between the two vectors in radians
  */
-double angleBetweenVectors(const Eigen::VectorXd &aVec1,
-                           const Eigen::VectorXd &aVec2) {
-    return acos(aVec1.dot(aVec2) / (aVec1.norm() * aVec2.norm()));
+const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
+                                 const Eigen::VectorXd &aVec2) {
+    double unnormalizedAngle =
+        acos(aVec1.dot(aVec2) / (aVec1.norm() * aVec2.norm()));
+
+    return constrainAngle(unnormalizedAngle);
 }
 
 const PoseTransform2D transformFromOptimParams(const OptimParams &aParams) {
@@ -44,19 +50,37 @@ const PoseTransform2D transformFromOptimParams(const OptimParams &aParams) {
 const double point2LineCost(const RadarImage &aRImage,
                             const Keyframe &aKeyframe,
                             const OptimParams &aParams) {
-    // Transform to be applied on ORSP points in RImage to convert to world coord
+    // Transform to be applied on ORSP points in RImage to convert to world
+    // coord
     const PoseTransform2D rImgTransform = transformFromOptimParams(aParams);
 
-    // Loop through each point from ORSP point in RImage and get the cost from formula
+    // Loop through each point from ORSP point in RImage and get the cost from
+    // formula
+    bool foundMatch = false;
     double cost = 0.0;
+
     const ORSPVec rImgFeaturePts = aRImage.getORSPFeaturePoints();
     for (const ORSP &featurePt : rImgFeaturePts) {
         // Get the ORSP point in world coordinates
         ORSP worldORSPPoint;
         convertORSPCoordinates(featurePt, worldORSPPoint, rImgTransform);
 
-        
+        ORSP closestORSPPoint;
+        const bool found =
+            aKeyframe.findClosestORSP(worldORSPPoint, closestORSPPoint);
+
+        // Only parse if found a match
+        if (found) {
+            foundMatch = true;
+
+            // TODO: now compute cost according to formula
+        }
     }
 
-    return 0;
+    // TODO: What if there is no match?
+    if (!foundMatch) {
+        return Eigen::Infinity;
+    }
+
+    return cost;
 }

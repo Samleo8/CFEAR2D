@@ -33,13 +33,17 @@ typedef struct {
     Eigen::Vector2d translation; ///< translation
 } OptimParams;
 
+
+
 /** @brief Angle tolerance threshold in radians */
-const double angleToleranceRad = 30 * ANGLE_DEG_TO_RAD;
+const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
 
 // TODO: See
 // http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
 
-double angleBetweenVectors(const Eigen::VectorXd &aVec1,
+const double constrainAngle(const double aAngleRad);
+
+const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
                            const Eigen::VectorXd &aVec2);
 
 const double point2LineCost(const RadarImage &aRImage,
