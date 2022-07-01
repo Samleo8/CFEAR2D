@@ -19,21 +19,25 @@
 #ifndef __KEYFRAME_H__
 #define __KEYFRAME_H__
 
-#include "Eigen/Core"
+#include <Eigen/Core>
+
 #include "OrientedSurfacePointsHandler.hpp"
-#include "RadarImage.hpp"
 #include "PoseTransformHandler.hpp"
+#include "RadarImage.hpp"
 
 class Keyframe {
   private:
-    /** @brief World pose as homogeneous transformation matrix that converts from local to world coordinates */
+    /** @brief World pose as homogeneous transformation matrix that converts
+     * from local to world coordinates */
     const PoseTransform2D mLocalToWorldTransform;
 
-    /** @brief Homogeneous transform matrix that converts world to local coordinates */
+    /** @brief Homogeneous transform matrix that converts world to local
+     * coordinates */
     const PoseTransform2D mWorldToLocalTransform;
 
-    /** @brief ORSP feature points in LOCAL coordinates @todo maybe make this global? */
-    ORSPVec mORSPFeaturePoints; 
+    /** @brief ORSP feature points in LOCAL coordinates @todo maybe make this
+     * global? */
+    ORSPVec mORSPFeaturePoints;
 
     /**
      * @brief Caching of grid representation of ORSP feature points, with r/f as
@@ -50,8 +54,10 @@ class Keyframe {
     Keyframe(const RadarImage &aRadarImage, const PoseTransform2D &aWorldPose);
     ~Keyframe();
 
-    void localToWorldORSP(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint) const;
-    void worldToLocalORSP(const ORSP &aWorldORSPPoint, ORSP &aLocalORSPPoint) const;
+    void localToWorldORSP(const ORSP &aLocalORSPPoint,
+                          ORSP &aWorldORSPPoint) const;
+    void worldToLocalORSP(const ORSP &aWorldORSPPoint,
+                          ORSP &aLocalORSPPoint) const;
 };
 
 #endif // __KEYFRAME_H__

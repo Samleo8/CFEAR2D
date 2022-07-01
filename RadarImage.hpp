@@ -166,9 +166,6 @@ class RadarImage {
     // NOTE: UNUSED
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);
     void performFFTOnImage(const cv::Mat &aSrcImage, cv::Mat &aDestImage);
-
-    // Optimization stuff
-    const double point2LineCost(const Keyframe &aKeyframe, const OptimParams &aParams);
 };
 
 #endif
