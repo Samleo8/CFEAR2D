@@ -56,8 +56,7 @@ typedef PointCart2D FilteredPoint;
 typedef std::vector<FilteredPoint> FilteredPointsVec;
 
 /** @brief Typedef for list of metadata information (vector of doubles) */
-template <typename T>
-using MetaDataList = std::vector<T>;
+template <typename T> using MetaDataList = std::vector<T>;
 
 /**
  * @brief Struct of metadata information (timestamps and azimuths)
@@ -105,6 +104,9 @@ typedef std::pair<double, size_t> ValueIndexPair;
 /** @brief Defines how much we should cut the image by */
 #define RADAR_IMAGE_SUB_RANGE 500
 
+/** @brief Radar's true maximum range in meters */
+#define RADAR_MAX_RANGE_RAW_M 165
+
 /** @brief Radar's maximum range in meters */
 #define RADAR_MAX_RANGE_M 165
 
@@ -112,8 +114,12 @@ typedef std::pair<double, size_t> ValueIndexPair;
  * image */
 #define RADAR_IMAGE_POLAR_MAX_RANGE_PX 3768
 
-/** @brief Optimisation for checking if distance is less than radar max range */
-#define RADAR_MAX_RANGE_M_2 (0.707 * RADAR_MAX_RANGE_M) // range * 1/sqrt(2)
+/** @brief SQRT2 **/
+#define SQRT2 1.41421356237
+
+/** @brief Maximum range for keyframe gridding, basically the radius of the
+ * circle inscribing a square of width 2 * max range */
+#define RADAR_MAX_RANGE_M_SQRT2 (SQRT2 * RADAR_MAX_RANGE_M)
 
 /** @brief Square of radar max range */
 #define RADAR_MAX_RANGE_M_SQUARED (RADAR_MAX_RANGE_M * RADAR_MAX_RANGE_M)

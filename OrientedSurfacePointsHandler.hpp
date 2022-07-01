@@ -103,6 +103,8 @@ const PointCart3D getCentroid(const Point3DList &aPoints);
 void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
                        Eigen::Matrix2d &aCovMatrix);
 void pointToGridCoordinate(const PointCart2D &aPoint,
-                           PointCart2D &aGridCoordinate);
+                           PointCart2D &aGridCoordinate,
+                           const PointCart2D &aGridCenter = PointCart2D(
+                               RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M));
 
 #endif

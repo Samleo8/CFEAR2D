@@ -21,9 +21,18 @@
 
 #include <Eigen/Core>
 
+#include "OrientedSurfacePointsHandler.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
-#include "OrientedSurfacePointsHandler.hpp"
+
+/**
+ * @brief Maximum number of grid squares, used in ORSP grid formation.
+ * Needs to double because max range is radius of image.
+ * @note Needs to be larger than the original ORSP grid size because in global
+ * coordinates, so frame is allowed to turn.
+ */
+const size_t ORSP_KF_GRID_N = static_cast<size_t>(
+    floor(2 * RADAR_MAX_RANGE_M_SQRT2 / ORSP_GRID_SQUARE_WIDTH));
 
 class Keyframe {
   private:
@@ -38,20 +47,29 @@ class Keyframe {
      * coordinates */
     PoseTransform2D mWorldToLocalTransform;
 
-    /** @brief ORSP feature points in LOCAL coordinates @todo maybe make this
-     * global? */
+    /** @brief Grid center used for getting new grid coordinate in WORLD
+     * coordinates
+     * @see pointToGridCoordinate()
+     */
+    const PointCart2D mGridCenter;
+
+    /** @brief ORSP feature points in WORLD coordinates */
     ORSPVec mORSPFeaturePoints;
 
     /**
      * @brief Caching of grid representation of ORSP feature points, with r/f as
      * the length of the grid. Allows very quick checking of surrounding ORSP
-     * points. Value of the grid contains the index to the exact ORSP point,
-     * indexed to mORSPFeaturePoints. -1 implies no coordinate there.
-     * @todo Make this a sparse representation instead
-     * @todo Make it store index+1, so 0s are default as no coordinate
+     * points. Value of the grid contains the indices to the exact ORSP point,
+     * indexed to mORSPFeaturePoints.
+     * @note Empty vector implies no coordinate there.
+     * @note Because of the grid conversion that could potentially be rotated,
+     * we might not be able to assume (TODO: check math?) that a single ORSP
+     * point will be alone inside a grid square. Thus a vector of indices is
+     * required.
+     * @todo Make this a sparse representation instead?
      * @see pointToGridCoordinate()
      */
-    ssize_t mORSPIndexGrid[ORSP_GRID_N][ORSP_GRID_N];
+    std::vector<ssize_t> mORSPIndexGrid[ORSP_KF_GRID_N][ORSP_KF_GRID_N];
 
   public:
     Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
@@ -69,6 +87,6 @@ class Keyframe {
                           ORSP &aWorldORSPPoint) const;
     void worldToLocalORSP(const ORSP &aWorldORSPPoint,
                           ORSP &aLocalORSPPoint) const;
-    };
+};
 
 #endif // __KEYFRAME_H__
