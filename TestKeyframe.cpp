@@ -247,7 +247,7 @@ int main(int argc, char **argv) {
     std::vector<Keyframe> keyframeList;
 
     // First image is always a keyframe
-    const Pose2D initWorldPose(1, 2, M_PI / 2);
+    const Pose2D initWorldPose(0, 0, 0);
 
     // TODO: Keyframe handling
     Keyframe keyframe(prevRImg, initWorldPose);

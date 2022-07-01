@@ -27,6 +27,14 @@ double angleBetweenVectors(const Eigen::VectorXd &aVec1,
     return acos(aVec1.dot(aVec2) / (aVec1.norm() * aVec2.norm()));
 }
 
+/**
+ * @brief Cost between point to line given a radar image, keyframe, and optimization parameters (in this case, a pose)
+ * 
+ * @param[in] aRImage 
+ * @param[in] aKeyframe 
+ * @param[in] aParams 
+ * @return const double 
+ */
 const double point2LineCost(const RadarImage &aRImage,
                             const Keyframe &aKeyframe,
                             const OptimParams &aParams) {

@@ -27,7 +27,8 @@
 // TODO: Integrate with ceres somehow
 // TOOD: 2D for now
 typedef struct {
-    Eigen::Quaterniond q; // rotation
+    // Eigen::Quaterniond q; // rotation
+    double theta;          // rotation 
     Eigen::Vector2d t;    // translation
 } OptimParams;
 
