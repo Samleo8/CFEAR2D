@@ -22,10 +22,11 @@ const PoseTransform2D rotTransToTransform(const Eigen::Rotation2Dd &aRotMat,
     const int dimension = 2;
 
     PoseTransform2D transform = PoseTransform2D::Identity();
-    
-    transform.rotate(aRotMat);
+
+    // TODO: Check if its supposed to actually be rot, trans
     transform.translate(aTrans);
-    
+    transform.rotate(aRotMat);
+
     return transform;
 }
 
@@ -36,13 +37,10 @@ const PoseTransform2D rotTransToTransform(const double aAngleRad,
 }
 
 /**
- * @brief Convert local to world coordinate using homogeneous transforms,
- * dynamic dimensions.
- * @pre Dimensions must be consistent:
- *      - aLocalCoordinate.rows == aWorldCoordinate.rows
- *      - aLocalCoordinate.rows + 1 == aConversionTransform.rows
+ * @brief Convert one coordinate to another coordinate frame using homogeneous
+ * transforms. 2D interface.
  *
- * @param[in] aLocalCoordinate Local Coordinate (N x 1)
+ * @param[in] aCoordinate Coordinate (N x 1)
  * @param[in] aConversionTransform Homogeneous pose transform matrix from local
  * to world coordinates (N+1 x N+1)
  * @param[in] isVector Whether or not coordinate is a vector (affects
@@ -51,9 +49,13 @@ const PoseTransform2D rotTransToTransform(const double aAngleRad,
  * @return World coordinate (N x 1)
  */
 const Eigen::Vector2d
-convertCoordinate(const Eigen::Vector2d &aLocalCoordinate,
+convertCoordinate(const Eigen::Vector2d &aCoordinate,
                   const PoseTransform2D &aConversionTransform, bool isVector) {
-    return Eigen::Vector2d::Zero(aLocalCoordinate.rows());
+    if (isVector) {
+        return aConversionTransform.rotation() * aCoordinate.homogeneous();
+    }
+
+    return aConversionTransform * aCoordinate.homogeneous();
 }
 
 /**

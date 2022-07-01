@@ -223,10 +223,15 @@ int main(int argc, char **argv) {
     const bool saveDirectly = (argc == 5 && atoi(argv[4]));
 
     // For now, just test the Pose transforms
+    // TODO: See pages 8 of
+    // https://dritchie.github.io/csci2240/assignments/eigen_tutorial.pdf
     PoseTransform2D poseTransform =
-        rotTransToTransform(M_PI / 2, Eigen::Vector2d(0, 0));
+        rotTransToTransform(M_PI / 2, Eigen::Vector2d(5, 7));
+    poseTransform.inverse();
 
-    std::cout << poseTransform.matrix() << std::endl;
+    Eigen::Vector2d pt(1, 1);
+
+    std::cout << poseTransform * pt.homogeneous() << std::endl;
 
     return 0;
 
