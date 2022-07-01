@@ -19,8 +19,10 @@
 #ifndef __KEYFRAME_H__
 #define __KEYFRAME_H__
 
-#include <Eigen/Core>
+#include <Eigen/Geometry>
+#include <vector>
 
+#include "OptimisationHandler.hpp"
 #include "OrientedSurfacePointsHandler.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
@@ -33,6 +35,8 @@
  */
 const size_t ORSP_KF_GRID_N = static_cast<size_t>(
     floor(2 * RADAR_MAX_RANGE_M_SQRT2 / ORSP_GRID_SQUARE_WIDTH));
+
+typedef std::vector<size_t> IndexList;
 
 class Keyframe {
   private:
@@ -69,7 +73,7 @@ class Keyframe {
      * @todo Make this a sparse representation instead?
      * @see pointToGridCoordinate()
      */
-    std::vector<ssize_t> mORSPIndexGrid[ORSP_KF_GRID_N][ORSP_KF_GRID_N];
+    IndexList mORSPIndexGrid[ORSP_KF_GRID_N][ORSP_KF_GRID_N];
 
   public:
     Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
