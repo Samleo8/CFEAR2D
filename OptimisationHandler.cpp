@@ -10,9 +10,10 @@
  *
  */
 
-#include "RadarImage.hpp"
-#include "Keyframe.hpp"
 #include "OptimisationHandler.hpp"
+#include "Keyframe.hpp"
+#include "PoseTransformHandler.hpp"
+#include "RadarImage.hpp"
 
 /**
  * @brief Obtain the angle between two vectors. Used for comparing angle
@@ -27,16 +28,35 @@ double angleBetweenVectors(const Eigen::VectorXd &aVec1,
     return acos(aVec1.dot(aVec2) / (aVec1.norm() * aVec2.norm()));
 }
 
+const PoseTransform2D transformFromOptimParams(const OptimParams &aParams) {
+    return rotTransToTransform(aParams.theta, aParams.translation);
+}
+
 /**
- * @brief Cost between point to line given a radar image, keyframe, and optimization parameters (in this case, a pose)
- * 
- * @param[in] aRImage 
- * @param[in] aKeyframe 
- * @param[in] aParams 
- * @return const double 
+ * @brief Cost between point to line given a radar image, keyframe, and
+ * optimization parameters (in this case, a pose)
+ *
+ * @param[in] aRImage
+ * @param[in] aKeyframe
+ * @param[in] aParams
+ * @return const double
  */
 const double point2LineCost(const RadarImage &aRImage,
                             const Keyframe &aKeyframe,
                             const OptimParams &aParams) {
+    // Transform to be applied on ORSP points in RImage to convert to world coord
+    const PoseTransform2D rImgTransform = transformFromOptimParams(aParams);
+
+    // Loop through each point from ORSP point in RImage and get the cost from formula
+    double cost = 0.0;
+    const ORSPVec rImgFeaturePts = aRImage.getORSPFeaturePoints();
+    for (const ORSP &featurePt : rImgFeaturePts) {
+        // Get the ORSP point in world coordinates
+        ORSP worldORSPPoint;
+        convertORSPCoordinates(featurePt, worldORSPPoint, rImgTransform);
+
+        
+    }
+
     return 0;
 }

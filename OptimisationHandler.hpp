@@ -12,8 +12,9 @@
 #ifndef __OPTIMISATION_HANDLER_HPP__
 #define __OPTIMISATION_HANDLER_HPP__
 
-#include "RadarImage.hpp"
 #include "Keyframe.hpp"
+#include "PoseTransformHandler.hpp"
+#include "RadarImage.hpp"
 
 #include <Eigen/Geometry>
 #include <Eigen/LU>
@@ -27,9 +28,9 @@
 // TODO: Integrate with ceres somehow
 // TOOD: 2D for now
 typedef struct {
-    // Eigen::Quaterniond q; // rotation
-    double theta;          // rotation 
-    Eigen::Vector2d t;    // translation
+    // Eigen::Quaterniond q;     ///< rotation
+    double theta;                ///< rotation
+    Eigen::Vector2d translation; ///< translation
 } OptimParams;
 
 /** @brief Angle tolerance threshold in radians */

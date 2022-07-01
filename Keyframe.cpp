@@ -17,12 +17,15 @@
  */
 
 #include "Keyframe.hpp"
+#include "OrientedSurfacePointsHandler.hpp"
 #include "PoseTransformHandler.hpp"
 
 /**
  * @brief Constructor for Keyframe class. Handles transferring of relevant data
  * structures (specifically grid representations and points) from RadarImage
  * into the class
+ * @todo To save memory, we can remove the need for saving the pose transform
+ * since it is only used in this initialization
  *
  * @param[in] aRadarImage Reference to radar image to be used to construct
  * keyframe
@@ -61,8 +64,8 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
         mORSPFeaturePoints.push_back(worldORSPPoint);
     }
 
-    // TODO: Use Eigen::Map if necessary to convert a set of coordinates from
-    // world to local or vice versa
+    // TODO: Use Eigen::Map if necessary to (quickly) batch convert a set of
+    // coordinates from world to local or vice versa
 }
 
 /**
@@ -141,4 +144,13 @@ void Keyframe::worldToLocalORSP(const ORSP &aWorldORSPPoint,
     // NOTE: Same function, but different pose transform and parameter order
     convertORSPCoordinates(aWorldORSPPoint, aLocalORSPPoint,
                            mWorldToLocalTransform);
+}
+
+/**
+ * @brief Find the closest feature point to a given point in world coordinates
+ * 
+ * @return Whether a closest feature point was found
+ */
+const bool Keyframe::findClosestORSP(const ORSP &aORSPPoint, ORSP &aClosestORSPPoint) const {
+    return true;
 }

@@ -87,6 +87,10 @@ class Keyframe {
                           ORSP &aWorldORSPPoint) const;
     void worldToLocalORSP(const ORSP &aWorldORSPPoint,
                           ORSP &aLocalORSPPoint) const;
+
+    // Find the closest ORSP point to a given point
+    [[nodiscard]] const bool findClosestORSP(const ORSP &aORSPPoint,
+                                             ORSP &aClosestORSPPoint) const;
 };
 
 #endif // __KEYFRAME_H__
