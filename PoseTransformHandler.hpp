@@ -42,6 +42,9 @@ struct Pose2D {
         : orientation(aOrientation) {
         position << ax, ay;
     }
+
+    friend std::ostream &operator<<(std::ostream &aOutputStream,
+                                    const Pose2D &aPose);
 };
 
 typedef struct Pose2D Pose2D; ///< typedef for struct Pose2D

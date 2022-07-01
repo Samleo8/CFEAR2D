@@ -11,6 +11,18 @@
 #include "PoseTransformHandler.hpp"
 
 /**
+ * @brief Printing of class information using cout
+ * 
+ * @param[in] aOutputStream Cout output stream
+ * @param[in] aPose Pose class to output
+ * @return std::ostream& Output stream reference
+ */
+std::ostream &operator<<(std::ostream &aOutputStream, const Pose2D &aPose) {
+    os << aPose.position << " " << aPose.orientation << std::endl;
+    return os;
+}
+
+/**
  * @brief Convert rotation and translation to transformation matrix
  *
  * @param[in] aRotMat Rotation matrix (N x N)
