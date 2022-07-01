@@ -5,9 +5,9 @@
 #include <string>
 
 #include "CVColor.hpp"
+#include "Keyframe.hpp"
 #include "RadarFeed.hpp"
 #include "RadarImage.hpp"
-#include "Keyframe.hpp"
 
 #define ORSP_ONLY
 
@@ -222,6 +222,14 @@ int main(int argc, char **argv) {
     const int endID = (argc == 4) ? atoi(argv[3]) : -1;
     const bool saveDirectly = (argc == 5 && atoi(argv[4]));
 
+    // For now, just test the Pose transforms
+    PoseTransform2D poseTransform =
+        rotTransToTransform(M_PI / 2, Eigen::Vector2d(0, 0));
+
+    std::cout << poseTransform.matrix() << std::endl;
+
+    return 0;
+
     // Create path to save images
     fs::path saveImagesPath(".");
     saveImagesPath /= "results";
@@ -232,46 +240,49 @@ int main(int argc, char **argv) {
     /**********************************************************************
      * @section TestRadar-KeyframeToKeyframe Compute keyframe to keyframe
      **********************************************************************/
-    // TODO: Refactor the RadarFeed class so that it only saves the current and maybe previous image
-    fs::path dataPath(".");
-    dataPath /= "data";
-    dataPath /= std::to_string(dataset);
+    /*
+   // TODO: Refactor the RadarFeed class so that it only saves the current and
+   // maybe previous image
+   fs::path dataPath(".");
+   dataPath /= "data";
+   dataPath /= std::to_string(dataset);
 
-    RadarFeed feed(dataPath);
+   RadarFeed feed(dataPath);
 
-    feed.loadFrame(startID);
-    RadarImage prevRImg, currRImg;
-    feed.getCurrentRadarImage(prevRImg);
+   feed.loadFrame(startID);
+   RadarImage prevRImg, currRImg;
+   feed.getCurrentRadarImage(prevRImg);
 
-    std::vector<Keyframe> keyframeList;
+   std::vector<Keyframe> keyframeList;
 
-    // First image is always a keyframe
-    const PoseTransform2D initWorldPose(0,0);
+   // First image is always a keyframe
+   const PoseTransform2D initWorldPose(0, 0);
 
-    // TODO: Keyframe handling
-    Keyframe keyframe(currRImg, initWorldPose);
-    keyframeList.push_back(keyframe);
+   // TODO: Keyframe handling
+   Keyframe keyframe(currRImg, initWorldPose);
+   keyframeList.push_back(keyframe);
 
-    // Keep finding frames
-    while (feed.nextFrame()) {
-        if (feed.getCurrentFrame() == endID) break;
+   // Keep finding frames
+   while (feed.nextFrame()) {
+       if (feed.getCurrentFrame() == endID) break;
 
-        feed.getCurrentRadarImage(currRImg);
+       feed.getCurrentRadarImage(currRImg);
 
-        // K-filtering and ORSP
-        const size_t K = 12;
-        const double Z_min = 55;
+       // K-filtering and ORSP
+       const size_t K = 12;
+       const double Z_min = 55;
 
-        currRImg.performKStrong(K, Z_min);
-        currRImg.computeOrientedSurfacePoints();
+       currRImg.performKStrong(K, Z_min);
+       currRImg.computeOrientedSurfacePoints();
 
-        // Output image
-        cv::Mat outputImgORSP;
-        outputImgFromRImg(currRImg, outputImgORSP);
+       // Output image
+       cv::Mat outputImgORSP;
+       outputImgFromRImg(currRImg, outputImgORSP);
 
-        // TODO: Add keyframe if necessary
-        // Keyframe keyframe2(currRImg);
-    }
+       // TODO: Add keyframe if necessary
+       // Keyframe keyframe2(currRImg);
+   }
+   */
 
     return 0;
 }

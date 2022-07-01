@@ -19,9 +19,13 @@
  */
 const PoseTransform2D rotTransToTransform(const Eigen::Rotation2Dd &aRotMat,
                                           const Eigen::Vector2d &aTrans) {
-    PoseTransform2D transform;
-    transform.fromPositionOrientationScale(aTrans, aRotMat, 1);
+    const int dimension = 2;
 
+    PoseTransform2D transform = PoseTransform2D::Identity();
+    
+    transform.rotate(aRotMat);
+    transform.translate(aTrans);
+    
     return transform;
 }
 
