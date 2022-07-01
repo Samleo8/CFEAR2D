@@ -18,8 +18,8 @@
  * @return std::ostream& Output stream reference
  */
 std::ostream &operator<<(std::ostream &aOutputStream, const Pose2D &aPose) {
-    os << aPose.position << " " << aPose.orientation << std::endl;
-    return os;
+    aOutputStream << aPose.position << " " << aPose.orientation << std::endl;
+    return aOutputStream;
 }
 
 /**
