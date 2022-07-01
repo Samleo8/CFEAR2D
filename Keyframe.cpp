@@ -25,10 +25,10 @@
  *
  * @param[in] aRadarImage Reference to radar image to be used to construct
  * keyframe
- * @param[in] aWorldPose
+ * @param[in] aWorldPose 
  */
-Keyframe::Keyframe(const RadarImage &aRadarImage, const PoseTransform2D &aWorldPose)
-    : mLocalToWorldTransform(aWorldPose) {
+Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose) {
+    // : mLocalToWorldTransform(poseToTransform(aWorldPose)) {
     // Copy over ORSP points and populate grid
     const ORSPVec &ORSPFeaturePointsRef = aRadarImage.getORSPFeaturePoints();
     mORSPFeaturePoints.reserve(ORSPFeaturePointsRef.size());
@@ -50,6 +50,10 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const PoseTransform2D &aWorldP
         // Copy over ORSP point
         mORSPFeaturePoints.push_back(ORSPFeaturePoint);
     }
+
+    // TODO: Use Eigen::Map if necessary to convert a set of coordinates from world to local or vice versa
+
+
 }
 
 /**

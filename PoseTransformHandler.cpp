@@ -36,6 +36,10 @@ const PoseTransform2D rotTransToTransform(const double aAngleRad,
     return rotTransToTransform(rotMat, aTrans);
 }
 
+const PoseTransform2D poseToTransform(const Pose2D &aPose) {
+    return rotTransToTransform(aPose.orientation, aPose.position);
+}
+
 /**
  * @brief Convert one coordinate to another coordinate frame using homogeneous
  * transforms. 2D interface.
@@ -52,7 +56,7 @@ const Eigen::Vector2d
 convertCoordinate(const Eigen::Vector2d &aCoordinate,
                   const PoseTransform2D &aConversionTransform, bool isVector) {
     if (isVector) {
-        return aConversionTransform.rotation() * aCoordinate.homogeneous();
+        return aConversionTransform.rotation() * aCoordinate;
     }
 
     return aConversionTransform * aCoordinate.homogeneous();

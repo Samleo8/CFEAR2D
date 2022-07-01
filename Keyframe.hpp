@@ -33,7 +33,7 @@ class Keyframe {
 
     /** @brief Homogeneous transform matrix that converts world to local
      * coordinates */
-    const PoseTransform2D mWorldToLocalTransform;
+    PoseTransform2D mWorldToLocalTransform;
 
     /** @brief ORSP feature points in LOCAL coordinates @todo maybe make this
      * global? */
@@ -51,7 +51,7 @@ class Keyframe {
     ssize_t mORSPIndexGrid[ORSP_GRID_N][ORSP_GRID_N];
 
   public:
-    Keyframe(const RadarImage &aRadarImage, const PoseTransform2D &aWorldPose);
+    Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
     ~Keyframe();
 
     void localToWorldORSP(const ORSP &aLocalORSPPoint,
