@@ -10,6 +10,8 @@
  *
  */
 
+#include "RadarImage.hpp"
+#include "Keyframe.hpp"
 #include "OptimisationHandler.hpp"
 
 /**
@@ -24,6 +26,7 @@ double angleBetweenVectors(const Eigen::VectorXd &aVec1,
                            const Eigen::VectorXd &aVec2) {
     return acos(aVec1.dot(aVec2) / (aVec1.norm() * aVec2.norm()));
 }
+
 const double point2LineCost(const RadarImage &aRImage,
                             const Keyframe &aKeyframe,
                             const OptimParams &aParams) {

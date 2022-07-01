@@ -21,9 +21,9 @@
 
 #include <Eigen/Core>
 
-#include "OrientedSurfacePointsHandler.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
+#include "OrientedSurfacePointsHandler.hpp"
 
 class Keyframe {
   private:

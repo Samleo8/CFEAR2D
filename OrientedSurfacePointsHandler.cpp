@@ -10,7 +10,6 @@
  */
 
 #include "OrientedSurfacePointsHandler.hpp"
-#include "RadarImage.hpp"
 
 /**
  * @brief Get Centroid from list of 2D points

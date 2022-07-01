@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef __OPTIMISATION_HANDLER_H__
-#define __OPTIMISATION_HANDLER_H__
+#ifndef __OPTIMISATION_HANDLER_HPP__
+#define __OPTIMISATION_HANDLER_HPP__
 
 #include "RadarImage.hpp"
 #include "Keyframe.hpp"
@@ -44,4 +44,4 @@ const double point2LineCost(const RadarImage &aRImage,
                             const Keyframe &aKeyframe,
                             const OptimParams &aParams);
 
-#endif // __OPTIMISATION_HANDLER_H__
+#endif // __OPTIMISATION_HANDLER_HPP__

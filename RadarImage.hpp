@@ -17,8 +17,6 @@
 #include "RadarImageHandler.hpp" // needed to handle file path and data
 #include "OrientedSurfacePointsHandler.hpp" // some ORSP-related functions for the
                                             // RadarImage class are defined here
-#include "OptimisationHandler.hpp" // needed for optimization-related functions for BA; 
-// some functions defined here
 
 // Constants
 /** @brief Tau = 2 * Pi. Used for radian conversion and img proc */

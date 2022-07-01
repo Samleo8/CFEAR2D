@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 
+#include "ImageProcessing.hpp"
 #include "PointCart2D.hpp"
 #include "PointPolar2D.hpp"
 
