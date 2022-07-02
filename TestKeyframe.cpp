@@ -245,7 +245,7 @@ int main(int argc, char **argv) {
     RadarImage prevRImg, currRImg;
     feed.getCurrentRadarImage(prevRImg);
 
-    KeyframeBuffer keyframeList(KF_BUFF_SIZE);
+    KeyframeBuffer keyframeList{KF_BUFF_SIZE};
 
     // First image is always a keyframe
     const Pose2D initWorldPose(1, 2, 0.4);
@@ -276,6 +276,9 @@ int main(int argc, char **argv) {
         
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
+
+        // TODO: actually go through the frames
+        break; 
     }
 
     return 0;
