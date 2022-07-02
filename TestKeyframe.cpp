@@ -255,18 +255,6 @@ int main(int argc, char **argv) {
 
     keyframeList.push_back(keyframe);
 
-    std::cout << keyframe.getPose() << std::endl;
-    std::cout << keyframe.getLocalToWorldTransform().matrix() << std::endl;
-    std::cout << keyframe.getWorldToLocalTransform().matrix() << std::endl;
-
-    Keyframe keyframe2 = keyframeList.back();
-
-    std::cout << keyframe2.getPose() << std::endl;
-    std::cout << keyframe2.getLocalToWorldTransform().matrix() << std::endl;
-    std::cout << keyframe2.getWorldToLocalTransform().matrix() << std::endl;
-
-    return 0;
-
     // Keep finding frames
     while (feed.nextFrame()) {
         if (feed.getCurrentFrame() == endID) break;
@@ -284,6 +272,8 @@ int main(int argc, char **argv) {
         cv::Mat outputImgORSP;
         outputImgFromRImg(currRImg, outputImgORSP);
 
+        // TODO: find odometry / optimization. For now, optimization is returning the world pose, so to get odometry, we need to multiply by inverse of pose.
+        
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
     }
