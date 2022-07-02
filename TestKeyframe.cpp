@@ -248,16 +248,24 @@ int main(int argc, char **argv) {
     KeyframeBuffer keyframeList(KF_BUFF_SIZE);
 
     // First image is always a keyframe
-    const Pose2D initWorldPose(0, 0, 0);
+    const Pose2D initWorldPose(1, 2, 0.4);
 
     // TODO: Keyframe handling
     Keyframe keyframe(prevRImg, initWorldPose);
 
     keyframeList.push_back(keyframe);
 
-    // std::cout << keyframe.getPose() << std::endl;
-    // std::cout << keyframe.getLocalToWorldTransform().matrix() << std::endl;
-    // std::cout << keyframe.getWorldToLocalTransform().matrix() << std::endl;
+    std::cout << keyframe.getPose() << std::endl;
+    std::cout << keyframe.getLocalToWorldTransform().matrix() << std::endl;
+    std::cout << keyframe.getWorldToLocalTransform().matrix() << std::endl;
+
+    Keyframe keyframe2 = keyframeList.back();
+
+    std::cout << keyframe2.getPose() << std::endl;
+    std::cout << keyframe2.getLocalToWorldTransform().matrix() << std::endl;
+    std::cout << keyframe2.getWorldToLocalTransform().matrix() << std::endl;
+
+    return 0;
 
     // Keep finding frames
     while (feed.nextFrame()) {
