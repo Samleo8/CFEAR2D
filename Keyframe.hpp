@@ -43,15 +43,20 @@ class Keyframe {
     Pose2D mWorldPose;
 
     /** @brief World pose as homogeneous transformation matrix that converts
-     * from local to world coordinates */
+     * from local to world coordinates. Effectively const: only initialized on
+     constructor but no `const` because circular_buffer needs the copy assignment
+     */
     PoseTransform2D mLocalToWorldTransform;
 
     /** @brief Homogeneous transform matrix that converts world to local
-     * coordinates */
+     * coordinates. Effectively const: only initialized on constructor but no
+     * `const` because circular_buffer needs the copy assignment.
+     */
     PoseTransform2D mWorldToLocalTransform;
 
     /** @brief Grid center used for getting new grid coordinate in WORLD
-     * coordinates
+     * coordinates. Effectively const: only initialized on constructor but no
+     * `const` because circular_buffer needs the copy assignment
      * @see pointToGridCoordinate()
      */
     PointCart2D mGridCenter;
