@@ -71,22 +71,6 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
 }
 
 /**
- * @brief Copy Constructor for Keyframe. Needed for circular buffer
- * because of the use of const initializers
- *
- * @param[in] aKeyframe Input keyframe
- */
-Keyframe::Keyframe(const Keyframe &aKeyframe)
-    : mWorldPose(aKeyframe.mWorldPose),
-      mLocalToWorldTransform(aKeyframe.mLocalToWorldTransform),
-      mWorldToLocalTransform(aKeyframe.mWorldToLocalTransform),
-      mGridCenter(aKeyframe.mWorldPose.position[0] + RADAR_MAX_RANGE_M_SQRT2,
-                  aKeyframe.mWorldPose.position[1] + RADAR_MAX_RANGE_M_SQRT2) {
-    // Copy over feature points
-    mORSPFeaturePoints = aKeyframe.mORSPFeaturePoints;
-}
-
-/**
  * @brief Destructor for Keyframe::Keyframe
  * Currently empty.
  */

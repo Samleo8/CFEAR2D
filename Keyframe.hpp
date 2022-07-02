@@ -81,7 +81,7 @@ class Keyframe {
 
   public:
     Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
-    Keyframe(const Keyframe &aKeyframe);
+    // Keyframe(const Keyframe &aKeyframe);
     ~Keyframe();
 
     // Getters
