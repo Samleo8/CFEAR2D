@@ -22,7 +22,6 @@
 #include <Eigen/Geometry>
 #include <vector>
 
-#include "OptimisationHandler.hpp"
 #include "OrientedSurfacePointsHandler.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
@@ -41,11 +40,11 @@ typedef std::vector<size_t> IndexList;
 class Keyframe {
   private:
     /** @brief World pose, probably mainly for plotting */
-    const Pose2D mWorldPose;
+    Pose2D mWorldPose;
 
     /** @brief World pose as homogeneous transformation matrix that converts
      * from local to world coordinates */
-    const PoseTransform2D mLocalToWorldTransform;
+    PoseTransform2D mLocalToWorldTransform;
 
     /** @brief Homogeneous transform matrix that converts world to local
      * coordinates */
@@ -55,7 +54,7 @@ class Keyframe {
      * coordinates
      * @see pointToGridCoordinate()
      */
-    const PointCart2D mGridCenter;
+    PointCart2D mGridCenter;
 
     /** @brief ORSP feature points in WORLD coordinates */
     ORSPVec mORSPFeaturePoints;
@@ -77,6 +76,7 @@ class Keyframe {
 
   public:
     Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
+    Keyframe(const Keyframe &aKeyframe);
     ~Keyframe();
 
     // Getters

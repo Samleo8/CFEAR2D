@@ -6,6 +6,7 @@
 
 #include "CVColor.hpp"
 #include "Keyframe.hpp"
+#include "OptimisationHandler.hpp"
 #include "RadarFeed.hpp"
 #include "RadarImage.hpp"
 
@@ -244,20 +245,19 @@ int main(int argc, char **argv) {
     RadarImage prevRImg, currRImg;
     feed.getCurrentRadarImage(prevRImg);
 
-    std::vector<Keyframe> keyframeList;
+    KeyframeBuffer keyframeList(KF_BUFF_SIZE);
 
     // First image is always a keyframe
     const Pose2D initWorldPose(0, 0, 0);
 
     // TODO: Keyframe handling
     Keyframe keyframe(prevRImg, initWorldPose);
+
     keyframeList.push_back(keyframe);
 
-    std::cout << keyframe.getPose() << std::endl;
-    std::cout << keyframe.getLocalToWorldTransform().matrix() << std::endl;
-    std::cout << keyframe.getWorldToLocalTransform().matrix() << std::endl;
-
-    return 0;
+    // std::cout << keyframe.getPose() << std::endl;
+    // std::cout << keyframe.getLocalToWorldTransform().matrix() << std::endl;
+    // std::cout << keyframe.getWorldToLocalTransform().matrix() << std::endl;
 
     // Keep finding frames
     while (feed.nextFrame()) {

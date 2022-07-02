@@ -19,6 +19,9 @@
 #include <Eigen/Geometry>
 #include <Eigen/LU>
 
+#include <boost/circular_buffer.hpp>
+#include <boost/circular_buffer/base.hpp>
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -33,7 +36,9 @@ typedef struct {
     Eigen::Vector2d translation; ///< translation
 } OptimParams;
 
-
+const size_t KF_BUFF_SIZE = 3;
+typedef boost::circular_buffer<Keyframe> KeyframeBuffer;
+// typedef std::vector<Keyframe> KeyframeBuffer;
 
 /** @brief Angle tolerance threshold in radians */
 const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
@@ -44,7 +49,7 @@ const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
 const double constrainAngle(const double aAngleRad);
 
 const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
-                           const Eigen::VectorXd &aVec2);
+                                 const Eigen::VectorXd &aVec2);
 
 const double point2LineCost(const RadarImage &aRImage,
                             const Keyframe &aKeyframe,

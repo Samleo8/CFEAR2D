@@ -24,6 +24,9 @@ struct Pose2D {
     Eigen::Vector2d position = Eigen::Vector2d::Zero(); ///< position as x, y
     double orientation = 0; ///< orientation as theta
 
+    /** @brief Default constructor */
+    Pose2D() {}
+
     /**
      * @brief Constructor for Pose2D using position and orientation
      * vectors/scalars

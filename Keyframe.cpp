@@ -17,13 +17,15 @@
  */
 
 #include "Keyframe.hpp"
+#include "OptimisationHandler.hpp" // needed for angle handling
+#include "PoseTransformHandler.hpp"
 
 /**
- * @brief Constructor for Keyframe class. Handles transferring of relevant data
- * structures (specifically grid representations and points) from RadarImage
- * into the class
- * @todo To save memory, we can remove the need for saving the pose transform
- * since it is only used in this initialization
+ * @brief Constructor for Keyframe class. Handles transferring of relevant
+ * data structures (specifically grid representations and points) from
+ * RadarImage into the class
+ * @todo To save memory, we can remove the need for saving the pose
+ * transform since it is only used in this initialization
  *
  * @param[in] aRadarImage Reference to radar image to be used to construct
  * keyframe
@@ -66,6 +68,22 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
 
     // TODO: Use Eigen::Map if necessary to (quickly) batch convert a set of
     // coordinates from world to local or vice versa
+}
+
+/**
+ * @brief Copy Constructor for Keyframe. Needed for circular buffer
+ * because of the use of const initializers
+ *
+ * @param[in] aKeyframe Input keyframe
+ */
+Keyframe::Keyframe(const Keyframe &aKeyframe)
+    : mWorldPose(aKeyframe.mWorldPose),
+      mLocalToWorldTransform(aKeyframe.mLocalToWorldTransform),
+      mWorldToLocalTransform(aKeyframe.mWorldToLocalTransform),
+      mGridCenter(aKeyframe.mWorldPose.position[0] + RADAR_MAX_RANGE_M_SQRT2,
+                  aKeyframe.mWorldPose.position[1] + RADAR_MAX_RANGE_M_SQRT2) {
+    // Copy over feature points
+    mORSPFeaturePoints = aKeyframe.mORSPFeaturePoints;
 }
 
 /**
@@ -125,8 +143,8 @@ const PoseTransform2D &Keyframe::getWorldToLocalTransform() const {
  */
 void Keyframe::localToWorldORSP(const ORSP &aLocalORSPPoint,
                                 ORSP &aWorldORSPPoint) const {
-    // Use pose transform handler library and internal world pose to convert to
-    // world coordinate
+    // Use pose transform handler library and internal world pose to convert
+    // to world coordinate
     convertORSPCoordinates(aLocalORSPPoint, aWorldORSPPoint,
                            mLocalToWorldTransform);
 }
@@ -139,15 +157,16 @@ void Keyframe::localToWorldORSP(const ORSP &aLocalORSPPoint,
  */
 void Keyframe::worldToLocalORSP(const ORSP &aWorldORSPPoint,
                                 ORSP &aLocalORSPPoint) const {
-    // Use pose transform handler library and internal world pose to convert to
-    // world coordinate
-    // NOTE: Same function, but different pose transform and parameter order
+    // Use pose transform handler library and internal world pose to convert
+    // to world coordinate NOTE: Same function, but different pose transform
+    // and parameter order
     convertORSPCoordinates(aWorldORSPPoint, aLocalORSPPoint,
                            mWorldToLocalTransform);
 }
 
 /**
- * @brief Find the closest feature point to a given point in world coordinates
+ * @brief Find the closest feature point to a given point in world
+ * coordinates
  * @note User needs to check if a feature point was found; otherwise, the
  * aClosestORSPPoint can give garbage values.
  * @return Whether a closest feature point was found
@@ -198,8 +217,8 @@ const bool Keyframe::findClosestORSP(const ORSP &aORSPPoint,
                     potentialClosestPoint.center);
 
                 // Check angle tolerance
-                const double angle = angleBetweenVectors(potentialClosestPoint.normal,
-                                                   aClosestORSPPoint.normal);
+                const double angle = angleBetweenVectors(
+                    potentialClosestPoint.normal, aClosestORSPPoint.normal);
 
                 if (ABS(angle) > ANGLE_TOLERANCE_RAD) continue;
 
