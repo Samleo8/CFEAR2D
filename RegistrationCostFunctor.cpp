@@ -56,21 +56,21 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
 
     // TODO: Point to line cost, sum by looping through all keyframes in the
     // buffer
-    double cost = 0.0;
+    double regCost = 0.0;
     bool success = false;
 
     for (size_t i = 0; i < mKFBuffer.size(); i++) {
         const Keyframe &keyframe = getKeyframe(i);
-        double indvCost;
-        if (point2LineCost(keyframe, params, &indvCost)) {
+        double p2lCost;
+        if (point2LineCost(keyframe, params, &p2lCost)) {
             success = true;
-            cost += indvCost;
+            regCost += p2lCost;
         }
     }
 
     // TODO: Huber loss from Ceres?
 
-    aResidualArray[0] = cost;
+    aResidualArray[0] = regCost;
 
     return success;
 }
