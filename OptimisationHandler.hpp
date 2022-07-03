@@ -43,6 +43,9 @@ typedef boost::circular_buffer<Keyframe> KeyframeBuffer;
 /** @brief Angle tolerance threshold in radians */
 const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
 
+/** @brief (Default) Delta threshold for Huber loss */
+const double HUBER_DELTA_DEFAULT = 0.1;
+
 // TODO: See
 // http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
 
@@ -52,5 +55,8 @@ const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
                                  const Eigen::VectorXd &aVec2);
 
 const PoseTransform2D transformFromOptimParams(const OptimParams &aParams);
+
+const double HuberLoss(const double a,
+                       const double delta = HUBER_DELTA_DEFAULT);
 
 #endif // __OPTIMISATION_HANDLER_HPP__

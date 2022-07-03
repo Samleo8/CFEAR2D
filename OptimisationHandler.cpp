@@ -34,6 +34,30 @@ const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
     return constrainAngle(unnormalizedAngle);
 }
 
+/**
+ * @brief Get pose transform from optimisation parameters, currently a pose
+ *
+ * @param[in] aParams Optimisation parameters, basically a pose. @see
+ * OptimParams struct
+ * @return Pose transform from optimisation parameters
+ */
 const PoseTransform2D transformFromOptimParams(const OptimParams &aParams) {
     return rotTransToTransform(aParams.theta, aParams.translation);
+}
+
+/**
+ * @brief Huber loss according to formula
+ * @see https://en.wikipedia.org/wiki/Huber_loss
+ *
+ * @param[in] a Value
+ * @param[in] delta threshold for Huber loss
+ * @return Huber loss
+ */
+const double HuberLoss(const double a, const double delta) {
+    if (std::abs(a) < delta) {
+        return 0.5 * a * a;
+    }
+    else {
+        return delta * (std::abs(a) - 0.5 * delta);
+    }
 }
