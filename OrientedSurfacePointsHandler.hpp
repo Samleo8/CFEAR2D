@@ -90,6 +90,7 @@ struct ORSP {
     ORSP(const ORSP &aORSP) : center(aORSP.center), normal(aORSP.normal) {}
 };
 
+/** @brief Oriented surface point struct typedef */
 typedef struct ORSP ORSP;
 
 /** @brief Typedef for OrientedSurfacePoint struct */

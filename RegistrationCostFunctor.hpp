@@ -33,13 +33,25 @@ class RegistrationCostFunctor {
     const KeyframeBuffer mKFBuffer;
 
   public:
+    // Constructors
     RegistrationCostFunctor(const RadarImage &aRImg,
                             const KeyframeBuffer &aKFBuffer);
 
-    const double point2LineCost(const RadarImage &aRImage,
-                                const Keyframe &aKeyframe,
-                                const OptimParams &aParams) const;
+    // Getters
+    const RadarImage &getRImg() const;
+    const KeyframeBuffer &getKFBuffer() const;
+    const Keyframe &getKeyframe(const size_t aIdx) const;
 
+    // Helper function for cost function
+    const bool point2LineCost(const RadarImage &aRImage,
+                              const Keyframe &aKeyframe,
+                              const OptimParams &aParams,
+                              double *aOutputCost) const;
+    const bool point2LineCost(const Keyframe &aKeyframe,
+                              const OptimParams &aParams,
+                              double *aOutputCost) const;
+
+    // Actual cost function
     template <typename T>
     bool operator()(const T *const aPositionArray,
                     const T *const aOrientationArray, T *aResidualArray);

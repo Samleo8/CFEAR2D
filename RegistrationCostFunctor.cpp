@@ -56,18 +56,44 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
 }
 
 /**
+ * @brief Get the internal radar image of cost functor
+ *
+ * @return const RadarImage& Internal radar image to register against
+ */
+const RadarImage &RegistrationCostFunctor::getRImg() const {
+    return mRImg;
+}
+
+/**
+ * @brief Get the internal keyframe buffer of cost functor
+ *
+ * @return const KeyframeBuffer& Internal circular buffer of keyframes to register against
+ */
+const KeyframeBuffer &RegistrationCostFunctor::getKFBuffer() const {
+    return mKFBuffer;
+}
+
+const Keyframe &RegistrationCostFunctor::getKeyframe(const size_t aIdx) const {
+    return mKFBuffer[aIdx];
+}
+
+/**
  * @brief Cost between point to line given a radar image, keyframe, and
  * optimization parameters (in this case, a pose)
  *
- * @param[in] aRImage
- * @param[in] aKeyframe
- * @param[in] aParams
- * @return const double
+ * @param[in] aRImage Radar image to register against
+ * @param[in] aKeyframe Keyframe to register against
+ * @param[in] aParams Optimization parameters (in this case a pose) @see
+ * OptimParams struct
+ * @param[out] aOutputCost Pointer to output cost between point to line as
+ indicated by cost function
+ *
+ * @return Successfully found cost between point to line
  */
-const double
-RegistrationCostFunctor::point2LineCost(const RadarImage &aRImage,
-                                        const Keyframe &aKeyframe,
-                                        const OptimParams &aParams) const {
+const bool RegistrationCostFunctor::point2LineCost(const RadarImage &aRImage,
+                                                   const Keyframe &aKeyframe,
+                                                   const OptimParams &aParams,
+                                                   double *aOutputCost) const {
     // Transform to be applied on ORSP points in RImage to convert to world
     // coord
     const PoseTransform2D rImgTransform = transformFromOptimParams(aParams);
@@ -95,10 +121,25 @@ RegistrationCostFunctor::point2LineCost(const RadarImage &aRImage,
         }
     }
 
-    // TODO: What if there is no match?
-    if (!foundMatch) {
-        return Eigen::Infinity;
-    }
+    *aOutputCost = cost;
+    return foundMatch;
+}
 
-    return cost;
+/**
+ * @brief Cost between point to line using internal radar image and given
+ * keyframe, and optimization parameters (in this case, a pose)
+ *
+ * @param[in] aKeyframe Keyframe to register against
+ * @param[in] aParams Optimization parameters (in this case a pose) @see
+ * OptimParams struct
+ * @param[out] aOutputCost Pointer to output cost
+ * @param[out] aOutputCost Pointer to output cost between point to line as
+ indicated by cost function
+ *
+ * @return Successfully found cost between point to line
+ */
+const bool RegistrationCostFunctor::point2LineCost(const Keyframe &aKeyframe,
+                                                   const OptimParams &aParams,
+                                                   double *aOutputCost) const {
+    return point2LineCost(mRImg, aKeyframe, aParams, aOutputCost);
 }
