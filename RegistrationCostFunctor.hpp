@@ -43,13 +43,13 @@ class RegistrationCostFunctor {
     const Keyframe &getKeyframe(const size_t aIdx) const;
 
     // Helper function for cost function
-    const bool point2LineCost(const RadarImage &aRImage,
-                              const Keyframe &aKeyframe,
-                              const OptimParams &aParams,
-                              double *aOutputCost) const;
-    const bool point2LineCost(const Keyframe &aKeyframe,
-                              const OptimParams &aParams,
-                              double *aOutputCost) const;
+    [[nodiscard]] const bool point2LineCost(const RadarImage &aRImage,
+                                            const Keyframe &aKeyframe,
+                                            const OptimParams &aParams,
+                                            double *aOutputCost) const;
+    [[nodiscard]] const bool point2LineCost(const Keyframe &aKeyframe,
+                                            const OptimParams &aParams,
+                                            double *aOutputCost) const;
 
     // Actual cost function
     template <typename T>

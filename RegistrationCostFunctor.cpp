@@ -10,6 +10,7 @@
  */
 
 #include "RegistrationCostFunctor.hpp"
+#include "OptimisationHandler.hpp"
 
 /**
  * @brief Constructor for RegistrationCostFunctor::RegistrationCostFunctor
@@ -44,15 +45,34 @@ template <typename T>
 bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
                                          const T *const aOrientationArray,
                                          T *aResidualArray) {
+    // Build parameter object from input params
     T x = aPositionArray[0];
     T y = aPositionArray[1];
     T theta = aOrientationArray[0];
 
+    OptimParams params;
+    params.theta = theta;
+    params.translation = Eigen::Vector2d(x, y);
+
     // TODO: Point to line cost, sum by looping through all keyframes in the
     // buffer
     double cost = 0.0;
+    bool success = false;
 
-    return true;
+    for (size_t i = 0; i < mKFBuffer.size(); i++) {
+        const Keyframe &keyframe = getKeyframe(i);
+        double indvCost;
+        if (point2LineCost(keyframe, params, &indvCost)) {
+            success = true;
+            cost += indvCost;
+        }
+    }
+
+    // TODO: Huber loss from Ceres?
+
+    aResidualArray[0] = cost;
+
+    return success;
 }
 
 /**
@@ -67,12 +87,20 @@ const RadarImage &RegistrationCostFunctor::getRImg() const {
 /**
  * @brief Get the internal keyframe buffer of cost functor
  *
- * @return const KeyframeBuffer& Internal circular buffer of keyframes to register against
+ * @return const KeyframeBuffer& Internal circular buffer of keyframes to
+ * register against
  */
 const KeyframeBuffer &RegistrationCostFunctor::getKFBuffer() const {
     return mKFBuffer;
 }
 
+/**
+ * @brief Get keyframe from internal keyframe buffer at indicated index
+ *
+ * @pre Index must be within bounds of internal keyframe buffer
+ * @param[in] aIdx Index of keyframe buffer to get
+ * @return const Keyframe& Keyframe at indicated index
+ */
 const Keyframe &RegistrationCostFunctor::getKeyframe(const size_t aIdx) const {
     return mKFBuffer[aIdx];
 }
@@ -118,10 +146,13 @@ const bool RegistrationCostFunctor::point2LineCost(const RadarImage &aRImage,
             foundMatch = true;
 
             // TODO: now compute cost according to formula
+            cost += closestORSPPoint.normal.dot(worldORSPPoint.center -
+                                        closestORSPPoint.center);
         }
     }
 
-    *aOutputCost = cost;
+    // TODO: Huber loss here or from Ceres?
+    *aOutputCost = HuberLoss(cost);
     return foundMatch;
 }
 
