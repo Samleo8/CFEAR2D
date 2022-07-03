@@ -5,9 +5,10 @@
 #include <string>
 
 #include "CVColor.hpp"
+#include "Keyframe.hpp"
+#include "OptimisationHandler.hpp"
 #include "RadarFeed.hpp"
 #include "RadarImage.hpp"
-#include "Keyframe.hpp"
 
 #define ORSP_ONLY
 
@@ -232,7 +233,8 @@ int main(int argc, char **argv) {
     /**********************************************************************
      * @section TestRadar-KeyframeToKeyframe Compute keyframe to keyframe
      **********************************************************************/
-    // TODO: Refactor the RadarFeed class so that it only saves the current and maybe previous image
+    // TODO: Refactor the RadarFeed class so that it only saves the current and
+    // maybe previous image
     fs::path dataPath(".");
     dataPath /= "data";
     dataPath /= std::to_string(dataset);
@@ -243,13 +245,14 @@ int main(int argc, char **argv) {
     RadarImage prevRImg, currRImg;
     feed.getCurrentRadarImage(prevRImg);
 
-    std::vector<Keyframe> keyframeList;
+    KeyframeBuffer keyframeList{KF_BUFF_SIZE};
 
     // First image is always a keyframe
-    const PoseTransform2D initWorldPose(0,0);
+    const Pose2D initWorldPose(1, 2, 0.4);
 
     // TODO: Keyframe handling
-    Keyframe keyframe(currRImg, initWorldPose);
+    Keyframe keyframe(prevRImg, initWorldPose);
+
     keyframeList.push_back(keyframe);
 
     // Keep finding frames
@@ -269,8 +272,13 @@ int main(int argc, char **argv) {
         cv::Mat outputImgORSP;
         outputImgFromRImg(currRImg, outputImgORSP);
 
+        // TODO: find odometry / optimization. For now, optimization is returning the world pose, so to get odometry, we need to multiply by inverse of pose.
+        
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
+
+        // TODO: actually go through the frames
+        break; 
     }
 
     return 0;

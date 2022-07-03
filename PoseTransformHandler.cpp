@@ -11,44 +11,52 @@
 #include "PoseTransformHandler.hpp"
 
 /**
+ * @brief Printing of class information using cout
+ * 
+ * @param[in] aOutputStream Cout output stream
+ * @param[in] aPose Pose class to output
+ * @return std::ostream& Output stream reference
+ */
+std::ostream &operator<<(std::ostream &aOutputStream, const Pose2D &aPose) {
+    aOutputStream << aPose.position << std::endl << aPose.orientation << std::endl;
+    return aOutputStream;
+}
+
+/**
  * @brief Convert rotation and translation to transformation matrix
  *
  * @param[in] aRotMat Rotation matrix (N x N)
  * @param[in] aTrans Translation vector (N x 1)
  * @return Homogeneous transformation matrix (N+1 x N+1)
  */
-const Eigen::MatrixXd rotTransToTransform(const Eigen::MatrixXd &aRotMat,
-                                      const Eigen::VectorXd &aTrans) {
-    Eigen::MatrixXd transform(aRotMat.rows() + 1, aRotMat.cols() + 1);
-    transform << aRotMat, aTrans, 0, 0, 1;
+const PoseTransform2D rotTransToTransform(const Eigen::Rotation2Dd &aRotMat,
+                                          const Eigen::Vector2d &aTrans) {
+    const int dimension = 2;
+
+    PoseTransform2D transform = PoseTransform2D::Identity();
+
+    // TODO: Check if its supposed to actually be rot, trans
+    transform.translate(aTrans);
+    transform.rotate(aRotMat);
+
     return transform;
 }
 
-/**
- * @brief Convert rotation and translation to INVERTED transformation matrix
- * @note Uses known formula to compute inverse of transformation matrix for efficiency
- *
- * @param[in] aRotMat Rotation matrix (N x N)
- * @param[in] aTrans Translation vector (N x 1)
- * @return Homogeneous transformation matrix (N+1 x N+1)
- */
-const Eigen::MatrixXd rotTransToTransformInverted(const Eigen::MatrixXd &aRotMat,
-                                              const Eigen::VectorXd &aTrans) {
-    Eigen::MatrixXd transform(aRotMat.rows() + 1, aRotMat.cols() + 1);
-    const Eigen::MatrixXd rotMatTrans = aRotMat.transpose();
+const PoseTransform2D rotTransToTransform(const double aAngleRad,
+                                          const Eigen::Vector2d &aTrans) {
+    const Eigen::Rotation2Dd rotMat(aAngleRad);
+    return rotTransToTransform(rotMat, aTrans);
+}
 
-    transform << rotMatTrans, (-rotMatTrans * aTrans), 0, 0, 1;
-    return transform;
+const PoseTransform2D poseToTransform(const Pose2D &aPose) {
+    return rotTransToTransform(aPose.orientation, aPose.position);
 }
 
 /**
- * @brief Convert local to world coordinate using homogeneous transforms,
- * dynamic dimensions.
- * @pre Dimensions must be consistent:
- *      - aLocalCoordinate.rows == aWorldCoordinate.rows
- *      - aLocalCoordinate.rows + 1 == aConversionTransform.rows
+ * @brief Convert one coordinate to another coordinate frame using homogeneous
+ * transforms. 2D interface.
  *
- * @param[in] aLocalCoordinate Local Coordinate (N x 1)
+ * @param[in] aCoordinate Coordinate (N x 1)
  * @param[in] aConversionTransform Homogeneous pose transform matrix from local
  * to world coordinates (N+1 x N+1)
  * @param[in] isVector Whether or not coordinate is a vector (affects
@@ -56,18 +64,14 @@ const Eigen::MatrixXd rotTransToTransformInverted(const Eigen::MatrixXd &aRotMat
  *
  * @return World coordinate (N x 1)
  */
-const Eigen::VectorXd
-convertCoordinate(const Eigen::VectorXd &aLocalCoordinate,
-                  const PoseTransformXD &aConversionTransform, bool isVector) {
-    // TODO: Check for consistent dimensions
-    const size_t outputDimension = aLocalCoordinate.rows();
+const Eigen::Vector2d
+convertCoordinate(const Eigen::Vector2d &aCoordinate,
+                  const PoseTransform2D &aConversionTransform, bool isVector) {
+    if (isVector) {
+        return aConversionTransform.rotation() * aCoordinate;
+    }
 
-    Eigen::VectorXd coordHomo(outputDimension + 1);
-    double homoVal = (isVector) ? 0.0 : 1.0;
-
-    coordHomo << aLocalCoordinate, homoVal;
-
-    return (aConversionTransform * coordHomo).head(outputDimension);
+    return aConversionTransform * aCoordinate.homogeneous();
 }
 
 /**
