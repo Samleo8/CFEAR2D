@@ -48,8 +48,8 @@ const PoseTransform2D transformFromOptimParams(const OptimParams &aParams) {
  * @return const double
  */
 const double point2LineCost(const RadarImage &aRImage,
-                            const Keyframe &aKeyframe,
-                            const OptimParams &aParams) {
+                                        const Keyframe &aKeyframe,
+                                        const OptimParams &aParams) {
     // Transform to be applied on ORSP points in RImage to convert to world
     // coord
     const PoseTransform2D rImgTransform = transformFromOptimParams(aParams);

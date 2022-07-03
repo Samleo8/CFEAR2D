@@ -70,6 +70,7 @@ add_executable(
   Keyframe.cpp
   OrientedSurfacePointsHandler.cpp
   OptimisationHandler.cpp
+  RegistrationCostFunctor.cpp
   OdometryVisualiser.cpp
   RadarFeedHandler.cpp
   RadarFeed.cpp
