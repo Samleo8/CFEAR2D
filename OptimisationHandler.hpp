@@ -51,6 +51,4 @@ const double constrainAngle(const double aAngleRad);
 const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
                                  const Eigen::VectorXd &aVec2);
 
-const double point2LineCost(const RadarImage &aRImage,
-                            const Keyframe &aKeyframe,
-                            const OptimParams &aParams);
+#endif // __OPTIMISATION_HANDLER_HPP__

@@ -36,6 +36,10 @@ class RegistrationCostFunctor {
     RegistrationCostFunctor(const RadarImage &aRImg,
                             const KeyframeBuffer &aKFBuffer);
 
+    const double point2LineCost(const RadarImage &aRImage,
+                                const Keyframe &aKeyframe,
+                                const OptimParams &aParams);
+
     template <typename T>
     bool operator()(const T *const aPositionArray,
                     const T *const aOrientationArray, T *aResidualArray);
