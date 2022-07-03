@@ -19,7 +19,7 @@
  */
 RegistrationCostFunctor::RegistrationCostFunctor(
     const RadarImage &aRImg, const KeyframeBuffer &aKFBuffer)
-    : mRImg(aRImg), mKFBuffer(KeyframeBuffer) {}
+    : mRImg(aRImg), mKFBuffer(aKFBuffer) {}
 
 /**
  * @brief The key function of the cost functor. Will return the calculated cost
@@ -67,7 +67,7 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
 const double
 RegistrationCostFunctor::point2LineCost(const RadarImage &aRImage,
                                         const Keyframe &aKeyframe,
-                                        const OptimParams &aParams) {
+                                        const OptimParams &aParams) const {
     // Transform to be applied on ORSP points in RImage to convert to world
     // coord
     const PoseTransform2D rImgTransform = transformFromOptimParams(aParams);

@@ -51,4 +51,6 @@ const double constrainAngle(const double aAngleRad);
 const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
                                  const Eigen::VectorXd &aVec2);
 
+const PoseTransform2D transformFromOptimParams(const OptimParams &aParams);
+
 #endif // __OPTIMISATION_HANDLER_HPP__

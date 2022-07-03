@@ -38,7 +38,7 @@ class RegistrationCostFunctor {
 
     const double point2LineCost(const RadarImage &aRImage,
                                 const Keyframe &aKeyframe,
-                                const OptimParams &aParams);
+                                const OptimParams &aParams) const;
 
     template <typename T>
     bool operator()(const T *const aPositionArray,
