@@ -9,6 +9,7 @@
 #include "OptimisationHandler.hpp"
 #include "RadarFeed.hpp"
 #include "RadarImage.hpp"
+#include "RegistrationCostFunctor.hpp"
 
 #define ORSP_ONLY
 
@@ -275,8 +276,17 @@ int main(int argc, char **argv) {
         // TODO: find odometry / optimization. For now, optimization is
         // returning the world pose, so to get odometry, we need to multiply by
         // inverse of pose.
-        MyScalarCostFunctor functor(1.0);
-        
+        RegistrationCostFunctor functor(currRImg, keyframeList);
+
+        // NOTE: Parameters: <cost functor type, num residuals, num pos params,
+        // num orientation params>
+        CostFunction *cost_function =
+            new AutoDiffCostFunction<RegistrationCostFunctor, 1, 2, 1>(
+                &functor);
+        // TODO: If want to keep functor pointer, by updating currRImg and
+        // keyframeList instead of creating new functor each iteration, then use
+        // ceres::DO_NOT_TAKE_OWNERSHIP
+
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
 

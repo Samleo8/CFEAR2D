@@ -22,8 +22,7 @@
 #include <boost/circular_buffer.hpp>
 #include <boost/circular_buffer/base.hpp>
 
-#include <ceres/autodiff_local_parameterization.h>
-#include <ceres/local_parameterization.h>
+#include <ceres/ceres.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
