@@ -245,7 +245,7 @@ int main(int argc, char **argv) {
     RadarImage prevRImg, currRImg;
     feed.getCurrentRadarImage(prevRImg);
 
-    KeyframeBuffer keyframeList{KF_BUFF_SIZE};
+    KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
 
     // First image is always a keyframe
     const Pose2D initWorldPose(1, 2, 0.4);
@@ -272,13 +272,16 @@ int main(int argc, char **argv) {
         cv::Mat outputImgORSP;
         outputImgFromRImg(currRImg, outputImgORSP);
 
-        // TODO: find odometry / optimization. For now, optimization is returning the world pose, so to get odometry, we need to multiply by inverse of pose.
+        // TODO: find odometry / optimization. For now, optimization is
+        // returning the world pose, so to get odometry, we need to multiply by
+        // inverse of pose.
+        MyScalarCostFunctor functor(1.0);
         
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
 
         // TODO: actually go through the frames
-        break; 
+        break;
     }
 
     return 0;
