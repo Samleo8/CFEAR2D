@@ -12,6 +12,7 @@ include_directories(${Boost_INCLUDE_DIRS} ${CERES_INCLUDE_DIRS}
                     ${EIGEN3_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 set(CMAKE_C_STANDARD 11)
+set(CMAKE_EXPORT_COMPILE_COMMANDS)
 
 # Need to disable multithreading
 add_compile_definitions(EIGEN_DONT_PARALLELIZE)
