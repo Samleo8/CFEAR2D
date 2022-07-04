@@ -55,20 +55,43 @@ const size_t ORSP_GRID_N =
  */
 const size_t ORSP_VALID_NEIGHBOUR_MIN = 6;
 
-/** @brief Eigenvalue ratio threshold above which distribution is considered ill defined */
+/** @brief Eigenvalue ratio threshold above which distribution is considered ill
+ * defined */
 const double ORSP_EIGENVAL_THRESHOLD = 10e5;
 
 /**
- * @brief Final Oriented Surface Point representation, holds mean and normal
+ * @brief Oriented Surface Point representation, holds mean and normal
  * vector obtained from covariance
  */
-typedef struct {
-    // Mean / center of point
+struct ORSP {
+    /// @brief Mean / center of point
     Eigen::Vector2d center;
 
-    // Normal vector
+    /// @brief Normal vector
     Eigen::Vector2d normal;
-} ORSP;
+
+    /**
+     * @brief Empty constructor for OrientedSurfacePoint
+     */
+    ORSP() : center(Eigen::Vector2d::Zero()), normal(Eigen::Vector2d::Zero()) {}
+
+    /**
+     * @brief Constructor for OrientedSurfacePoint
+     * @param[in] aCenter Center of point
+     * @param[in] aNormal Normal vector
+     */
+    ORSP(const Eigen::Vector2d &aCenter, const Eigen::Vector2d &aNormal)
+        : center(aCenter), normal(aNormal) {}
+
+    /**
+     * @brief Copy Constructor for OrientedSurfacePoint
+     * @param[in] aORSP ORSP to copy
+     */
+    ORSP(const ORSP &aORSP) : center(aORSP.center), normal(aORSP.normal) {}
+};
+
+/** @brief Oriented surface point struct typedef */
+typedef struct ORSP ORSP;
 
 /** @brief Typedef for OrientedSurfacePoint struct */
 typedef std::vector<ORSP> ORSPVec;
@@ -81,6 +104,8 @@ const PointCart3D getCentroid(const Point3DList &aPoints);
 void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
                        Eigen::Matrix2d &aCovMatrix);
 void pointToGridCoordinate(const PointCart2D &aPoint,
-                           PointCart2D &aGridCoordinate);
+                           PointCart2D &aGridCoordinate,
+                           const PointCart2D &aGridCenter = PointCart2D(
+                               RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M));
 
 #endif

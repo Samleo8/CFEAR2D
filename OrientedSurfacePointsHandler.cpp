@@ -10,6 +10,7 @@
  */
 
 #include "OrientedSurfacePointsHandler.hpp"
+#include "PointCart2D.hpp"
 #include "RadarImage.hpp"
 
 /**
@@ -75,14 +76,16 @@ void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
  * @param[out] aGridCoordinate Output grid coordinate
  */
 void pointToGridCoordinate(const PointCart2D &aPoint,
-                           PointCart2D &aGridCoordinate) {
+                           PointCart2D &aGridCoordinate,
+                           const PointCart2D &aGridCenter) {
     // TODO: Check correctness
-    // NOTE: Need to add max range to convert to correct coordinate system
-    // (where (0,0) is at top left)
+    // NOTE: Need to add grid center to convert to correct coordinate system
+    // where (0,0) is at top left
+    // In the default, non keyframe case, this is (MAX_RANGE_M, MAX_RANGE_M)
     aGridCoordinate.x =
-        floor((aPoint.x + RADAR_MAX_RANGE_M) / ORSP_GRID_SQUARE_WIDTH);
+        floor((aPoint.x + aGridCenter.x) / ORSP_GRID_SQUARE_WIDTH);
     aGridCoordinate.y =
-        floor((aPoint.y + RADAR_MAX_RANGE_M) / ORSP_GRID_SQUARE_WIDTH);
+        floor((aPoint.y + aGridCenter.y) / ORSP_GRID_SQUARE_WIDTH);
 
     // TODO: Bound aGridCoordinate to be within grid
 }
@@ -101,7 +104,9 @@ void RadarImage::downsamplePointCloud() {
     const FilteredPointsVec &filteredPoints = getFilteredPoints();
 
     const size_t sz = filteredPoints.size();
-    std::cout << "Downsampling point cloud of size " << sz << " into " << ORSP_GRID_N << " x " << ORSP_GRID_N << " grid... " << std::flush;
+    std::cout << "Downsampling point cloud of size " << sz << " into "
+              << ORSP_GRID_N << " x " << ORSP_GRID_N << " grid... "
+              << std::flush;
 
     for (size_t i = 0; i < sz; i++) {
         const FilteredPoint &filtPt = filteredPoints[i];
@@ -112,7 +117,8 @@ void RadarImage::downsamplePointCloud() {
         size_t gridY = static_cast<size_t>(gridCoordinate.y);
 
         // std::cout << "Raw XY: (" << filtPt.x << ", " << filtPt.y << ") | ";
-        // std::cout << "Grid coordinate: (" << gridX << ", " << gridY << ")" << std::endl;
+        // std::cout << "Grid coordinate: (" << gridX << ", " << gridY << ")" <<
+        // std::endl;
 
         mORSPGrid[gridX][gridY].push_back(filteredPoints[i]);
     }
@@ -165,7 +171,8 @@ void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
 
             for (const PointCart2D &point : potentialNeighbourPoints) {
                 // Check if point is within search radius
-                // TODO: Extra efficiency constraint: if dx == dy == 0, then guarenteed to be in
+                // TODO: Extra efficiency constraint: if dx == dy == 0, then
+                // guarenteed to be in
                 const double dist = point.distance(centroid);
 
                 if (dist <= ORSP_RADIUS) {
@@ -181,7 +188,7 @@ void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
 /**
  * @brief Estimate point distribution
  * @pre @see downsamplePointCloud() to be called first
- * 
+ *
  * @note Updates internal ORSP feature points list
  */
 void RadarImage::estimatePointDistribution() {
@@ -199,22 +206,24 @@ void RadarImage::estimatePointDistribution() {
             // No valid centroid, skip
             if (currPoints.size() == 0) continue;
 
-            // std::cout << "Parsing centroid at grid (" << i << ", " << j << ")... ";
-            
+            // std::cout << "Parsing centroid at grid (" << i << ", " << j <<
+            // ")... ";
+
             // Search around the grid square to find valid neighbours
             // NOTE: Smart efficiency consideration: search only within the
             // neighbouring grids
             Point2DList validNeighbours;
             findValidNeighbours(validNeighbours, i, j);
 
-            // std::cout << "Found " << validNeighbours.size() << " valid neighbours!" << std::endl;
+            // std::cout << "Found " << validNeighbours.size() << " valid
+            // neighbours!" << std::endl;
 
             // TODO: Check for invalid points
             // Ensure enough neighbours to consider as valid point distribution
             if (validNeighbours.size() < ORSP_VALID_NEIGHBOUR_MIN) continue;
 
-            // After finding valid neighbours, consider this as a potential feature point
-            // Compute mean and covariance
+            // After finding valid neighbours, consider this as a potential
+            // feature point Compute mean and covariance
             Eigen::Vector2d mean;
             Eigen::Vector2d normalVector;
             Eigen::Matrix2d covMatrix;
@@ -232,13 +241,15 @@ void RadarImage::estimatePointDistribution() {
             double eigVal2 = eigVal(1);
 
             if (eigVal1 < eigVal2) {
-                // Fails condition criteria (ratio too high => ill-defined distribution)
+                // Fails condition criteria (ratio too high => ill-defined
+                // distribution)
                 if ((eigVal2 / eigVal1) > ORSP_EIGENVAL_THRESHOLD) continue;
 
                 normalVector = eigVec.col(0);
             }
             else {
-                // Fails condition criteria (ratio too high => ill-defined distribution)
+                // Fails condition criteria (ratio too high => ill-defined
+                // distribution)
                 if ((eigVal1 / eigVal2) > ORSP_EIGENVAL_THRESHOLD) continue;
 
                 normalVector = eigVec.col(1);
@@ -254,7 +265,8 @@ void RadarImage::estimatePointDistribution() {
     }
 
     std::cout << "Done!" << std::endl;
-    std::cout << "Found " << mORSPFeaturePoints.size() << " oriented surface feature points." << std::endl;
+    std::cout << "Found " << mORSPFeaturePoints.size()
+              << " oriented surface feature points." << std::endl;
 }
 
 /**
@@ -262,7 +274,7 @@ void RadarImage::estimatePointDistribution() {
  * @see estimatePointDistribution()
  * @see downsamplePointCloud()
  */
-void RadarImage::computeOrientedSurfacePoints(){
+void RadarImage::computeOrientedSurfacePoints() {
     downsamplePointCloud();
     estimatePointDistribution();
 }

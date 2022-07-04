@@ -48,9 +48,9 @@ add_executable(
   PointPolar2D.cpp 
   # PoseTransformHandler.cpp
   RadarImageHandler.cpp
-  OrientedSurfacePointsHandler.cpp
   RadarImage.cpp
   # Keyframe.cpp
+  OrientedSurfacePointsHandler.cpp
   TestRadar.cpp
 )
 set_property(TARGET TestRadar PROPERTY C_STANDARD 11)
@@ -66,9 +66,11 @@ add_executable(
   PointPolar2D.cpp 
   PoseTransformHandler.cpp
   RadarImageHandler.cpp
-  OrientedSurfacePointsHandler.cpp
   RadarImage.cpp
   Keyframe.cpp
+  OrientedSurfacePointsHandler.cpp
+  OptimisationHandler.cpp
+  RegistrationCostFunctor.cpp
   OdometryVisualiser.cpp
   RadarFeedHandler.cpp
   RadarFeed.cpp
