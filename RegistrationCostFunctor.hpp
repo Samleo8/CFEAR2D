@@ -53,19 +53,22 @@ class RegistrationCostFunctor {
     const Keyframe &getKeyframe(const size_t aIdx) const;
 
     // Helper function for cost function
-    [[nodiscard]] const bool point2LineCost(const RadarImage &aRImage,
-                                            const Keyframe &aKeyframe,
-                                            const OptimParams &aParams,
-                                            double *aOutputCost) const;
-    [[nodiscard]] const bool point2LineCost(const Keyframe &aKeyframe,
-                                            const OptimParams &aParams,
-                                            double *aOutputCost) const;
+    template <typename T>
+    [[nodiscard]] const bool
+    point2LineCost(const RadarImage &aRImage, const Keyframe &aKeyframe,
+                   const struct OptimParams<T> &aParams, T *aOutputCost) const;
+
+    template <typename T>
+    [[nodiscard]] const bool
+    point2LineCost(const Keyframe &aKeyframe,
+                   const struct OptimParams<T> &aParams,
+                   double *aOutputCost) const;
 
     /**
      * @brief The key function of the cost functor. Will return the calculated
      * cost for optimization, given the inputs, as pointers of varying lengths,
      * and the end parameter as a pointer to the residuals/costs.
-     * 
+     *
      * TODO: Needs to be here because Ceres needs it here :(
      *
      * @todo Extend to 3D
@@ -99,12 +102,12 @@ class RegistrationCostFunctor {
 
         // TODO: Point to line cost, sum by looping through all keyframes in the
         // buffer
-        double regCost = 0.0;
+        T regCost = 0.0;
         bool success = false;
 
         for (size_t i = 0; i < mKFBuffer.size(); i++) {
             const Keyframe &keyframe = getKeyframe(i);
-            double p2lCost;
+            T p2lCost;
             if (point2LineCost(keyframe, params, &p2lCost)) {
                 success = true;
                 regCost += p2lCost;

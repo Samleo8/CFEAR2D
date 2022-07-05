@@ -8,11 +8,19 @@
 
 /** @brief Typedef for 3D pose transform as Eigen isometric transform. Slightly
  * more memory but more natural. */
-typedef Eigen::Isometry3d PoseTransform3D;
+template <typename T>
+using PoseTransform3D = Eigen::Transform<T, 3, Eigen::Isometry>;
 
 /** @brief Typedef for 2D pose transform as Eigen isometric transform. Slightly
  * more memory but more natural. */
-typedef Eigen::Isometry2d PoseTransform2D;
+template <typename T>
+using PoseTransform2D = Eigen::Transform<T, 2, Eigen::Isometry>;
+
+/** @brief Typedef for a 2D vector with templated type */
+template <typename T> using Vector2T = Eigen::Matrix<T, 2, 1>;
+
+/** @brief Typedef for a 3D vector with templated type */
+template <typename T> using Vector3T = Eigen::Matrix<T, 3, 1>;
 
 /**
  * @brief Struct for storing 2D pose information as position(x,y),
@@ -52,20 +60,25 @@ struct Pose2D {
 
 typedef struct Pose2D Pose2D; ///< typedef for struct Pose2D
 
-const PoseTransform2D rotTransToTransform(const Eigen::Rotation2Dd &aRotMat,
-                                          const Eigen::Vector2d &aTrans);
+template <typename T>
+const PoseTransform2D<T> rotTransToTransform(const Eigen::Rotation2D<T> &aRotMat,
+                                             const Vector2T<T> &aTrans);
 
-const PoseTransform2D rotTransToTransform(const double aAngleRad,
-                                          const Eigen::Vector2d &aTrans);
+template <typename T>
+const PoseTransform2D<T>
+rotTransToTransform(const T &aAngleRad, const Vector2T<T> &aTrans);
 
-const PoseTransform2D poseToTransform(const Pose2D &aPose);
+template <typename T>
+const PoseTransform2D<T> poseToTransform(const Pose2D &aPose);
 
+template <typename T>
 const Eigen::Vector2d
-convertCoordinate(const Eigen::Vector2d &aLocalCoordinate,
-                  const PoseTransform2D &aWorldPoseTransform,
+convertCoordinate(const Eigen::Vector2d &aCoordinate,
+                  const PoseTransform2D<T> &aConversionTransform,
                   bool isVector = false);
 
+template <typename T>
 void convertORSPCoordinates(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint,
-                            const PoseTransform2D &aWorldPoseTransform);
+                            const PoseTransform2D<T> &aWorldPoseTransform);
 
 #endif // __POSE_TRANSFORM_H__

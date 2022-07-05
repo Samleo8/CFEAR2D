@@ -10,6 +10,7 @@
  */
 
 #include "RegistrationCostFunctor.hpp"
+#include "OptimisationHandler.hpp"
 
 /**
  * @brief Constructor for RegistrationCostFunctor::RegistrationCostFunctor
@@ -64,13 +65,14 @@ const Keyframe &RegistrationCostFunctor::getKeyframe(const size_t aIdx) const {
  *
  * @return Successfully found cost between point to line
  */
+template <typename T>
 const bool RegistrationCostFunctor::point2LineCost(const RadarImage &aRImage,
                                                    const Keyframe &aKeyframe,
-                                                   const OptimParams &aParams,
+                                                   const struct OptimParams<T> &aParams,
                                                    double *aOutputCost) const {
     // Transform to be applied on ORSP points in RImage to convert to world
     // coord
-    const PoseTransform2D rImgTransform = transformFromOptimParams(aParams);
+    const PoseTransform2D rImgTransform = transformFromOptimParams<T>(aParams);
 
     // Loop through each point from ORSP point in RImage and get the cost from
     // formula
@@ -115,8 +117,9 @@ const bool RegistrationCostFunctor::point2LineCost(const RadarImage &aRImage,
  *
  * @return Successfully found cost between point to line
  */
+template<typename T>
 const bool RegistrationCostFunctor::point2LineCost(const Keyframe &aKeyframe,
-                                                   const OptimParams &aParams,
+                                                   const struct OptimParams<T> &aParams,
                                                    double *aOutputCost) const {
     return point2LineCost(mRImg, aKeyframe, aParams, aOutputCost);
 }

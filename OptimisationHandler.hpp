@@ -23,6 +23,7 @@
 #include <boost/circular_buffer/base.hpp>
 
 #include <ceres/ceres.h>
+#include <eigen3/Eigen/src/Core/Matrix.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -32,15 +33,17 @@
 
 // TODO: Integrate with ceres somehow
 // TOOD: 2D for now
-typedef struct {
+template <typename T> struct OptimParams {
     // Eigen::Quaterniond q;     ///< rotation
-    Eigen::Vector2d translation; ///< translation
-    double theta;                ///< rotation
-} OptimParams;
+    Eigen::Matrix<T, 2, 1> translation; ///< translation
+    T theta;                            ///< rotation
+};
 
+/** @brief Keyframe buffer size */
 const size_t KF_BUFF_SIZE = 3;
+
+/** @brief Keyframe buffer typedef */
 typedef boost::circular_buffer<Keyframe> KeyframeBuffer;
-// typedef std::vector<Keyframe> KeyframeBuffer;
 
 /** @brief Angle tolerance threshold in radians */
 const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
@@ -56,9 +59,10 @@ const double constrainAngle(const double aAngleRad);
 const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
                                  const Eigen::VectorXd &aVec2);
 
-const PoseTransform2D transformFromOptimParams(const OptimParams &aParams);
+template <typename T>
+const PoseTransform2D
+transformFromOptimParams(const struct OptimParams<T> &aParams);
 
-const double HuberLoss(const double a,
-                       const double delta = HUBER_DELTA_DEFAULT);
+template <typename T> const double HuberLoss(const T &a, const T &delta);
 
 #endif // __OPTIMISATION_HANDLER_HPP__

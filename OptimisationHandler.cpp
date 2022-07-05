@@ -41,7 +41,8 @@ const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
  * OptimParams struct
  * @return Pose transform from optimisation parameters
  */
-const PoseTransform2D transformFromOptimParams(const OptimParams &aParams) {
+template<typename T>
+const PoseTransform2D transformFromOptimParams(const struct OptimParams<T> &aParams) {
     return rotTransToTransform(aParams.theta, aParams.translation);
 }
 
@@ -53,7 +54,8 @@ const PoseTransform2D transformFromOptimParams(const OptimParams &aParams) {
  * @param[in] delta threshold for Huber loss
  * @return Huber loss
  */
-const double HuberLoss(const double a, const double delta) {
+template <typename T>
+const double HuberLoss(const T &a, const T &delta) {
     if (std::abs(a) < delta) {
         return 0.5 * a * a;
     }

@@ -12,50 +12,65 @@
 
 /**
  * @brief Printing of class information using cout
- * 
+ *
  * @param[in] aOutputStream Cout output stream
  * @param[in] aPose Pose class to output
  * @return std::ostream& Output stream reference
  */
 std::ostream &operator<<(std::ostream &aOutputStream, const Pose2D &aPose) {
-    aOutputStream << aPose.position << std::endl << aPose.orientation << std::endl;
+    aOutputStream << aPose.position << std::endl
+                  << aPose.orientation << std::endl;
     return aOutputStream;
 }
 
 /**
  * @brief Convert rotation and translation to transformation matrix
  *
+ * @tparam[in] T Scalar type, used for Ceres
  * @param[in] aRotMat Rotation matrix (N x N)
  * @param[in] aTrans Translation vector (N x 1)
  * @return Homogeneous transformation matrix (N+1 x N+1)
  */
-const PoseTransform2D rotTransToTransform(const Eigen::Rotation2Dd &aRotMat,
-                                          const Eigen::Vector2d &aTrans) {
+template <typename T>
+const PoseTransform2D<T>
+rotTransToTransform(const Eigen::Rotation2D<T> &aRotMat,
+                    const Vector2T<T> &aTrans) {
     const int dimension = 2;
 
-    PoseTransform2D transform = PoseTransform2D::Identity();
+    PoseTransform2D<T> transf = PoseTransform2D<T>::Identity();
 
     // TODO: Check if its supposed to actually be rot, trans
-    transform.translate(aTrans);
-    transform.rotate(aRotMat);
+    transf.translate(aTrans);
+    transf.rotate(aRotMat);
 
-    return transform;
+    return transf;
 }
 
-const PoseTransform2D rotTransToTransform(const double aAngleRad,
-                                          const Eigen::Vector2d &aTrans) {
-    const Eigen::Rotation2Dd rotMat(aAngleRad);
-    return rotTransToTransform(rotMat, aTrans);
+/**
+ * @brief Convert rotation and translation to transformation matrix
+ *
+ * @tparam T Scalar type, used for Ceres
+ * @param[in] aAngleRad Angle of rotation in radians
+ * @param[in] aTrans Translation vector (N x 1)
+ * @return Homogeneous transformation matrix (N+1 x N+1)
+ */
+template <typename T>
+const PoseTransform2D<T> rotTransToTransform(const T &aAngleRad,
+                                             const Vector2T<T> &aTrans) {
+    const Eigen::Rotation2D<T> rotMat(aAngleRad);
+    return rotTransToTransform<T>(rotMat, aTrans);
 }
 
-const PoseTransform2D poseToTransform(const Pose2D &aPose) {
-    return rotTransToTransform(aPose.orientation, aPose.position);
+template <typename T>
+const PoseTransform2D<T> poseToTransform(const Pose2D &aPose) {
+    return rotTransToTransform<T>(aPose.orientation, aPose.position);
 }
 
 /**
  * @brief Convert one coordinate to another coordinate frame using homogeneous
  * transforms. 2D interface.
  *
+ * @tparam T Scalar type, used for Ceres
  * @param[in] aCoordinate Coordinate (N x 1)
  * @param[in] aConversionTransform Homogeneous pose transform matrix from local
  * to world coordinates (N+1 x N+1)
@@ -64,9 +79,11 @@ const PoseTransform2D poseToTransform(const Pose2D &aPose) {
  *
  * @return World coordinate (N x 1)
  */
+template <typename T>
 const Eigen::Vector2d
 convertCoordinate(const Eigen::Vector2d &aCoordinate,
-                  const PoseTransform2D &aConversionTransform, bool isVector) {
+                  const PoseTransform2D<T> &aConversionTransform,
+                  bool isVector) {
     if (isVector) {
         return aConversionTransform.rotation() * aCoordinate;
     }
@@ -83,10 +100,11 @@ convertCoordinate(const Eigen::Vector2d &aCoordinate,
  * @param[in] aConversionTransform Transformation matrix used in coordinate
  * conversion
  */
+template <typename T>
 void convertORSPCoordinates(const ORSP &aInputORSPPoint, ORSP &aOutputORSPPoint,
-                            const PoseTransform2D &aConversionTransform) {
-    aOutputORSPPoint.center =
-        convertCoordinate(aInputORSPPoint.center, aConversionTransform, false);
-    aOutputORSPPoint.normal =
-        convertCoordinate(aInputORSPPoint.normal, aConversionTransform, true);
+                            const PoseTransform2D<T> &aConversionTransform) {
+    aOutputORSPPoint.center = convertCoordinate<T>(aInputORSPPoint.center,
+                                                   aConversionTransform, false);
+    aOutputORSPPoint.normal = convertCoordinate<T>(aInputORSPPoint.normal,
+                                                   aConversionTransform, true);
 }
