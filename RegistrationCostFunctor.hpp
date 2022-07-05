@@ -91,6 +91,8 @@ class RegistrationCostFunctor {
         T y = aPositionArray[1];
         T theta = aOrientationArray[0];
 
+        // TODO: Need to think in terms of manifolds, and template everything
+
         OptimParams params;
         params.theta = theta;
         params.translation = Eigen::Vector2d(x, y);
