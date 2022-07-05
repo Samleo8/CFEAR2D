@@ -22,59 +22,6 @@ RegistrationCostFunctor::RegistrationCostFunctor(
     : mRImg(aRImg), mKFBuffer(aKFBuffer) {}
 
 /**
- * @brief The key function of the cost functor. Will return the calculated cost
- * for optimization, given the inputs, as pointers of varying lengths, and the
- * end parameter as a pointer to the residuals/costs.
- *
- * @todo Extend to 3D
- * @note Size of the input parameters are variable and are determined when
- * creating the @see AutoDiffCostFunction, handled in @ref
- * OptimisationHandler.cpp
- * @tparam T Template parameter, assume it is of a base type (like double), but
- * in reality, Ceres will use it's own Jet type for auto differentiation.
- * @param[in] aPositionArray Pointer as an array of position values (x, y) in
- * this 2D case
- * @param[in] aOrientationArray Pointer as an array to orientation values
- * (theta) in this 2D case
- * @param[in] aResidualArray Pointer to residual output (can consider this as an
- * array)
- * @return Whether the function is successful.
- */
-template <typename T>
-bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
-                                         const T *const aOrientationArray,
-                                         T *aResidualArray) const {
-    // Build parameter object from input params
-    T x = aPositionArray[0];
-    T y = aPositionArray[1];
-    T theta = aOrientationArray[0];
-
-    OptimParams params;
-    params.theta = theta;
-    params.translation = Eigen::Vector2d(x, y);
-
-    // TODO: Point to line cost, sum by looping through all keyframes in the
-    // buffer
-    double regCost = 0.0;
-    bool success = false;
-
-    for (size_t i = 0; i < mKFBuffer.size(); i++) {
-        const Keyframe &keyframe = getKeyframe(i);
-        double p2lCost;
-        if (point2LineCost(keyframe, params, &p2lCost)) {
-            success = true;
-            regCost += p2lCost;
-        }
-    }
-
-    // TODO: Huber loss from Ceres?
-
-    aResidualArray[0] = regCost;
-
-    return success;
-}
-
-/**
  * @brief Get the internal radar image of cost functor
  *
  * @return const RadarImage& Internal radar image to register against

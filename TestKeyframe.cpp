@@ -280,11 +280,10 @@ int main(int argc, char **argv) {
         // inverse of pose.
         RegistrationCostFunctor functor(currRImg, keyframeList);
 
-        // NOTE: Parameters: <cost functor type, num residuals, num pos params,
+        // // NOTE: Parameters: <cost functor type, num residuals, num pos params,
         // num orientation params>
         ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
-            RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
-            REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
+            RegistrationCostFunctor, 1, 2, 1>(
             &functor, ceres::DO_NOT_TAKE_OWNERSHIP);
 
         // NOTE: If want to keep functor pointer, by updating currRImg and
@@ -297,7 +296,7 @@ int main(int argc, char **argv) {
         // TODO: actually go through the frames
 
         // Free memory for cost function
-        delete regCostFn;
+        // delete regCostFn;
 
         break;
     }
