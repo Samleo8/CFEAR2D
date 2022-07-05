@@ -77,7 +77,9 @@ const bool RegistrationCostFunctor::point2LineCost(
     // Loop through each point from ORSP point in RImage and get the cost from
     // formula
     bool foundMatch = false;
-    double cost = 0.0;
+
+    T cost = static_cast<T>(0.0);
+    const T HUBER_DELTA_DEFAULT_TEMPLATED = static_cast<T>(HUBER_DELTA_DEFAULT);
 
     const ORSPVec rImgFeaturePts = aRImage.getORSPFeaturePoints();
     for (const ORSP &featurePt : rImgFeaturePts) {
@@ -94,13 +96,16 @@ const bool RegistrationCostFunctor::point2LineCost(
             foundMatch = true;
 
             // TODO: now compute cost according to formula
-            cost += closestORSPPoint.normal.dot(worldORSPPoint.center -
-                                                closestORSPPoint.center);
+            double dotted = closestORSPPoint.normal.dot(
+                worldORSPPoint.center - closestORSPPoint.center);
+            T dotted_templated = static_cast<T>(dotted);
+
+            // TODO: Huber loss here or from Ceres?
+            cost += HuberLoss<T>(dotted_templated, HUBER_DELTA_DEFAULT_TEMPLATED);
         }
     }
 
-    // TODO: Huber loss here or from Ceres?
-    *aOutputCost = HuberLoss<T>(cost);
+    *aOutputCost = cost;
     return foundMatch;
 }
 
@@ -165,18 +170,18 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     T regCost = static_cast<T>(0.0);
     bool success = false;
 
-        for (size_t i = 0; i < mKFBuffer.size(); i++) {
-            const Keyframe &keyframe = getKeyframe(i);
-            T p2lCost;
-            if (point2LineCost<T>(keyframe, params, &p2lCost)) {
-                success = true;
-                regCost += p2lCost;
-            }
+    for (size_t i = 0; i < mKFBuffer.size(); i++) {
+        const Keyframe &keyframe = getKeyframe(i);
+        T p2lCost;
+        if (point2LineCost<T>(keyframe, params, &p2lCost)) {
+            success = true;
+            regCost += p2lCost;
         }
+    }
 
     //     // TODO: Huber loss from Ceres?
 
-        aResidualArray[0] = regCost;
+    aResidualArray[0] = regCost;
 
     return success;
 }

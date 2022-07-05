@@ -27,9 +27,6 @@ static const int newlineSpaceDefault = 50;
 static const cv::Scalar black(0, 0, 0);
 static const cv::Scalar white(255, 255, 255);
 
-// Typedef for Ceres type -> double for now
-typedef double _ceres_type;
-
 /**
  * @brief Enum output image style
  * @see outputImgFromFrames()
@@ -286,7 +283,7 @@ int main(int argc, char **argv) {
         // // NOTE: Parameters: <cost functor type, num residuals, num pos params,
         // num orientation params>
         ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
-            RegistrationCostFunctor, 1, 2, 1>(
+            RegistrationCostFunctor, REGOPT_NUM_RESIDUALS, REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
             &functor, ceres::DO_NOT_TAKE_OWNERSHIP);
 
         // NOTE: If want to keep functor pointer, by updating currRImg and

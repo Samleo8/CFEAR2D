@@ -62,7 +62,7 @@ template <typename T>
 const PoseTransform2D<T>
 transformFromOptimParams(const struct OptimParams<T> &aParams);
 
-template <typename T> const double HuberLoss(const T &a, const T &delta = HUBER_DELTA_DEFAULT);
+template <typename T> const T HuberLoss(const T &a, const T &delta);
 
 // Implementation file for optimisation handler functions
 #include "OptimisationHandler.tpp"
