@@ -107,9 +107,4 @@ void pointToGridCoordinate(const PointCart2D &aPoint,
                            const PointCart2D &aGridCenter = PointCart2D(
                                RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M));
 
-template <typename T>
-void convertORSPCoordinates(const ORSP<T> &aLocalORSPPoint,
-                            ORSP<T> &aWorldORSPPoint,
-                            const PoseTransform2D<T> &aWorldPoseTransform);
-
 #endif

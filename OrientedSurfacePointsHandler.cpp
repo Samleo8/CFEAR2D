@@ -256,7 +256,7 @@ void RadarImage::estimatePointDistribution() {
             }
 
             // Build the oriented feature point and add to list
-            ORSP featurePt;
+            ORSP<double> featurePt;
             featurePt.center = mean;
             featurePt.normal = normalVector;
 
