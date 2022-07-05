@@ -98,7 +98,7 @@ const Pose2D &Keyframe::getWorldPose() const {
  * @brief Get vector of ORSP feature points
  * @return Vector of ORSP feature points, in LOCAL coordinates
  */
-const ORSPVec &Keyframe::getORSPFeaturePoints() const {
+const ORSPVec<double> &Keyframe::getORSPFeaturePoints() const {
     return mORSPFeaturePoints;
 }
 
@@ -127,8 +127,8 @@ const PoseTransform2D<double> &Keyframe::getWorldToLocalTransform() const {
  * @param[out] aWorldORSPPoint Output world ORSP point
  */
 
-void Keyframe::localToWorldORSP(const ORSP &aLocalORSPPoint,
-                                ORSP &aWorldORSPPoint) const {
+void Keyframe::localToWorldORSP(const ORSP<double> &aLocalORSPPoint,
+                                ORSP<double> &aWorldORSPPoint) const {
     // Use pose transform handler library and internal world pose to convert
     // to world coordinate
     convertORSPCoordinates<double>(aLocalORSPPoint, aWorldORSPPoint,
@@ -142,8 +142,8 @@ void Keyframe::localToWorldORSP(const ORSP &aLocalORSPPoint,
  * @param[out] aLocalORSPPoint Output local ORSP point
  */
 
-void Keyframe::worldToLocalORSP(const ORSP &aWorldORSPPoint,
-                                ORSP &aLocalORSPPoint) const {
+void Keyframe::worldToLocalORSP(const ORSP<double> &aWorldORSPPoint,
+                                ORSP<double> &aLocalORSPPoint) const {
     // Use pose transform handler library and internal world pose to convert
     // to world coordinate NOTE: Same function, but different pose transform
     // and parameter order
@@ -159,8 +159,8 @@ void Keyframe::worldToLocalORSP(const ORSP &aWorldORSPPoint,
  * @return Whether a closest feature point was found
  */
 
-const bool Keyframe::findClosestORSP(const ORSP &aORSPPoint,
-                                     ORSP &aClosestORSPPoint) const {
+const bool Keyframe::findClosestORSP(const ORSP<double> &aORSPPoint,
+                                     ORSP<double> &aClosestORSPPoint) const {
     // Init stuff
     bool found = false;
     double closestDistance = ORSP_RADIUS;
@@ -198,7 +198,7 @@ const bool Keyframe::findClosestORSP(const ORSP &aORSPPoint,
             // Loop through all potential closest points
             for (size_t i = 0; i < potentialClosestPointIndices.size(); i++) {
                 // Get potential closest point
-                const ORSP &potentialClosestPoint =
+                const ORSP<double> &potentialClosestPoint =
                     mORSPFeaturePoints[potentialClosestPointIndices[i]];
 
                 const PointCart2D potentialClosestPointCart(

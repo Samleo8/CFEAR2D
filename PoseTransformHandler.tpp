@@ -68,8 +68,8 @@ const PoseTransform2D<T> poseToTransform(const Pose2D &aPose) {
  * @return World coordinate (N x 1)
  */
 template <typename T>
-const Eigen::Vector2d
-convertCoordinate(const Eigen::Vector2d &aCoordinate,
+const Vector2T<T>
+convertCoordinate(const Vector2T<T> &aCoordinate,
                   const PoseTransform2D<T> &aConversionTransform,
                   bool isVector) {
     if (isVector) {
@@ -89,7 +89,7 @@ convertCoordinate(const Eigen::Vector2d &aCoordinate,
  * conversion
  */
 template <typename T>
-void convertORSPCoordinates(const ORSP &aInputORSPPoint, ORSP &aOutputORSPPoint,
+void convertORSPCoordinates(const ORSP<T> &aInputORSPPoint, ORSP<T> &aOutputORSPPoint,
                             const PoseTransform2D<T> &aConversionTransform) {
     aOutputORSPPoint.center = convertCoordinate<T>(aInputORSPPoint.center,
                                                    aConversionTransform, false);

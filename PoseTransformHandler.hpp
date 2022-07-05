@@ -32,7 +32,7 @@ template <typename T> using VectorXT = Eigen::Matrix<T, Eigen::Dynamic, 1>;
  * or set of euler angles
  */
 struct Pose2D {
-    Eigen::Vector2d position = Eigen::Vector2d::Zero(); ///< position as x, y
+    Vector2T<T> position = Vector2T<T>::Zero(); ///< position as x, y
     double orientation = 0; ///< orientation as theta
 
     /** @brief Default constructor */
@@ -44,7 +44,7 @@ struct Pose2D {
      * @param[in] aPosition Position (x, y)
      * @param[in] aOrientation Orientation (theta)
      */
-    Pose2D(const Eigen::Vector2d &aPosition, const double aOrientation)
+    Pose2D(const Vector2T<T> &aPosition, const double aOrientation)
         : position(aPosition), orientation(aOrientation) {}
 
     /**
@@ -87,13 +87,13 @@ template <typename T>
 const PoseTransform2D<T> poseToTransform(const Pose2D &aPose);
 
 template <typename T>
-const Eigen::Vector2d
-convertCoordinate(const Eigen::Vector2d &aCoordinate,
+const Vector2T<T>
+convertCoordinate(const Vector2T<T> &aCoordinate,
                   const PoseTransform2D<T> &aConversionTransform,
                   bool isVector = false);
 
 template <typename T>
-void convertORSPCoordinates(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint,
+void convertORSPCoordinates(const ORSP<T> &aLocalORSPPoint, ORSP<T> &aWorldORSPPoint,
                             const PoseTransform2D<T> &aWorldPoseTransform);
 
 // Include implementation file

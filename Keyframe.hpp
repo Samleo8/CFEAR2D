@@ -63,7 +63,7 @@ class Keyframe {
     PointCart2D mGridCenter;
 
     /** @brief ORSP feature points in WORLD coordinates */
-    ORSPVec mORSPFeaturePoints;
+    ORSPVec<double> mORSPFeaturePoints;
 
     /**
      * @brief Caching of grid representation of ORSP feature points, with r/f as
@@ -93,14 +93,14 @@ class Keyframe {
     const PoseTransform2D<double> &getWorldToLocalTransform() const;
 
     // Conversion functions for ORSP
-    void localToWorldORSP(const ORSP &aLocalORSPPoint,
-                          ORSP &aWorldORSPPoint) const;
-    void worldToLocalORSP(const ORSP &aWorldORSPPoint,
-                          ORSP &aLocalORSPPoint) const;
+    void localToWorldORSP(const ORSP<double> &aLocalORSPPoint,
+                          ORSP<double> &aWorldORSPPoint) const;
+    void worldToLocalORSP(const ORSP<double> &aWorldORSPPoint,
+                          ORSP<double> &aLocalORSPPoint) const;
 
     // Find the closest ORSP point to a given point
-    [[nodiscard]] const bool findClosestORSP(const ORSP &aORSPPoint,
-                                             ORSP &aClosestORSPPoint) const;
+    [[nodiscard]] const bool findClosestORSP(const ORSP<double> &aORSPPoint,
+                                             ORSP<double> &aClosestORSPPoint) const;
 };
 
 #endif // __KEYFRAME_HPP__

@@ -89,7 +89,7 @@ template <typename T = double> class ORSP {
      * @brief Copy Constructor for OrientedSurfacePoint
      * @param[in] aORSP ORSP to copy
      */
-    ORSP(const struct ORSP<T> &aORSP)
+    ORSP(const ORSP<T> &aORSP)
         : center(aORSP.center), normal(aORSP.normal) {}
 };
 
