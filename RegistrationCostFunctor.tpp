@@ -56,6 +56,7 @@ const Keyframe &RegistrationCostFunctor::getKeyframe(const size_t aIdx) const {
  * @brief Cost between point to line given a radar image, keyframe, and
  * optimization parameters (in this case, a pose)
  *
+ * @tparam T Type of data to use for optimization, used by Ceres
  * @param[in] aRImage Radar image to register against
  * @param[in] aKeyframe Keyframe to register against
  * @param[in] aParams Optimization parameters (in this case a pose) @see
