@@ -191,7 +191,7 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
 
     // Compute ORSP and draw those points with vectors
     r1.computeOrientedSurfacePoints();
-    const ORSPVec &featurePoints = r1.getORSPFeaturePoints();
+    const ORSPVec<double> &featurePoints = r1.getORSPFeaturePoints();
 
     // Draw ORSP points
     const double VEC_LEN = 2;

@@ -279,6 +279,6 @@ void RadarImage::computeOrientedSurfacePoints() {
     estimatePointDistribution();
 }
 
-const ORSPVec &RadarImage::getORSPFeaturePoints() const {
+const ORSPVec<double> &RadarImage::getORSPFeaturePoints() const {
     return mORSPFeaturePoints;
 }

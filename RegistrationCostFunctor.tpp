@@ -82,7 +82,7 @@ const bool RegistrationCostFunctor::point2LineCost(
     T cost = static_cast<T>(0.0);
     const T HUBER_DELTA_DEFAULT_TEMPLATED = static_cast<T>(HUBER_DELTA_DEFAULT);
 
-    const ORSPVec rImgFeaturePts = aRImage.getORSPFeaturePoints();
+    const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
     for (const ORSP &featurePt : rImgFeaturePts) {
         // Get the ORSP point in world coordinates
         ORSP worldORSPPoint;

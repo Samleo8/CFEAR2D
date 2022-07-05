@@ -173,7 +173,7 @@ void outputImgFromRImg(const RadarImage &aRImg, cv::Mat &outputImgORSP,
         cv::Point2d(outputImgORSP.cols, outputImgORSP.rows) / 2;
 
     // Compute ORSP and draw those points with vectors
-    const ORSPVec &featurePoints = aRImg.getORSPFeaturePoints();
+    const ORSPVec<double> &featurePoints = aRImg.getORSPFeaturePoints();
 
     // Draw ORSP points
     const double VEC_LEN = 2;

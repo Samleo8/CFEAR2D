@@ -87,7 +87,7 @@ class Keyframe {
     // Getters
     const Pose2D &getPose() const;
     const Pose2D &getWorldPose() const;
-    const ORSPVec &getORSPFeaturePoints() const;
+    const ORSPVec<double> &getORSPFeaturePoints() const;
 
     const PoseTransform2D<double> &getLocalToWorldTransform() const;
     const PoseTransform2D<double> &getWorldToLocalTransform() const;
@@ -99,8 +99,9 @@ class Keyframe {
                           ORSP<double> &aLocalORSPPoint) const;
 
     // Find the closest ORSP point to a given point
-    [[nodiscard]] const bool findClosestORSP(const ORSP<double> &aORSPPoint,
-                                             ORSP<double> &aClosestORSPPoint) const;
+    [[nodiscard]] const bool
+    findClosestORSP(const ORSP<double> &aORSPPoint,
+                    ORSP<double> &aClosestORSPPoint) const;
 };
 
 #endif // __KEYFRAME_HPP__

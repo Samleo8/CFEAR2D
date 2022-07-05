@@ -64,7 +64,7 @@ const double ORSP_EIGENVAL_THRESHOLD = 10e5;
  * @brief Oriented Surface Point representation, holds mean and normal
  * vector obtained from covariance
  */
-template <typename T = double> class ORSP {
+template <typename T> class ORSP {
   public:
     /// @brief Mean / center of point
     Vector2T<T> center;
@@ -89,8 +89,7 @@ template <typename T = double> class ORSP {
      * @brief Copy Constructor for OrientedSurfacePoint
      * @param[in] aORSP ORSP to copy
      */
-    ORSP(const ORSP<T> &aORSP)
-        : center(aORSP.center), normal(aORSP.normal) {}
+    ORSP(const ORSP<T> &aORSP) : center(aORSP.center), normal(aORSP.normal) {}
 };
 
 /** @brief Typedef for OrientedSurfacePoint struct */
@@ -107,5 +106,10 @@ void pointToGridCoordinate(const PointCart2D &aPoint,
                            PointCart2D &aGridCoordinate,
                            const PointCart2D &aGridCenter = PointCart2D(
                                RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M));
+
+template <typename T>
+void convertORSPCoordinates(const ORSP<T> &aLocalORSPPoint,
+                            ORSP<T> &aWorldORSPPoint,
+                            const PoseTransform2D<T> &aWorldPoseTransform);
 
 #endif

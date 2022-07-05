@@ -38,7 +38,7 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
                   aWorldPose.position[1] + RADAR_MAX_RANGE_M_SQRT2) {
     // Initialize feature points vector, which needs to be populated by
     // converted feature points from RadarImage to world coordinates
-    const ORSPVec &ORSPFeaturePointsRef = aRadarImage.getORSPFeaturePoints();
+    const ORSPVec<double> &ORSPFeaturePointsRef = aRadarImage.getORSPFeaturePoints();
     mORSPFeaturePoints.reserve(ORSPFeaturePointsRef.size());
 
     // TODO: Check if this is correct.

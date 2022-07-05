@@ -4,8 +4,6 @@
 #include <Eigen/Geometry>
 #include <Eigen/LU>
 
-#include "OrientedSurfacePointsHandler.hpp"
-
 /** @brief Typedef for 3D pose transform as Eigen isometric transform. Slightly
  * more memory but more natural. */
 template <typename T>
@@ -25,6 +23,9 @@ template <typename T> using Vector3T = Eigen::Matrix<T, 3, 1>;
 /** @brief Typedef for a X-D vector with templated type */
 template <typename T> using VectorXT = Eigen::Matrix<T, Eigen::Dynamic, 1>;
 
+// Forward declaration of ORSP
+template<typename T> class ORSP;
+
 /**
  * @brief Struct for storing 2D pose information as position(x,y),
  * orientation(theta)
@@ -32,7 +33,7 @@ template <typename T> using VectorXT = Eigen::Matrix<T, Eigen::Dynamic, 1>;
  * or set of euler angles
  */
 struct Pose2D {
-    Vector2T<T> position = Vector2T<T>::Zero(); ///< position as x, y
+    Eigen::Vector2d position = Eigen::Vector2d::Zero(); ///< position as x, y
     double orientation = 0; ///< orientation as theta
 
     /** @brief Default constructor */
@@ -44,7 +45,7 @@ struct Pose2D {
      * @param[in] aPosition Position (x, y)
      * @param[in] aOrientation Orientation (theta)
      */
-    Pose2D(const Vector2T<T> &aPosition, const double aOrientation)
+    Pose2D(const Eigen::Vector2d &aPosition, const double aOrientation)
         : position(aPosition), orientation(aOrientation) {}
 
     /**
