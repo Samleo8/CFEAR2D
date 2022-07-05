@@ -83,18 +83,20 @@ template <typename T> Keyframe<T>::~Keyframe() {}
  *
  * @param[in] aKeyframe
  */
-template <typename T> template <typename _T> Keyframe<T>::Keyframe(const Keyframe<_T> &aKeyframe) {
-    mWorldPose = aKeyframe.mWorldPose;
-    mLocalToWorldTransform =
-        static_cast<PoseTransform2D<_T>>(aKeyframe.mLocalToWorldTransform);
-    mWorldToLocalTransform =
-        static_cast<PoseTransform2D<_T>>(aKeyframe.mWorldToLocalTransform);
+// template <typename T>
+// template <typename _T>
+// Keyframe<T>::Keyframe(const Keyframe<_T> &aKeyframe) {
+//     mWorldPose = aKeyframe.mWorldPose;
+//     mLocalToWorldTransform =
+//         static_cast<PoseTransform2D<_T>>(aKeyframe.mLocalToWorldTransform);
+//     mWorldToLocalTransform =
+//         static_cast<PoseTransform2D<_T>>(aKeyframe.mWorldToLocalTransform);
 
-    mGridCenter = aKeyframe.mGridCenter;
+//     mGridCenter = aKeyframe.mGridCenter;
 
-    mORSPFeaturePoints = aKeyframe.mORSPFeaturePoints;
-    mORSPIndexGrid = aKeyframe.mORSPIndexGrid;
-}
+//     mORSPFeaturePoints = aKeyframe.mORSPFeaturePoints;
+//     mORSPIndexGrid = aKeyframe.mORSPIndexGrid;
+// }
 
 /**
  * @brief Get world pose of keyframe

@@ -96,26 +96,26 @@ template <typename T> class RegistrationCostFunctor {
 
         OptimParams<_T> params;
         params.theta = theta;
-        params.translation = Eigen::Vector2d(x, y);
+        params.translation = Vector2T<_T>(x, y);
 
         // TODO: Point to line cost, sum by looping through all keyframes in the
         // buffer
         double regCost = 0.0;
         bool success = false;
 
-        for (size_t i = 0; i < mKFBuffer.size(); i++) {
-            const Keyframe<_T> &keyframe =
-                static_cast<Keyframe<_T>>(getKeyframe(i));
-            _T p2lCost;
-            if (point2LineCost(keyframe, params, &p2lCost)) {
-                success = true;
-                regCost += p2lCost;
-            }
-        }
+        //     for (size_t i = 0; i < mKFBuffer.size(); i++) {
+        //         const Keyframe<_T> &keyframe =
+        //             static_cast<Keyframe<_T>>(getKeyframe(i));
+        //         _T p2lCost;
+        //         if (point2LineCost(keyframe, params, &p2lCost)) {
+        //             success = true;
+        //             regCost += p2lCost;
+        //         }
+        //     }
 
-        // TODO: Huber loss from Ceres?
+        //     // TODO: Huber loss from Ceres?
 
-        aResidualArray[0] = static_cast<_T>(regCost);
+        //     aResidualArray[0] = static_cast<_T>(regCost);
 
         return success;
     }

@@ -82,7 +82,7 @@ template <typename T> class Keyframe {
 
   public:
     Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
-    template <typename _T> Keyframe(const Keyframe<_T> &aKeyframe);
+    // template <typename _T> Keyframe(const Keyframe<_T> &aKeyframe);
     ~Keyframe();
 
     // Getters
