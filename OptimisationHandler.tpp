@@ -10,7 +10,8 @@
  *
  */
 
-#include "OptimisationHandler.hpp"
+#ifndef __OPTIMISATION_HANDLER_TPP__
+#define __OPTIMISATION_HANDLER_TPP__
 
 /**
  * @brief Constrain angle in radians between [-pi and pi)
@@ -73,3 +74,5 @@ template <typename T> const double HuberLoss(const T &a, const T &delta) {
         return delta * (std::abs(a) - 0.5 * delta);
     }
 }
+
+#endif // __OPTIMISATION_HANDLER_TPP__

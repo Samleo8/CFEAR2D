@@ -57,13 +57,14 @@ const double HUBER_DELTA_DEFAULT = 0.1;
 template <typename T> T constrainAngle(const T &aAngleRad);
 
 template <typename T>
-const double angleBetweenVectors(const VectorXT<T> &aVec1,
-                                 const VectorXT<T> &aVec2);
+const T angleBetweenVectors(const VectorXT<T> &aVec1, const VectorXT<T> &aVec2);
 
 template <typename T>
 const PoseTransform2D<T>
 transformFromOptimParams(const struct OptimParams<T> &aParams);
 
 template <typename T> const double HuberLoss(const T &a, const T &delta);
+
+#include "OptimisationHandler.tpp"
 
 #endif // __OPTIMISATION_HANDLER_HPP__

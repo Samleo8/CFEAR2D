@@ -227,10 +227,10 @@ const bool Keyframe<T>::findClosestORSP(const ORSP &aORSPPoint,
                     potentialClosestPoint.center);
 
                 // Check angle tolerance
-                const double angle = angleBetweenVectors<T>(
+                const T angle = angleBetweenVectors<T>(
                     potentialClosestPoint.normal, aClosestORSPPoint.normal);
 
-                if (ABS(angle) > ANGLE_TOLERANCE_RAD) continue;
+                if (ceres::abs(angle) > ANGLE_TOLERANCE_RAD) continue;
 
                 // Calculate distance between potential closest point, and
                 // check if it is indeed the closest point
