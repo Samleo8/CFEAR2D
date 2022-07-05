@@ -23,7 +23,6 @@
 #include <boost/circular_buffer/base.hpp>
 
 #include <ceres/ceres.h>
-#include <eigen3/Eigen/src/Core/Matrix.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -43,7 +42,8 @@ template <typename T> struct OptimParams {
 const size_t KF_BUFF_SIZE = 3;
 
 /** @brief Keyframe buffer typedef */
-typedef boost::circular_buffer<Keyframe> KeyframeBuffer;
+template <typename T>
+using KeyframeBuffer = boost::circular_buffer<Keyframe<T>>;
 
 /** @brief Angle tolerance threshold in radians */
 const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
@@ -54,13 +54,14 @@ const double HUBER_DELTA_DEFAULT = 0.1;
 // TODO: Create a cost functor for computing cost function. See
 // http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
 
-const double constrainAngle(const double aAngleRad);
-
-const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
-                                 const Eigen::VectorXd &aVec2);
+template <typename T> T constrainAngle(const T &aAngleRad);
 
 template <typename T>
-const PoseTransform2D
+const double angleBetweenVectors(const VectorXT<T> &aVec1,
+                                 const VectorXT<T> &aVec2);
+
+template <typename T>
+const PoseTransform2D<T>
 transformFromOptimParams(const struct OptimParams<T> &aParams);
 
 template <typename T> const double HuberLoss(const T &a, const T &delta);

@@ -36,33 +36,30 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
  * @see
  * http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
  */
-class RegistrationCostFunctor {
+template <typename T> class RegistrationCostFunctor {
   private:
     // TODO: is it ok if this is a reference?
     const RadarImage mRImg;
-    const KeyframeBuffer mKFBuffer;
+    const KeyframeBuffer<T> mKFBuffer;
 
   public:
     // Constructors
     RegistrationCostFunctor(const RadarImage &aRImg,
-                            const KeyframeBuffer &aKFBuffer);
+                            const KeyframeBuffer<T> &aKFBuffer);
 
     // Getters
     const RadarImage &getRImg() const;
-    const KeyframeBuffer &getKFBuffer() const;
-    const Keyframe &getKeyframe(const size_t aIdx) const;
+    const KeyframeBuffer<T> &getKFBuffer() const;
+    const Keyframe<T> &getKeyframe(const size_t aIdx) const;
 
     // Helper function for cost function
-    template <typename T>
     [[nodiscard]] const bool
-    point2LineCost(const RadarImage &aRImage, const Keyframe &aKeyframe,
+    point2LineCost(const RadarImage &aRImage, const Keyframe<T> &aKeyframe,
                    const struct OptimParams<T> &aParams, T *aOutputCost) const;
 
-    template <typename T>
     [[nodiscard]] const bool
-    point2LineCost(const Keyframe &aKeyframe,
-                   const struct OptimParams<T> &aParams,
-                   double *aOutputCost) const;
+    point2LineCost(const Keyframe<T> &aKeyframe,
+                   const struct OptimParams<T> &aParams, T *aOutputCost) const;
 
     /**
      * @brief The key function of the cost functor. Will return the calculated
@@ -86,28 +83,30 @@ class RegistrationCostFunctor {
      * as an array)
      * @return Whether the function is successful.
      */
-    template <typename T>
-    bool operator()(const T *const aPositionArray,
-                    const T *const aOrientationArray, T *aResidualArray) const {
+    template <typename _T>
+    bool operator()(const _T *const aPositionArray,
+                    const _T *const aOrientationArray,
+                    _T *aResidualArray) const {
         // Build parameter object from input params
-        T x = aPositionArray[0];
-        T y = aPositionArray[1];
-        T theta = aOrientationArray[0];
+        _T x = aPositionArray[0];
+        _T y = aPositionArray[1];
+        _T theta = aOrientationArray[0];
 
         // TODO: Need to think in terms of manifolds, and template everything
 
-        OptimParams params;
+        OptimParams<_T> params;
         params.theta = theta;
         params.translation = Eigen::Vector2d(x, y);
 
         // TODO: Point to line cost, sum by looping through all keyframes in the
         // buffer
-        T regCost = 0.0;
+        double regCost = 0.0;
         bool success = false;
 
         for (size_t i = 0; i < mKFBuffer.size(); i++) {
-            const Keyframe &keyframe = getKeyframe(i);
-            T p2lCost;
+            const Keyframe<_T> &keyframe =
+                static_cast<Keyframe<_T>>(getKeyframe(i));
+            _T p2lCost;
             if (point2LineCost(keyframe, params, &p2lCost)) {
                 success = true;
                 regCost += p2lCost;
@@ -116,7 +115,7 @@ class RegistrationCostFunctor {
 
         // TODO: Huber loss from Ceres?
 
-        aResidualArray[0] = regCost;
+        aResidualArray[0] = static_cast<_T>(regCost);
 
         return success;
     }

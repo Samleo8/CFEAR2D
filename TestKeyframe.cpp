@@ -27,6 +27,9 @@ static const int newlineSpaceDefault = 50;
 static const cv::Scalar black(0, 0, 0);
 static const cv::Scalar white(255, 255, 255);
 
+// Typedef for Ceres type -> double for now
+typedef double _ceres_type;
+
 /**
  * @brief Enum output image style
  * @see outputImgFromFrames()
@@ -248,13 +251,13 @@ int main(int argc, char **argv) {
     RadarImage prevRImg, currRImg;
     feed.getCurrentRadarImage(prevRImg);
 
-    KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
+    KeyframeBuffer<_ceres_type> keyframeList{ KF_BUFF_SIZE };
 
     // First image is always a keyframe
     const Pose2D initWorldPose(1, 2, 0.4);
 
     // TODO: Keyframe handling
-    Keyframe keyframe(prevRImg, initWorldPose);
+    Keyframe<_ceres_type> keyframe(prevRImg, initWorldPose);
 
     keyframeList.push_back(keyframe);
 
@@ -278,12 +281,12 @@ int main(int argc, char **argv) {
         // TODO: find odometry / optimization. For now, optimization is
         // returning the world pose, so to get odometry, we need to multiply by
         // inverse of pose.
-        RegistrationCostFunctor functor(currRImg, keyframeList);
+        RegistrationCostFunctor<_ceres_type> functor(currRImg, keyframeList);
 
         // // NOTE: Parameters: <cost functor type, num residuals, num pos params,
         // num orientation params>
         ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
-            RegistrationCostFunctor, 1, 2, 1>(
+            RegistrationCostFunctor<_ceres_type>, 1, 2, 1>(
             &functor, ceres::DO_NOT_TAKE_OWNERSHIP);
 
         // NOTE: If want to keep functor pointer, by updating currRImg and

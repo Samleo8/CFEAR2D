@@ -22,6 +22,9 @@ template <typename T> using Vector2T = Eigen::Matrix<T, 2, 1>;
 /** @brief Typedef for a 3D vector with templated type */
 template <typename T> using Vector3T = Eigen::Matrix<T, 3, 1>;
 
+/** @brief Typedef for a X-D vector with templated type */
+template <typename T> using VectorXT = Eigen::Matrix<T, Eigen::Dynamic, 1>;
+
 /**
  * @brief Struct for storing 2D pose information as position(x,y),
  * orientation(theta)
