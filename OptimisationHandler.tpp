@@ -1,7 +1,7 @@
 /**
- * @file OptimisationHandler.cpp
+ * @file OptimisationHandler.tpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
- * @brief Functions related to optimization and cost functions for bundle
+ * @brief Implementation file for templated functions related to optimization and cost functions for bundle
  * adjustment
  * @version 0.1
  * @date 2022-06-28
@@ -10,7 +10,8 @@
  *
  */
 
-#include "OptimisationHandler.hpp"
+#ifndef __OPTIMISATION_HANDLER_TPP__
+#define __OPTIMISATION_HANDLER_TPP__
 
 /**
  * @brief Constrain angle in radians between [-pi and pi)
@@ -65,11 +66,13 @@ transformFromOptimParams(const struct OptimParams<T> &aParams) {
  * @param[in] delta threshold for Huber loss
  * @return Huber loss
  */
-template <typename T> const double HuberLoss(const T &a, const T &delta) {
-    if (std::abs(a) < delta) {
+template <typename T> const T HuberLoss(const T &a, const T &delta) {
+    if (ceres::abs(a) < delta) {
         return 0.5 * a * a;
     }
     else {
-        return delta * (std::abs(a) - 0.5 * delta);
+        return delta * (ceres::abs(a) - 0.5 * delta);
     }
 }
+
+#endif // __OPTIMISATION_HANDLER_TPP__

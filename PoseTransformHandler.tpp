@@ -8,20 +8,8 @@
  * @copyright Copyright (c) 2022
  */
 
-#include "PoseTransformHandler.hpp"
-
-/**
- * @brief Printing of class information using cout
- *
- * @param[in] aOutputStream Cout output stream
- * @param[in] aPose Pose class to output
- * @return std::ostream& Output stream reference
- */
-std::ostream &operator<<(std::ostream &aOutputStream, const Pose2D &aPose) {
-    aOutputStream << aPose.position << std::endl
-                  << aPose.orientation << std::endl;
-    return aOutputStream;
-}
+#ifndef __POSE_TRANSFORM_HANDLER_CPP__
+#define __POSE_TRANSFORM_HANDLER_CPP__
 
 /**
  * @brief Convert rotation and translation to transformation matrix
@@ -108,3 +96,5 @@ void convertORSPCoordinates(const ORSP &aInputORSPPoint, ORSP &aOutputORSPPoint,
     aOutputORSPPoint.normal = convertCoordinate<T>(aInputORSPPoint.normal,
                                                    aConversionTransform, true);
 }
+
+#endif // __POSE_TRANSFORM_HANDLER_HPP__

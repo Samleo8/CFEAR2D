@@ -63,63 +63,10 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
     point2LineCost(const Keyframe &aKeyframe,
                    const struct OptimParams<T> &aParams, T *aOutputCost) const;
 
-    /**
-     * @brief The key function of the cost functor. Will return the calculated
-     * cost for optimization, given the inputs, as pointers of varying lengths,
-     * and the end parameter as a pointer to the residuals/costs.
-     *
-     * TODO: Needs to be here because Ceres needs it here :(
-     *
-     * @todo Extend to 3D
-     * @note Size of the input parameters are variable and are determined when
-     * creating the @see AutoDiffCostFunction, handled in @ref
-     * OptimisationHandler.cpp
-     * @tparam T Template parameter, assume it is of a base type (like double),
-     * but in reality, Ceres will use it's own Jet type for auto
-     * differentiation.
-     * @param[in] aPositionArray Pointer as an array of position values (x, y)
-     * in this 2D case
-     * @param[in] aOrientationArray Pointer as an array to orientation values
-     * (theta) in this 2D case
-     * @param[in] aResidualArray Pointer to residual output (can consider this
-     * as an array)
-     * @return Whether the function is successful.
-     */
+    // Actual cost functor
     template <typename T>
     bool operator()(const T *const aPositionArray,
-                    const T *const aOrientationArray, T *aResidualArray) const {
-        // Build parameter object from input params
-        T x = aPositionArray[0];
-        T y = aPositionArray[1];
-        T theta = aOrientationArray[0];
-
-        // TODO: Need to think in terms of manifolds, and template everything
-
-        OptimParams<T> params;
-        params.theta = theta;
-        params.translation = Vector2T<T>(x, y);
-
-        // TODO: Point to line cost, sum by looping through all keyframes in the
-        // buffer
-        double regCost = 0.0;
-        bool success = false;
-
-        //     for (size_t i = 0; i < mKFBuffer.size(); i++) {
-        //         const Keyframe<_T> &keyframe =
-        //             static_cast<Keyframe<_T>>(getKeyframe(i));
-        //         _T p2lCost;
-        //         if (point2LineCost(keyframe, params, &p2lCost)) {
-        //             success = true;
-        //             regCost += p2lCost;
-        //         }
-        //     }
-
-        //     // TODO: Huber loss from Ceres?
-
-        //     aResidualArray[0] = static_cast<_T>(regCost);
-
-        return success;
-    }
+                    const T *const aOrientationArray, T *aResidualArray) const;
 };
 
 #include "RegistrationCostFunctor.tpp"

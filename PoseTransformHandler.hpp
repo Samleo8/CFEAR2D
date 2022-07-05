@@ -57,19 +57,31 @@ struct Pose2D {
         position << ax, ay;
     }
 
+    /**
+     * @brief Printing of class information using cout
+     *
+     * @param[in] aOutputStream Cout output stream
+     * @param[in] aPose Pose class to output
+     * @return std::ostream& Output stream reference
+     */
     friend std::ostream &operator<<(std::ostream &aOutputStream,
-                                    const Pose2D &aPose);
+                                    const Pose2D &aPose) {
+        aOutputStream << aPose.position << std::endl
+                      << aPose.orientation << std::endl;
+        return aOutputStream;
+    }
 };
 
 typedef struct Pose2D Pose2D; ///< typedef for struct Pose2D
 
 template <typename T>
-const PoseTransform2D<T> rotTransToTransform(const Eigen::Rotation2D<T> &aRotMat,
-                                             const Vector2T<T> &aTrans);
+const PoseTransform2D<T>
+rotTransToTransform(const Eigen::Rotation2D<T> &aRotMat,
+                    const Vector2T<T> &aTrans);
 
 template <typename T>
-const PoseTransform2D<T>
-rotTransToTransform(const T &aAngleRad, const Vector2T<T> &aTrans);
+const PoseTransform2D<T> rotTransToTransform(const T &aAngleRad,
+                                             const Vector2T<T> &aTrans);
 
 template <typename T>
 const PoseTransform2D<T> poseToTransform(const Pose2D &aPose);
@@ -83,5 +95,8 @@ convertCoordinate(const Eigen::Vector2d &aCoordinate,
 template <typename T>
 void convertORSPCoordinates(const ORSP &aLocalORSPPoint, ORSP &aWorldORSPPoint,
                             const PoseTransform2D<T> &aWorldPoseTransform);
+
+// Include implementation file
+#include "PoseTransformHandler.tpp"
 
 #endif // __POSE_TRANSFORM_H__

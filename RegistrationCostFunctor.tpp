@@ -1,7 +1,7 @@
 /**
  * @file RegistrationCostFunctor.tpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
- * @brief Implementation of functions in RegistrationCostFunctor class
+ * @brief Implementation file for functions in RegistrationCostFunctor class
  * @version 0.1
  * @date 2022-07-03
  *
@@ -13,7 +13,7 @@
 #define __REGISTRATION_COST_FUNCTOR_TPP__
 
 /**
- * @brief Constructor for RegistrationCostFunctor<T>::RegistrationCostFunctor
+ * @brief Constructor for RegistrationCostFunctor::RegistrationCostFunctor
  *
  * @param[in] aRImg Radar image to register against
  * @param[in] aKFBuffer Circular buffer of keyframes
@@ -37,7 +37,7 @@ const RadarImage &RegistrationCostFunctor::getRImg() const {
  * @return const KeyframeBuffer& Internal circular buffer of keyframes to
  * register against
  */
-const KeyframeBuffer &RegistrationCostFunctor<T>::getKFBuffer() const {
+const KeyframeBuffer &RegistrationCostFunctor::getKFBuffer() const {
     return mKFBuffer;
 }
 
@@ -48,8 +48,7 @@ const KeyframeBuffer &RegistrationCostFunctor<T>::getKFBuffer() const {
  * @param[in] aIdx Index of keyframe buffer to get
  * @return const Keyframe& Keyframe at indicated index
  */
-const Keyframe &
-RegistrationCostFunctor::getKeyframe(const size_t aIdx) const {
+const Keyframe &RegistrationCostFunctor::getKeyframe(const size_t aIdx) const {
     return mKFBuffer[aIdx];
 }
 
@@ -121,9 +120,65 @@ const bool RegistrationCostFunctor::point2LineCost(
 template <typename T>
 const bool
 RegistrationCostFunctor::point2LineCost(const Keyframe &aKeyframe,
-                                           const struct OptimParams<T> &aParams,
-                                           T *aOutputCost) const {
-    return point2LineCost(mRImg, aKeyframe, aParams, aOutputCost);
+                                        const struct OptimParams<T> &aParams,
+                                        T *aOutputCost) const {
+    return point2LineCost<T>(mRImg, aKeyframe, aParams, aOutputCost);
+}
+
+/**
+ * @brief The key function of the cost functor. Will return the calculated
+ * cost for optimization, given the inputs, as pointers of varying lengths,
+ * and the end parameter as a pointer to the residuals/costs.
+ *
+ * @todo Extend to 3D
+ * @note Size of the input parameters are variable and are determined when
+ * creating the @see AutoDiffCostFunction, handled in @ref
+ * OptimisationHandler.cpp
+ * @tparam T Template parameter, assume it is of a base type (like double),
+ * but in reality, Ceres will use it's own Jet type for auto
+ * differentiation.
+ * @param[in] aPositionArray Pointer as an array of position values (x, y)
+ * in this 2D case
+ * @param[in] aOrientationArray Pointer as an array to orientation values
+ * (theta) in this 2D case
+ * @param[in] aResidualArray Pointer to residual output (can consider this
+ * as an array)
+ * @return Whether the function is successful.
+ */
+template <typename T>
+bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
+                                         const T *const aOrientationArray,
+                                         T *aResidualArray) const {
+    // Build parameter object from input params
+    T x = aPositionArray[0];
+    T y = aPositionArray[1];
+    T theta = aOrientationArray[0];
+
+    // TODO: Need to think in terms of manifolds, and template everything
+
+    OptimParams<T> params;
+    params.theta = theta;
+    params.translation = Vector2T<T>(x, y);
+
+    // TODO: Point to line cost, sum by looping through all keyframes in the
+    // buffer
+    T regCost = static_cast<T>(0.0);
+    bool success = false;
+
+        for (size_t i = 0; i < mKFBuffer.size(); i++) {
+            const Keyframe &keyframe = getKeyframe(i);
+            T p2lCost;
+            if (point2LineCost<T>(keyframe, params, &p2lCost)) {
+                success = true;
+                regCost += p2lCost;
+            }
+        }
+
+    //     // TODO: Huber loss from Ceres?
+
+        aResidualArray[0] = regCost;
+
+    return success;
 }
 
 #endif // __REGISTRATION_COST_FUNCTOR_TPP__
