@@ -15,7 +15,6 @@
 #define __REGISTRATION_COST_FUNCTOR_HPP__
 
 #include "OptimisationHandler.hpp"
-#include <ceres/types.h>
 
 /** @brief number of residuals for registration cost optimization */
 const int REGOPT_NUM_RESIDUALS = 1;

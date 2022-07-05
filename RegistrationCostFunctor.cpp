@@ -10,7 +10,6 @@
  */
 
 #include "RegistrationCostFunctor.hpp"
-#include "OptimisationHandler.hpp"
 
 /**
  * @brief Constructor for RegistrationCostFunctor::RegistrationCostFunctor

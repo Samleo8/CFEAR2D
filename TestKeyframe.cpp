@@ -284,7 +284,8 @@ int main(int argc, char **argv) {
         // num orientation params>
         ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
             RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
-            REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(&functor);
+            REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
+            &functor, ceres::DO_NOT_TAKE_OWNERSHIP);
 
         // NOTE: If want to keep functor pointer, by updating currRImg and
         // keyframeList instead of creating new functor each iteration,
