@@ -36,27 +36,29 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
  * @see
  * http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
  */
-template <typename T> class RegistrationCostFunctor {
+ class RegistrationCostFunctor {
   private:
     // TODO: is it ok if this is a reference?
     const RadarImage mRImg;
-    const KeyframeBuffer<T> mKFBuffer;
+    const KeyframeBuffer mKFBuffer;
 
   public:
     // Constructors
     RegistrationCostFunctor(const RadarImage &aRImg,
-                            const KeyframeBuffer<T> &aKFBuffer);
+                            const KeyframeBuffer &aKFBuffer);
 
     // Getters
     const RadarImage &getRImg() const;
-    const KeyframeBuffer<T> &getKFBuffer() const;
+    const KeyframeBuffer &getKFBuffer() const;
     const Keyframe &getKeyframe(const size_t aIdx) const;
 
     // Helper function for cost function
+    template <typename T>
     [[nodiscard]] const bool
     point2LineCost(const RadarImage &aRImage, const Keyframe &aKeyframe,
                    const struct OptimParams<T> &aParams, T *aOutputCost) const;
 
+    template <typename T>
     [[nodiscard]] const bool
     point2LineCost(const Keyframe &aKeyframe,
                    const struct OptimParams<T> &aParams, T *aOutputCost) const;
@@ -83,20 +85,19 @@ template <typename T> class RegistrationCostFunctor {
      * as an array)
      * @return Whether the function is successful.
      */
-    template <typename _T>
-    bool operator()(const _T *const aPositionArray,
-                    const _T *const aOrientationArray,
-                    _T *aResidualArray) const {
+    template <typename T>
+    bool operator()(const T *const aPositionArray,
+                    const T *const aOrientationArray, T *aResidualArray) const {
         // Build parameter object from input params
-        _T x = aPositionArray[0];
-        _T y = aPositionArray[1];
-        _T theta = aOrientationArray[0];
+        T x = aPositionArray[0];
+        T y = aPositionArray[1];
+        T theta = aOrientationArray[0];
 
         // TODO: Need to think in terms of manifolds, and template everything
 
-        OptimParams<_T> params;
+        OptimParams<T> params;
         params.theta = theta;
-        params.translation = Vector2T<_T>(x, y);
+        params.translation = Vector2T<T>(x, y);
 
         // TODO: Point to line cost, sum by looping through all keyframes in the
         // buffer

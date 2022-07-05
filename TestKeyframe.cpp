@@ -251,13 +251,13 @@ int main(int argc, char **argv) {
     RadarImage prevRImg, currRImg;
     feed.getCurrentRadarImage(prevRImg);
 
-    KeyframeBuffer<_ceres_type> keyframeList{ KF_BUFF_SIZE };
+    KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
 
     // First image is always a keyframe
     const Pose2D initWorldPose(1, 2, 0.4);
 
     // TODO: Keyframe handling
-    Keyframe<_ceres_type> keyframe(prevRImg, initWorldPose);
+    Keyframe keyframe(prevRImg, initWorldPose);
 
     keyframeList.push_back(keyframe);
 
@@ -281,12 +281,12 @@ int main(int argc, char **argv) {
         // TODO: find odometry / optimization. For now, optimization is
         // returning the world pose, so to get odometry, we need to multiply by
         // inverse of pose.
-        RegistrationCostFunctor<_ceres_type> functor(currRImg, keyframeList);
+        RegistrationCostFunctor functor(currRImg, keyframeList);
 
         // // NOTE: Parameters: <cost functor type, num residuals, num pos params,
         // num orientation params>
         ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
-            RegistrationCostFunctor<_ceres_type>, 1, 2, 1>(
+            RegistrationCostFunctor, 1, 2, 1>(
             &functor, ceres::DO_NOT_TAKE_OWNERSHIP);
 
         // NOTE: If want to keep functor pointer, by updating currRImg and

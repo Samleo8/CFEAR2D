@@ -18,9 +18,8 @@
  * @param[in] aRImg Radar image to register against
  * @param[in] aKFBuffer Circular buffer of keyframes
  */
-template <typename T>
-RegistrationCostFunctor<T>::RegistrationCostFunctor(
-    const RadarImage &aRImg, const KeyframeBuffer<T> &aKFBuffer)
+RegistrationCostFunctor::RegistrationCostFunctor(
+    const RadarImage &aRImg, const KeyframeBuffer &aKFBuffer)
     : mRImg(aRImg), mKFBuffer(aKFBuffer) {}
 
 /**
@@ -28,8 +27,7 @@ RegistrationCostFunctor<T>::RegistrationCostFunctor(
  *
  * @return const RadarImage& Internal radar image to register against
  */
-template <typename T>
-const RadarImage &RegistrationCostFunctor<T>::getRImg() const {
+const RadarImage &RegistrationCostFunctor::getRImg() const {
     return mRImg;
 }
 
@@ -39,8 +37,7 @@ const RadarImage &RegistrationCostFunctor<T>::getRImg() const {
  * @return const KeyframeBuffer& Internal circular buffer of keyframes to
  * register against
  */
-template <typename T>
-const KeyframeBuffer<T> &RegistrationCostFunctor<T>::getKFBuffer() const {
+const KeyframeBuffer &RegistrationCostFunctor<T>::getKFBuffer() const {
     return mKFBuffer;
 }
 
@@ -51,9 +48,8 @@ const KeyframeBuffer<T> &RegistrationCostFunctor<T>::getKFBuffer() const {
  * @param[in] aIdx Index of keyframe buffer to get
  * @return const Keyframe& Keyframe at indicated index
  */
-template <typename T>
 const Keyframe &
-RegistrationCostFunctor<T>::getKeyframe(const size_t aIdx) const {
+RegistrationCostFunctor::getKeyframe(const size_t aIdx) const {
     return mKFBuffer[aIdx];
 }
 
@@ -71,7 +67,7 @@ RegistrationCostFunctor<T>::getKeyframe(const size_t aIdx) const {
  * @return Successfully found cost between point to line
  */
 template <typename T>
-const bool RegistrationCostFunctor<T>::point2LineCost(
+const bool RegistrationCostFunctor::point2LineCost(
     const RadarImage &aRImage, const Keyframe &aKeyframe,
     const struct OptimParams<T> &aParams, T *aOutputCost) const {
     // Transform to be applied on ORSP points in RImage to convert to world
@@ -124,7 +120,7 @@ const bool RegistrationCostFunctor<T>::point2LineCost(
  */
 template <typename T>
 const bool
-RegistrationCostFunctor<T>::point2LineCost(const Keyframe &aKeyframe,
+RegistrationCostFunctor::point2LineCost(const Keyframe &aKeyframe,
                                            const struct OptimParams<T> &aParams,
                                            T *aOutputCost) const {
     return point2LineCost(mRImg, aKeyframe, aParams, aOutputCost);

@@ -16,8 +16,8 @@
  *
  */
 
-#ifndef __KEYFRAME_H__
-#define __KEYFRAME_H__
+#ifndef __KEYFRAME_HPP__
+#define __KEYFRAME_HPP__
 
 #include <Eigen/Geometry>
 #include <vector>
@@ -103,4 +103,4 @@ class Keyframe {
                                              ORSP &aClosestORSPPoint) const;
 };
 
-#endif // __KEYFRAME_H__
+#endif // __KEYFRAME_HPP__

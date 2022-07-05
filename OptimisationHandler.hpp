@@ -64,6 +64,4 @@ transformFromOptimParams(const struct OptimParams<T> &aParams);
 
 template <typename T> const double HuberLoss(const T &a, const T &delta);
 
-#include "OptimisationHandler.tpp"
-
 #endif // __OPTIMISATION_HANDLER_HPP__
