@@ -37,22 +37,23 @@ const size_t ORSP_KF_GRID_N = static_cast<size_t>(
 
 typedef std::vector<size_t> IndexList;
 
-class Keyframe {
+template <typename T> class Keyframe {
   private:
     /** @brief World pose, probably mainly for plotting */
     Pose2D mWorldPose;
 
     /** @brief World pose as homogeneous transformation matrix that converts
      * from local to world coordinates. Effectively const: only initialized on
-     constructor but no `const` because circular_buffer needs the copy assignment
+     constructor but no `const` because circular_buffer needs the copy
+     assignment
      */
-    PoseTransform2D mLocalToWorldTransform;
+    PoseTransform2D<T> mLocalToWorldTransform;
 
     /** @brief Homogeneous transform matrix that converts world to local
      * coordinates. Effectively const: only initialized on constructor but no
      * `const` because circular_buffer needs the copy assignment.
      */
-    PoseTransform2D mWorldToLocalTransform;
+    PoseTransform2D<T> mWorldToLocalTransform;
 
     /** @brief Grid center used for getting new grid coordinate in WORLD
      * coordinates. Effectively const: only initialized on constructor but no
@@ -81,15 +82,16 @@ class Keyframe {
 
   public:
     Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
-    // Keyframe(const Keyframe &aKeyframe);
+    template <typename _T> Keyframe(const Keyframe<_T> &aKeyframe);
     ~Keyframe();
 
     // Getters
     const Pose2D &getPose() const;
     const Pose2D &getWorldPose() const;
     const ORSPVec &getORSPFeaturePoints() const;
-    const PoseTransform2D &getLocalToWorldTransform() const;
-    const PoseTransform2D &getWorldToLocalTransform() const;
+
+    const PoseTransform2D<T> &getLocalToWorldTransform() const;
+    const PoseTransform2D<T> &getWorldToLocalTransform() const;
 
     // Conversion functions for ORSP
     void localToWorldORSP(const ORSP &aLocalORSPPoint,
