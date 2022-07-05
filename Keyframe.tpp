@@ -1,9 +1,9 @@
 /**
- * @file Keyframe.cpp
+ * @file Keyframe.tpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
- * @brief Handler for keyframes, containing class and relevant internal data
- * structures, and functions to register keyframes with the incoming scan
- * frames.
+ * @brief Implementation file for keyframes, containing class and relevant
+ * internal data structures, and functions to register keyframes with the
+ * incoming scan frames.
  *
  * Each keyframe has a list of feature points associated with this keyframe
  * a grid representation containing these feature points transferred
@@ -16,9 +16,8 @@
  *
  */
 
-#include "Keyframe.hpp"
-#include "OptimisationHandler.hpp" // needed for angle handling
-#include "PoseTransformHandler.hpp"
+#ifndef __KEYFRAME_TPP__
+#define __KEYFRAME_TPP__
 
 /**
  * @brief Constructor for Keyframe class. Handles transferring of relevant
@@ -249,3 +248,5 @@ const bool Keyframe<T>::findClosestORSP(const ORSP &aORSPPoint,
 
     return found;
 }
+
+#endif // __KEYFRAME_TPP__

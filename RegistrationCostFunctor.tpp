@@ -1,7 +1,7 @@
 /**
- * @file RegistrationCostFunctor.cpp
+ * @file RegistrationCostFunctor.tpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
- * @brief
+ * @brief Implementation of functions in RegistrationCostFunctor class
  * @version 0.1
  * @date 2022-07-03
  *
@@ -9,8 +9,8 @@
  *
  */
 
-#include "RegistrationCostFunctor.hpp"
-#include "OptimisationHandler.hpp"
+#ifndef __REGISTRATION_COST_FUNCTOR_TPP__
+#define __REGISTRATION_COST_FUNCTOR_TPP__
 
 /**
  * @brief Constructor for RegistrationCostFunctor<T>::RegistrationCostFunctor
@@ -129,3 +129,5 @@ RegistrationCostFunctor<T>::point2LineCost(const Keyframe<T> &aKeyframe,
                                            T *aOutputCost) const {
     return point2LineCost(mRImg, aKeyframe, aParams, aOutputCost);
 }
+
+#endif // __REGISTRATION_COST_FUNCTOR_TPP__

@@ -68,10 +68,10 @@ add_executable(
   PoseTransformHandler.cpp
   RadarImageHandler.cpp
   RadarImage.cpp
-  Keyframe.cpp
+  Keyframe.tpp
   OrientedSurfacePointsHandler.cpp
   OptimisationHandler.cpp
-  RegistrationCostFunctor.cpp
+  RegistrationCostFunctor.tpp
   OdometryVisualiser.cpp
   RadarFeedHandler.cpp
   RadarFeed.cpp

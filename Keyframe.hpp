@@ -104,4 +104,6 @@ template <typename T> class Keyframe {
                                              ORSP &aClosestORSPPoint) const;
 };
 
+#include "Keyframe.tpp"
+
 #endif // __KEYFRAME_H__

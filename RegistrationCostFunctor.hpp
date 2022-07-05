@@ -121,4 +121,6 @@ template <typename T> class RegistrationCostFunctor {
     }
 };
 
+#include "RegistrationCostFunctor.tpp"
+
 #endif // __REGISTRATION_COST_FUNCTOR_HPP__
