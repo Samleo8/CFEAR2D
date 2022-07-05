@@ -1,5 +1,5 @@
 /**
- * @file Keyframe.tpp
+ * @file Keyframe.cpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
  * @brief Implementation file for keyframes, containing class and relevant
  * internal data structures, and functions to register keyframes with the
@@ -16,8 +16,8 @@
  *
  */
 
-#ifndef __KEYFRAME_TPP__
-#define __KEYFRAME_TPP__
+#include "Keyframe.hpp"
+#include "OptimisationHandler.hpp"
 
 /**
  * @brief Constructor for Keyframe class. Handles transferring of relevant
@@ -30,10 +30,9 @@
  * keyframe
  * @param[in] aWorldPose
  */
-template <typename T>
-Keyframe<T>::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
+Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
     : mWorldPose(aWorldPose),
-      mLocalToWorldTransform(poseToTransform<T>(aWorldPose)),
+      mLocalToWorldTransform(poseToTransform<double>(aWorldPose)),
       mWorldToLocalTransform(mLocalToWorldTransform.inverse()),
       mGridCenter(aWorldPose.position[0] + RADAR_MAX_RANGE_M_SQRT2,
                   aWorldPose.position[1] + RADAR_MAX_RANGE_M_SQRT2) {
@@ -71,31 +70,10 @@ Keyframe<T>::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
 }
 
 /**
- * @brief Destructor for Keyframe<T>::Keyframe
+ * @brief Destructor for Keyframe<double>::Keyframe
  * Currently empty.
  */
-template <typename T> Keyframe<T>::~Keyframe() {}
-
-/**
- * @brief Copy Constructor for Keyframe, with potential type conversion for
- * Ceres
- *
- * @param[in] aKeyframe
- */
-// template <typename T>
-// template <typename _T>
-// Keyframe<T>::Keyframe(const Keyframe<_T> &aKeyframe) {
-//     mWorldPose = aKeyframe.mWorldPose;
-//     mLocalToWorldTransform =
-//         static_cast<PoseTransform2D<_T>>(aKeyframe.mLocalToWorldTransform);
-//     mWorldToLocalTransform =
-//         static_cast<PoseTransform2D<_T>>(aKeyframe.mWorldToLocalTransform);
-
-//     mGridCenter = aKeyframe.mGridCenter;
-
-//     mORSPFeaturePoints = aKeyframe.mORSPFeaturePoints;
-//     mORSPIndexGrid = aKeyframe.mORSPIndexGrid;
-// }
+Keyframe::~Keyframe() {}
 
 /**
  * @brief Get world pose of keyframe
@@ -103,7 +81,7 @@ template <typename T> Keyframe<T>::~Keyframe() {}
  *
  * @return const Pose2D& World pose
  */
-template <typename T> const Pose2D &Keyframe<T>::getPose() const {
+const Pose2D &Keyframe::getPose() const {
     return getWorldPose();
 }
 
@@ -112,7 +90,7 @@ template <typename T> const Pose2D &Keyframe<T>::getPose() const {
  *
  * @return const Pose2D& World pose
  */
-template <typename T> const Pose2D &Keyframe<T>::getWorldPose() const {
+const Pose2D &Keyframe::getWorldPose() const {
     return mWorldPose;
 }
 
@@ -120,7 +98,7 @@ template <typename T> const Pose2D &Keyframe<T>::getWorldPose() const {
  * @brief Get vector of ORSP feature points
  * @return Vector of ORSP feature points, in LOCAL coordinates
  */
-template <typename T> const ORSPVec &Keyframe<T>::getORSPFeaturePoints() const {
+const ORSPVec &Keyframe::getORSPFeaturePoints() const {
     return mORSPFeaturePoints;
 }
 
@@ -128,8 +106,8 @@ template <typename T> const ORSPVec &Keyframe<T>::getORSPFeaturePoints() const {
  * @brief Get local to world transform
  * @return Transform class of local to world coordinate transform
  */
-template <typename T>
-const PoseTransform2D<T> &Keyframe<T>::getLocalToWorldTransform() const {
+
+const PoseTransform2D<double> &Keyframe::getLocalToWorldTransform() const {
     return mLocalToWorldTransform;
 }
 
@@ -137,8 +115,8 @@ const PoseTransform2D<T> &Keyframe<T>::getLocalToWorldTransform() const {
  * @brief Get world to local transform
  * @return Transform class of world to local coordinate transform
  */
-template <typename T>
-const PoseTransform2D<T> &Keyframe<T>::getWorldToLocalTransform() const {
+
+const PoseTransform2D<double> &Keyframe::getWorldToLocalTransform() const {
     return mWorldToLocalTransform;
 }
 
@@ -148,13 +126,13 @@ const PoseTransform2D<T> &Keyframe<T>::getWorldToLocalTransform() const {
  * @param[in] aLocalORSPPoint Local ORSP point to be converted
  * @param[out] aWorldORSPPoint Output world ORSP point
  */
-template <typename T>
-void Keyframe<T>::localToWorldORSP(const ORSP &aLocalORSPPoint,
-                                   ORSP &aWorldORSPPoint) const {
+
+void Keyframe::localToWorldORSP(const ORSP &aLocalORSPPoint,
+                                ORSP &aWorldORSPPoint) const {
     // Use pose transform handler library and internal world pose to convert
     // to world coordinate
-    convertORSPCoordinates<T>(aLocalORSPPoint, aWorldORSPPoint,
-                              mLocalToWorldTransform);
+    convertORSPCoordinates<double>(aLocalORSPPoint, aWorldORSPPoint,
+                                   mLocalToWorldTransform);
 }
 
 /**
@@ -163,14 +141,14 @@ void Keyframe<T>::localToWorldORSP(const ORSP &aLocalORSPPoint,
  * @param[in] aWorldORSPPoint World ORSP point to be converted
  * @param[out] aLocalORSPPoint Output local ORSP point
  */
-template <typename T>
-void Keyframe<T>::worldToLocalORSP(const ORSP &aWorldORSPPoint,
-                                   ORSP &aLocalORSPPoint) const {
+
+void Keyframe::worldToLocalORSP(const ORSP &aWorldORSPPoint,
+                                ORSP &aLocalORSPPoint) const {
     // Use pose transform handler library and internal world pose to convert
     // to world coordinate NOTE: Same function, but different pose transform
     // and parameter order
-    convertORSPCoordinates<T>(aWorldORSPPoint, aLocalORSPPoint,
-                              mWorldToLocalTransform);
+    convertORSPCoordinates<double>(aWorldORSPPoint, aLocalORSPPoint,
+                                   mWorldToLocalTransform);
 }
 
 /**
@@ -180,9 +158,9 @@ void Keyframe<T>::worldToLocalORSP(const ORSP &aWorldORSPPoint,
  * aClosestORSPPoint can give garbage values.
  * @return Whether a closest feature point was found
  */
-template <typename T>
-const bool Keyframe<T>::findClosestORSP(const ORSP &aORSPPoint,
-                                        ORSP &aClosestORSPPoint) const {
+
+const bool Keyframe::findClosestORSP(const ORSP &aORSPPoint,
+                                     ORSP &aClosestORSPPoint) const {
     // Init stuff
     bool found = false;
     double closestDistance = ORSP_RADIUS;
@@ -227,10 +205,10 @@ const bool Keyframe<T>::findClosestORSP(const ORSP &aORSPPoint,
                     potentialClosestPoint.center);
 
                 // Check angle tolerance
-                const T angle = angleBetweenVectors<T>(
+                const double angle = angleBetweenVectors<double>(
                     potentialClosestPoint.normal, aClosestORSPPoint.normal);
 
-                if (ceres::abs(angle) > ANGLE_TOLERANCE_RAD) continue;
+                if (ABS(angle) > ANGLE_TOLERANCE_RAD) continue;
 
                 // Calculate distance between potential closest point, and
                 // check if it is indeed the closest point
@@ -248,5 +226,3 @@ const bool Keyframe<T>::findClosestORSP(const ORSP &aORSPPoint,
 
     return found;
 }
-
-#endif // __KEYFRAME_TPP__

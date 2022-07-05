@@ -37,7 +37,7 @@ const size_t ORSP_KF_GRID_N = static_cast<size_t>(
 
 typedef std::vector<size_t> IndexList;
 
-template <typename T> class Keyframe {
+class Keyframe {
   private:
     /** @brief World pose, probably mainly for plotting */
     Pose2D mWorldPose;
@@ -47,13 +47,13 @@ template <typename T> class Keyframe {
      constructor but no `const` because circular_buffer needs the copy
      assignment
      */
-    PoseTransform2D<T> mLocalToWorldTransform;
+    PoseTransform2D<double> mLocalToWorldTransform;
 
     /** @brief Homogeneous transform matrix that converts world to local
      * coordinates. Effectively const: only initialized on constructor but no
      * `const` because circular_buffer needs the copy assignment.
      */
-    PoseTransform2D<T> mWorldToLocalTransform;
+    PoseTransform2D<double> mWorldToLocalTransform;
 
     /** @brief Grid center used for getting new grid coordinate in WORLD
      * coordinates. Effectively const: only initialized on constructor but no
@@ -82,7 +82,6 @@ template <typename T> class Keyframe {
 
   public:
     Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
-    // template <typename _T> Keyframe(const Keyframe<_T> &aKeyframe);
     ~Keyframe();
 
     // Getters
@@ -90,8 +89,8 @@ template <typename T> class Keyframe {
     const Pose2D &getWorldPose() const;
     const ORSPVec &getORSPFeaturePoints() const;
 
-    const PoseTransform2D<T> &getLocalToWorldTransform() const;
-    const PoseTransform2D<T> &getWorldToLocalTransform() const;
+    const PoseTransform2D<double> &getLocalToWorldTransform() const;
+    const PoseTransform2D<double> &getWorldToLocalTransform() const;
 
     // Conversion functions for ORSP
     void localToWorldORSP(const ORSP &aLocalORSPPoint,
@@ -103,7 +102,5 @@ template <typename T> class Keyframe {
     [[nodiscard]] const bool findClosestORSP(const ORSP &aORSPPoint,
                                              ORSP &aClosestORSPPoint) const;
 };
-
-#include "Keyframe.tpp"
 
 #endif // __KEYFRAME_H__

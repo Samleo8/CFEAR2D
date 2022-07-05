@@ -52,7 +52,7 @@ const KeyframeBuffer<T> &RegistrationCostFunctor<T>::getKFBuffer() const {
  * @return const Keyframe& Keyframe at indicated index
  */
 template <typename T>
-const Keyframe<T> &
+const Keyframe &
 RegistrationCostFunctor<T>::getKeyframe(const size_t aIdx) const {
     return mKFBuffer[aIdx];
 }
@@ -72,7 +72,7 @@ RegistrationCostFunctor<T>::getKeyframe(const size_t aIdx) const {
  */
 template <typename T>
 const bool RegistrationCostFunctor<T>::point2LineCost(
-    const RadarImage &aRImage, const Keyframe<T> &aKeyframe,
+    const RadarImage &aRImage, const Keyframe &aKeyframe,
     const struct OptimParams<T> &aParams, T *aOutputCost) const {
     // Transform to be applied on ORSP points in RImage to convert to world
     // coord
@@ -124,7 +124,7 @@ const bool RegistrationCostFunctor<T>::point2LineCost(
  */
 template <typename T>
 const bool
-RegistrationCostFunctor<T>::point2LineCost(const Keyframe<T> &aKeyframe,
+RegistrationCostFunctor<T>::point2LineCost(const Keyframe &aKeyframe,
                                            const struct OptimParams<T> &aParams,
                                            T *aOutputCost) const {
     return point2LineCost(mRImg, aKeyframe, aParams, aOutputCost);

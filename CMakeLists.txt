@@ -67,6 +67,7 @@ add_executable(
   PointPolar2D.cpp 
   PoseTransformHandler.cpp
   RadarImageHandler.cpp
+  Keyframe.cpp
   RadarImage.cpp
   OrientedSurfacePointsHandler.cpp
   OdometryVisualiser.cpp

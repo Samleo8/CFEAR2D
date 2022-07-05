@@ -42,8 +42,7 @@ template <typename T> struct OptimParams {
 const size_t KF_BUFF_SIZE = 3;
 
 /** @brief Keyframe buffer typedef */
-template <typename T>
-using KeyframeBuffer = boost::circular_buffer<Keyframe<T>>;
+typedef boost::circular_buffer<Keyframe> KeyframeBuffer;
 
 /** @brief Angle tolerance threshold in radians */
 const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;

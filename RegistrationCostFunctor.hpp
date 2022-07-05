@@ -50,15 +50,15 @@ template <typename T> class RegistrationCostFunctor {
     // Getters
     const RadarImage &getRImg() const;
     const KeyframeBuffer<T> &getKFBuffer() const;
-    const Keyframe<T> &getKeyframe(const size_t aIdx) const;
+    const Keyframe &getKeyframe(const size_t aIdx) const;
 
     // Helper function for cost function
     [[nodiscard]] const bool
-    point2LineCost(const RadarImage &aRImage, const Keyframe<T> &aKeyframe,
+    point2LineCost(const RadarImage &aRImage, const Keyframe &aKeyframe,
                    const struct OptimParams<T> &aParams, T *aOutputCost) const;
 
     [[nodiscard]] const bool
-    point2LineCost(const Keyframe<T> &aKeyframe,
+    point2LineCost(const Keyframe &aKeyframe,
                    const struct OptimParams<T> &aParams, T *aOutputCost) const;
 
     /**
