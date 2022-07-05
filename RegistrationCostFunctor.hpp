@@ -17,14 +17,23 @@
 #include "OptimisationHandler.hpp"
 #include <ceres/types.h>
 
+/** @brief number of residuals for registration cost optimization */
+const int REGOPT_NUM_RESIDUALS = 1;
+
+/** @brief number of values in position input vector */
+const int REGOPT_POS_PARAM_SIZE = 2;
+
+/** @brief number of values in orientation input vector */
+const int REGOPT_ORIENT_PARAM_SIZE = 1;
+
 /**
  * @brief Cost functor for point/line image to image registration, used by
  * Ceres for optimization
  * @todo Make a proper cost function and class variables etc for this
- * @note Important part is the operator(), which will contain the actual cost
- * function. More details @see operator(). Notably, function parameters should
- * be assumed as pointers to a base type (like double) that can take differing
- * and multiple values/dimensions.
+ * @note Important part is the operator(), which will contain the actual
+ * cost function. More details @see operator(). Notably, function parameters
+ * should be assumed as pointers to a base type (like double) that can take
+ * differing and multiple values/dimensions.
  * @see
  * http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
  */
@@ -56,34 +65,7 @@ class RegistrationCostFunctor {
     // Actual cost function
     template <typename T>
     bool operator()(const T *const aPositionArray,
-                    const T *const aOrientationArray, T *aResidualArray);
-};
-
-/**
- * @brief Cost function for image registration purposes, using auto
- *
- * @tparam CostFunctor Cost functor typename @see RegistrationCostFunctor()
- * @tparam kNumResiduals Number of residuals
- * @tparam kPositionParamSize Size/Number of position parameters (eg. x, y => 2)
- * @tparam kOrientationParamSize Size/Number of orientation parameters (eg.
- * theta => 1)
- */
-template <typename CostFunctor,   // Cost functor type
-          int kNumResiduals,      // Number of residuals, or ceres::DYNAMIC.
-          int kPositionParamSize, // Size of each parameter block (position and
-                                  // orientation)
-          int kOrientationParamSize>
-class RegistrationCostFunction
-    : public ceres::SizedCostFunction<kNumResiduals, kPositionParamSize,
-                                      kOrientationParamSize> {
-  public:
-    RegistrationCostFunction(CostFunctor *functor, ceres::Ownership ownership =
-                                                       ceres::TAKE_OWNERSHIP);
-    // Ignore the template parameter kNumResiduals and use
-    // num_residuals instead.
-    RegistrationCostFunction(
-        CostFunctor *functor, int num_residuals,
-        ceres::Ownership ownership = ceres::TAKE_OWNERSHIP);
+                    const T *const aOrientationArray, T *aResidualArray) const;
 };
 
 #endif // __REGISTRATION_COST_FUNCTOR_HPP__

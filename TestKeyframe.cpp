@@ -1,3 +1,5 @@
+#include <ceres/autodiff_cost_function.h>
+#include <ceres/cost_function.h>
 #include <filesystem>
 #include <stdbool.h>
 #include <stdio.h>
@@ -280,17 +282,22 @@ int main(int argc, char **argv) {
 
         // NOTE: Parameters: <cost functor type, num residuals, num pos params,
         // num orientation params>
-        CostFunction *cost_function =
-            new AutoDiffCostFunction<RegistrationCostFunctor, 1, 2, 1>(
-                &functor);
-        // TODO: If want to keep functor pointer, by updating currRImg and
-        // keyframeList instead of creating new functor each iteration, then use
-        // ceres::DO_NOT_TAKE_OWNERSHIP
+        ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
+            RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
+            REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(&functor);
+
+        // NOTE: If want to keep functor pointer, by updating currRImg and
+        // keyframeList instead of creating new functor each iteration,
+        // then use ceres::DO_NOT_TAKE_OWNERSHIP
 
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
 
         // TODO: actually go through the frames
+
+        // Free memory for cost function
+        delete regCostFn;
+
         break;
     }
 

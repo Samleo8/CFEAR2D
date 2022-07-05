@@ -44,7 +44,7 @@ RegistrationCostFunctor::RegistrationCostFunctor(
 template <typename T>
 bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
                                          const T *const aOrientationArray,
-                                         T *aResidualArray) {
+                                         T *aResidualArray) const {
     // Build parameter object from input params
     T x = aPositionArray[0];
     T y = aPositionArray[1];
@@ -147,7 +147,7 @@ const bool RegistrationCostFunctor::point2LineCost(const RadarImage &aRImage,
 
             // TODO: now compute cost according to formula
             cost += closestORSPPoint.normal.dot(worldORSPPoint.center -
-                                        closestORSPPoint.center);
+                                                closestORSPPoint.center);
         }
     }
 
