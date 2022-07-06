@@ -81,6 +81,14 @@ typedef std::vector<Eigen::Vector2d> Point3DList;
 /** @brief Typedef for list of X-dimensional points */
 typedef std::vector<Eigen::VectorXd> PointXDList;
 
+/** @brief Typedef for Vector of templated dimension */
+template <size_t Dimension>
+using VectorDimd = Eigen::Matrix<double, Dimension, 1>;
+
+/** @brief Typedef for std::vector of Eigen::Vector of templated dimension */
+template <size_t Dimension>
+using VectorDimdList = std::vector<VectorDimd<Dimension>>;
+
 // Defines
 /** @brief Simple MAX function */
 #ifndef MAX

@@ -64,16 +64,20 @@ const double ORSP_EIGENVAL_THRESHOLD = 10e5;
 const double getDistance(const Eigen::VectorXd &aVec1,
                          const Eigen::VectorXd &aVec2);
 
-const Eigen::VectorXd getCentroid(const PointXDList &aPoints,
-                                  const size_t aDimension = 2);
+template <size_t Dimension>
+const VectorDimd<Dimension>
+getCentroid(const VectorDimdList<Dimension> &aPoints);
 
-void getMeanCovariance(const PointXDList &aPoints, Eigen::VectorXd &aMean,
-                       Eigen::MatrixXd &aCovMatrix,
-                       const size_t aDimension = 2);
+template <size_t Dimension>
+void getMeanCovariance(const VectorDimdList<Dimension> &aPoints,
+                       VectorDimd<Dimension> &aMean,
+                       VectorDimd<Dimension> &aCovMatrix);
 
 void pointToGridCoordinate(const Eigen::Vector2d &aPoint,
                            Eigen::Vector2d &aGridCoordinate,
                            const Eigen::Vector2d &aGridCenter = Eigen::Vector2d(
                                RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M));
+
+#include "OrientedSurfacePointsHandler.tpp"
 
 #endif // __CFEAR_ORSP_HANDLER_HPP__

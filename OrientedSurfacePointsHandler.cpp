@@ -26,58 +26,6 @@ const double getDistance(const Eigen::VectorXd &aVec1,
 }
 
 /**
- * @brief Get Centroid from list of X-D points
- *
- * @param[in] aPoints List of points
- * @param[in] aDimension Dimension of points
- * @return const Point2D
- */
-const Eigen::VectorXd getCentroid(const PointXDList &aPoints,
-                                  const size_t aDimension) {
-    Eigen::VectorXd centroid = Eigen::VectorXd::Zero(aDimension);
-
-    // Empty list: Return (0,0) for centroid
-    if (aPoints.size() == 0) return centroid;
-
-    // Otherwise, calculate centroid by summing up all coordinates
-    for (const Eigen::VectorXd &point : aPoints) {
-        centroid += point;
-    }
-
-    // And dividing by size
-    size_t sz = aPoints.size();
-    return centroid / sz;
-}
-
-/**
- * @brief Get mean and covariance matrix from list of 2D points
- *
- * @param[in] aPoints
- * @param[in] aMean
- * @param[in] aCovMatrix
- */
-void getMeanCovariance(const PointXDList &aPoints, Eigen::VectorXd &aMean,
-                       Eigen::MatrixXd &aCovMatrix, const size_t aDimension) {
-    // Convert list of points into Eigen matrix, then use vectorization
-    // NOTe: Eigen is col-major, so colwise access is faster.
-    const size_t sz = aPoints.size();
-    Eigen::MatrixXd pointsListMat(aDimension, sz);
-
-    for (size_t i = 0; i < sz; i++) {
-        pointsListMat.col(i) = aPoints[i];
-    }
-    pointsListMat.transposeInPlace();
-
-    // Use vectorisation to get mean and covariance
-    aMean = pointsListMat.colwise().mean();
-
-    Eigen::MatrixXd deltaExpected(sz, aDimension);
-    deltaExpected = pointsListMat.rowwise() - aMean.transpose();
-
-    aCovMatrix = deltaExpected.transpose() * deltaExpected / sz;
-}
-
-/**
  * @brief Associate filtered point coordinate to downsampled grid coordinate
  * @param[in] aPoint Filtered point to associate
  * @param[out] aGridCoordinate Output grid coordinate
@@ -138,7 +86,7 @@ void RadarImage::downsamplePointCloud() {
     // Now find the centroids
     for (size_t i = 0; i < ORSP_GRID_N; i++) {
         for (size_t j = 0; j < ORSP_GRID_N; j++) {
-            mORSPCentroidGrid[i][j] = getCentroid(mORSPGrid[i][j]);
+            mORSPCentroidGrid[i][j] = getCentroid<2>(mORSPGrid[i][j]);
         }
     }
 
@@ -240,7 +188,7 @@ void RadarImage::estimatePointDistribution() {
             Eigen::Vector2d normalVector;
             Eigen::Matrix2d covMatrix;
 
-            getMeanCovariance(validNeighbours, mean, covMatrix);
+            getMeanCovariance<2>(validNeighbours, mean, covMatrix);
 
             // From covariance matrix, use SVD to get eigenvectors
             Eigen::EigenSolver<Eigen::Matrix2d> eigenSolver(covMatrix);
