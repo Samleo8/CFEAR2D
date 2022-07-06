@@ -15,7 +15,7 @@
 #define __ANGLE_MANIFOLD_HPP__
 
 #include "ceres/autodiff_manifold.h"
-#include "OptimisationHandler.h"
+#include "OptimisationHandler.hpp"
 
 // Defines a manifold for updating the angle to be constrained in [-pi to pi).
 class AngleManifold {
