@@ -41,46 +41,38 @@ typedef std::vector<size_t> IndexList;
 
 class Keyframe {
   private:
+    static const size_t DIMENSION = 2;
+
     /** @brief World pose, probably mainly for plotting */
     Pose2D mWorldPose;
 
-    /** @brief World pose as homogeneous transformation matrix that converts
+    /**
+     * @brief World pose as homogeneous transformation matrix that converts
      * from local to world coordinates. Effectively const: only initialized on
      constructor but no `const` because circular_buffer needs the copy
      assignment
      */
     PoseTransform2D<double> mLocalToWorldTransform;
 
-    /** @brief Homogeneous transform matrix that converts world to local
+    /**
+     * @brief Homogeneous transform matrix that converts world to local
      * coordinates. Effectively const: only initialized on constructor but no
      * `const` because circular_buffer needs the copy assignment.
      */
     PoseTransform2D<double> mWorldToLocalTransform;
 
-    /** @brief Grid center used for getting new grid coordinate in WORLD
-     * coordinates. Effectively const: only initialized on constructor but no
-     * `const` because circular_buffer needs the copy assignment
-     * @see pointToGridCoordinate()
-     */
-    Eigen::Vector2d mGridCenter;
-
-    /** @brief ORSP feature points in WORLD coordinates */
-    ORSPVec<double> mORSPFeaturePoints;
-
     /**
-     * @brief Caching of grid representation of ORSP feature points, with r/f as
-     * the length of the grid. Allows very quick checking of surrounding ORSP
-     * points. Value of the grid contains the indices to the exact ORSP point,
-     * indexed to mORSPFeaturePoints.
-     * @note Empty vector implies no coordinate there.
-     * @note Because of the grid conversion that could potentially be rotated,
-     * we might not be able to assume (TODO: check math?) that a single ORSP
-     * point will be alone inside a grid square. Thus a vector of indices is
-     * required.
-     * @todo Make this a sparse representation instead?
-     * @see pointToGridCoordinate()
+     * @brief Matrix of center of ORSP feature points (dim x N). Used instead of
+     * std::vector for quick processing of ORSP feature points distance
+     * calculation as a batch.
+     * @note In world coordinates.
+     * @todo Currently DIMENSION = 2 because dealing with 2D point. Will
+     * eventually change to 3D
      */
-    IndexList mORSPIndexGrid[ORSP_KF_GRID_N][ORSP_KF_GRID_N];
+    Eigen::Matrix<double, DIMENSION, Eigen::Dynamic> mORSPCenters;
+
+    /** @brief List/Vector of ORSP feature points in WORLD coordinates */
+    ORSPVec<double> mORSPFeaturePoints;
 
   public:
     Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
@@ -103,8 +95,8 @@ class Keyframe {
     // Find the closest ORSP point to a given point
     template <typename CastType>
     [[nodiscard]] const bool
-    findClosestORSP(const ORSP<double> &aORSPPoint,
-                    ORSP<double> &aClosestORSPPoint) const;
+    findClosestORSP(const ORSP<CastType> &aORSPPoint,
+                    ORSP<CastType> &aClosestORSPPoint) const;
 };
 
 #include "Keyframe.tpp"
