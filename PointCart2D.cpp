@@ -1,5 +1,5 @@
 #include "PointCart2D.hpp"
-#include "PointPolar2D.hpp"
+#include "PointPolar.hpp"
 
 PointCart2D::PointCart2D() : cv::Point2d(0, 0) {
 }
@@ -23,7 +23,7 @@ const size_t PointCart2D::distance(const PointCart2D &aPoint, const size_t norm)
     return pow(dist, 1/norm);
 }
 
-void PointCart2D::toPolar(PointPolar2D &polar) {
+void PointCart2D::toPolar(PointPolar &polar) {
     polar.R = sqrt(x * x + y * y);
     polar.theta = atan2(y, x);
 }

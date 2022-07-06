@@ -46,7 +46,7 @@ add_executable(
   CVColor.cpp
   ImageProcessing.cpp
   PointCart2D.cpp
-  PointPolar2D.cpp 
+  PointPolar.cpp 
   # PoseTransformHandler.cpp
   RadarImageHandler.cpp
   RadarImage.cpp
@@ -64,7 +64,7 @@ add_executable(
   CVColor.cpp
   ImageProcessing.cpp
   PointCart2D.cpp
-  PointPolar2D.cpp 
+  PointPolar.cpp 
   RadarImageHandler.cpp
   Keyframe.cpp
   RadarImage.cpp
@@ -85,7 +85,7 @@ target_link_libraries(TestKeyframe ${OpenCV_LIBS} ${CERES_LIBRARIES})
 #   OdometryVisualiser.cpp
 #   ImageProcessing.cpp
 #   PointCart2D.cpp 
-#   PointPolar2D.cpp 
+#   PointPolar.cpp 
 #   RadarImageHandler.cpp
 #   RadarImage.cpp
 #   PoseGraph.cpp

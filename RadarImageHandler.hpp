@@ -28,7 +28,7 @@
 
 #include "ImageProcessing.hpp"
 #include "PointCart2D.hpp"
-#include "PointPolar2D.hpp"
+#include "PointPolar.hpp"
 
 /**
  * @brief Translation data struct (no rotation). Used in pose graph and sliding

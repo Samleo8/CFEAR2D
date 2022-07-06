@@ -16,8 +16,8 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-// NOTE: Forward declaration of PointPolar2D class
-class PointPolar2D;
+// NOTE: Forward declaration of PointPolar class
+class PointPolar;
 
 /**
  * @brief 2D Cartesian Point class. Subclass of cv Point. Used for storing 2D
@@ -32,7 +32,7 @@ class PointCart2D : public cv::Point2d {
     const size_t distance(const PointCart2D &aPoint,
                           const size_t norm = 2) const;
 
-    void toPolar(PointPolar2D &polar);
+    void toPolar(PointPolar &polar);
     void toCV(cv::Point2d &aCVPoint);
     void toEigen(Eigen::Vector2d &aEigenPoint);
 
