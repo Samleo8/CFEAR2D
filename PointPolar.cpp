@@ -1,5 +1,5 @@
 /**
- * @file PointPolar2D.cpp
+ * @file PointPolar.cpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
  * @brief Simple point polar class that handles conversion to Cartesian
  * coordinates
@@ -10,14 +10,14 @@
  *
  */
 
-#include "PointPolar2D.hpp"
+#include "PointPolar.hpp"
 
 /**
  * @brief Conversion of polar coordinates to Cartesian coordinates
  *
  * @param[in] aCart
  */
-void PointPolar2D::toCartesian(Eigen::Vector2d &aCart) {
+void PointPolar::toCartesian(Eigen::Vector2d &aCart) {
     double x = R * cos(theta);
     double y = R * sin(theta);
 

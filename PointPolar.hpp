@@ -1,5 +1,5 @@
 /**
- * @file PointPolar2D.hpp
+ * @file PointPolar.hpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
  * @brief Class header for a 2D polar point
  * @date 2022-06-16
@@ -13,7 +13,7 @@
 #include <math.h>
 #include <Eigen/Core>
 
-class PointPolar2D {
+class PointPolar {
   public:
     double R;     ///< range-coordinate
     double theta; ///< azimuth-coordinate
