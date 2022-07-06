@@ -27,6 +27,7 @@
 #define __CFEAR_ORSP_HANDLER_HPP__
 
 #include "RadarImageHandler.hpp"
+#include "TransformDefines.hpp"
 
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
@@ -61,8 +62,8 @@ const double ORSP_EIGENVAL_THRESHOLD = 10e5;
 
 /// NOTE: All class related functions are declared in @see RadarImage.hpp.
 /// Helper functions are here.
-const double getDistance(const Eigen::VectorXd &aVec1,
-                         const Eigen::VectorXd &aVec2);
+template <typename T>
+const T getDistance(const VectorXT<T> &aVec1, const VectorXT<T> &aVec2);
 
 template <size_t Dimension>
 const VectorDimd<Dimension>

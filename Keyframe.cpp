@@ -33,33 +33,23 @@
 Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
     : mWorldPose(aWorldPose),
       mLocalToWorldTransform(poseToTransform<double>(aWorldPose)),
-      mWorldToLocalTransform(mLocalToWorldTransform.inverse()),
-      mGridCenter(aWorldPose.position[0] + RADAR_MAX_RANGE_M_SQRT2,
-                  aWorldPose.position[1] + RADAR_MAX_RANGE_M_SQRT2) {
+      mWorldToLocalTransform(mLocalToWorldTransform.inverse()){
     // Initialize feature points vector, which needs to be populated by
     // converted feature points from RadarImage to world coordinates
+    // Also initialize matrix of centers of ORSP coordinates
     const ORSPVec<double> &ORSPFeaturePointsRef =
         aRadarImage.getORSPFeaturePoints();
-    mORSPFeaturePoints.reserve(ORSPFeaturePointsRef.size());
+
+    size_t sz = ORSPFeaturePointsRef.size();
+    mORSPFeaturePoints.reserve(sz);
 
     // TODO: Check if this is correct.
     // Loop through all ORSP feature points, convert to world coordinates and
     // convert to world coordinate
-    for (size_t i = 0; i < ORSPFeaturePointsRef.size(); i++) {
+    for (size_t i = 0; i < sz; i++) {
         // First convert existing point to world coordinate
         ORSP<double> worldORSPPoint;
         localToWorldORSP(ORSPFeaturePointsRef[i], worldORSPPoint);
-
-        // Populate grid accordingly
-        Eigen::Vector2d gridCoord;
-
-        pointToGridCoordinate(worldORSPPoint.center, gridCoord, mGridCenter);
-
-        // TODO: Check if gridCoord is in bounds
-
-        size_t gridX = static_cast<size_t>(gridCoord[0]);
-        size_t gridY = static_cast<size_t>(gridCoord[1]);
-        mORSPIndexGrid[gridX][gridY].push_back(i);
 
         // Copy over ORSP point
         mORSPFeaturePoints.push_back(worldORSPPoint);

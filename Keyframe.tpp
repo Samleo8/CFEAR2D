@@ -11,6 +11,12 @@
 #ifndef __CFEAR_KEYFRAME_TPP__
 #define __CFEAR_KEYFRAME_TPP__
 
+#include "OptimisationHandler.hpp" // for angleBetweenVectors
+#include <ceres/jet.h> // for functions like abs, max
+
+// External declaration of ANGLE_TOLERANCE_RAD, defined in OptimizationHandler.hpp
+extern const double ANGLE_TOLERANCE_RAD;
+
 /**
  * @brief Find the closest feature point to a given point in world
  * coordinates
@@ -18,8 +24,10 @@
  * aClosestORSPPoint can give garbage values.
  *
  * @tparam CastType Type to cast to
- * @param[in] aORSPPoint
- * @param[in] aClosestORSPPoint
+ * @param[in] aORSPPoint ORSP Point (WTF Keyframe point closest to this), world
+ * coordinates
+ * @param[out] aClosestORSPPoint Closest ORSP Point (from keyframe), world
+ * coordinates
  * @return Whether a closest feature point was found
  */
 template <typename CastType>
@@ -27,64 +35,43 @@ const bool Keyframe::findClosestORSP(const ORSP<CastType> &aORSPPoint,
                                      ORSP<CastType> &aClosestORSPPoint) const {
     // Init stuff
     bool found = false;
-    double closestDistance = ORSP_RADIUS;
+    CastType closestDistance = static_cast<CastType>(ORSP_RADIUS);
+    CastType ANGLE_TOLERANCE_RAD_CASTED =
+        static_cast<CastType>(ANGLE_TOLERANCE_RAD);
 
-    // Convert point to appropriate grid coordinate
-    const PointCart2D centerPoint(aORSPPoint.center);
+    // TODO: If necessary, appropriately cast to CastType (for Ceres)
+    const Vector2T<CastType> centerPoint = aORSPPoint.center;
+    // aORSPPoint.center.template cast<CastType>();
+    const Vector2T<CastType> normalVec = aORSPPoint.normal;
+    // aORSPPoint.normal.template cast<CastType>();
 
-    PointCart2D gridCoord;
+    // Find the minimum distance, but we need to loop through to check if the
+    // point is even valid because of angle tolerances
+    for (size_t i = 0, sz = mORSPFeaturePoints.size(); i < sz; i++) {
+        // Get potential closest point
+        const ORSP<double> &potentialClosestPoint = mORSPFeaturePoints[i];
 
-    pointToGridCoordinate(centerPoint, gridCoord, mGridCenter);
+        // Obtain casted version of center, normal of ORSP point
+        Vector2T<CastType> potentialCenter = potentialClosestPoint.center.template cast<CastType>();
+        Vector2T<CastType> potentialNormal =
+            potentialClosestPoint.normal.template cast<CastType>();
 
-    // Check around the grid square but only up to sampling factor
-    const ssize_t gridX = static_cast<ssize_t>(gridCoord[0]);
-    const ssize_t gridY = static_cast<ssize_t>(gridCoord[1]);
-    const ssize_t f = static_cast<ssize_t>(ORSP_RESAMPLE_FACTOR);
-    const ssize_t N = static_cast<ssize_t>(ORSP_KF_GRID_N);
+        // Check angle tolerance
+        const CastType angle =
+            angleBetweenVectors<CastType>(potentialNormal, normalVec);
 
-    for (ssize_t dx = -f; dx <= f; dx++) {
-        // Bounds check: X
-        ssize_t neighGridX = gridX + dx;
-        if (neighGridX < 0 || neighGridX >= N) continue;
+        if (ceres::abs(angle) > ANGLE_TOLERANCE_RAD_CASTED) continue;
 
-        for (ssize_t dy = -f; dy <= f; dy++) {
-            // Bounds check: Y
-            ssize_t neighGridY = gridY + dy;
-            if (neighGridY < 0 || neighGridY >= N) continue;
+        // Calculate distance between potential closest point, and
+        // check if it is indeed the closest point
+        CastType dist = getDistance<CastType>(potentialCenter, centerPoint);
 
-            // Now look through all filtered points in neighbours
-            const IndexList &potentialClosestPointIndices =
-                mORSPIndexGrid[neighGridX][neighGridY];
+        if (dist < closestDistance) {
+            closestDistance = dist;
+            aClosestORSPPoint.center = potentialCenter;
+            aClosestORSPPoint.normal = potentialNormal;
 
-            // No potential closest point, continue
-            if (potentialClosestPointIndices.size() == 0) continue;
-
-            // Loop through all potential closest points
-            for (size_t i = 0; i < potentialClosestPointIndices.size(); i++) {
-                // Get potential closest point
-                const ORSP<double> &potentialClosestPoint =
-                    mORSPFeaturePoints[potentialClosestPointIndices[i]];
-
-                const PointCart2D potentialClosestPointCart(
-                    potentialClosestPoint.center);
-
-                // Check angle tolerance
-                const double angle = angleBetweenVectors<double>(
-                    potentialClosestPoint.normal, aClosestORSPPoint.normal);
-
-                if (ABS(angle) > ANGLE_TOLERANCE_RAD) continue;
-
-                // Calculate distance between potential closest point, and
-                // check if it is indeed the closest point
-                double dist = centerPoint.distance(potentialClosestPointCart);
-                if (dist < closestDistance) {
-                    closestDistance = dist;
-                    aClosestORSPPoint =
-                        potentialClosestPoint; // should be ok if reference
-                                               // since persistent
-                    found = true;
-                }
-            }
+            found = true;
         }
     }
 

@@ -13,17 +13,6 @@
 #include "RadarImage.hpp"
 #include <Eigen/Core>
 
-/**
- * @brief Get distance (2-norm) between 2 points/vectors in X-Dim space
- *
- * @param[in] aVec1 First vector
- * @param[in] aVec2 Second vector
- * @return Distance between these 2 vectors (2-norm)
- */
-const double getDistance(const Eigen::VectorXd &aVec1,
-                         const Eigen::VectorXd &aVec2) {
-    return (aVec1 - aVec2).norm();
-}
 
 /**
  * @brief Associate filtered point coordinate to downsampled grid coordinate
@@ -133,7 +122,7 @@ void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
                 // Check if point is within search radius
                 // TODO: Extra efficiency constraint: if dx == dy == 0, then
                 // guarenteed to be in
-                const double dist = getDistance(point, centroid);
+                const double dist = getDistance<double>(point, centroid);
 
                 if (dist <= ORSP_RADIUS) {
                     aValidNeighbours.push_back(point);
