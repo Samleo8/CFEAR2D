@@ -43,8 +43,6 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
     size_t sz = ORSPFeaturePointsRef.size();
     mORSPFeaturePoints.reserve(sz);
 
-    mORSPCenters(DIMENSION, sz);
-
     // TODO: Check if this is correct.
     // Loop through all ORSP feature points, convert to world coordinates and
     // convert to world coordinate
@@ -55,9 +53,6 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
 
         // Copy over ORSP point
         mORSPFeaturePoints.push_back(worldORSPPoint);
-
-        // Populate matrix accordingly
-        mORSPCenters.col(i) = worldORSPPoint.center;
     }
 }
 

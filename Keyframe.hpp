@@ -42,7 +42,7 @@ typedef std::vector<size_t> IndexList;
 class Keyframe {
   private:
     static const size_t DIMENSION = 2;
-
+    
     /** @brief World pose, probably mainly for plotting */
     Pose2D mWorldPose;
 
@@ -60,16 +60,6 @@ class Keyframe {
      * `const` because circular_buffer needs the copy assignment.
      */
     PoseTransform2D<double> mWorldToLocalTransform;
-
-    /**
-     * @brief Matrix of center of ORSP feature points (dim x N). Used instead of
-     * std::vector for quick processing of ORSP feature points distance
-     * calculation as a batch.
-     * @note In world coordinates.
-     * @todo Currently DIMENSION = 2 because dealing with 2D point. Will
-     * eventually change to 3D
-     */
-    Eigen::Matrix<double, DIMENSION, Eigen::Dynamic> mORSPCenters;
 
     /** @brief List/Vector of ORSP feature points in WORLD coordinates */
     ORSPVec<double> mORSPFeaturePoints;

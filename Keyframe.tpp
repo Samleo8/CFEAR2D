@@ -11,15 +11,22 @@
 #ifndef __CFEAR_KEYFRAME_TPP__
 #define __CFEAR_KEYFRAME_TPP__
 
+#include <ceres/jet.h> // for functions like abs, max
+
+// External declaration of ANGLE_TOLERANCE_RAD, defined in OptimizationHandler.hpp
+extern const double ANGLE_TOLERANCE_RAD;
+
 /**
  * @brief Find the closest feature point to a given point in world
  * coordinates
  * @note User needs to check if a feature point was found; otherwise, the
  * aClosestORSPPoint can give garbage values.
  *
- * @tparam T Type to cast to
- * @param[in] aORSPPoint
- * @param[in] aClosestORSPPoint
+ * @tparam CastType Type to cast to
+ * @param[in] aORSPPoint ORSP Point (WTF Keyframe point closest to this), world
+ * coordinates
+ * @param[out] aClosestORSPPoint Closest ORSP Point (from keyframe), world
+ * coordinates
  * @return Whether a closest feature point was found
  */
 template <typename CastType>
@@ -27,41 +34,45 @@ const bool Keyframe::findClosestORSP(const ORSP<CastType> &aORSPPoint,
                                      ORSP<CastType> &aClosestORSPPoint) const {
     // Init stuff
     bool found = false;
-    double closestDistance = ORSP_RADIUS;
+    CastType closestDistance = static_cast<CastType>(ORSP_RADIUS);
+    CastType ANGLE_TOLERANCE_RAD_CASTED =
+        static_cast<CastType>(ANGLE_TOLERANCE_RAD);
 
-    // Convert point to appropriate grid coordinate, casting to T type (for Ceres)
-    const Vector2T<CastType> centerPoint = aORSPPoint.center.template cast<CastType>();
+    // TODO: If necessary, appropriately cast to CastType (for Ceres)
+    const Vector2T<CastType> centerPoint = aORSPPoint.center;
+    // aORSPPoint.center.template cast<CastType>();
+    const Vector2T<CastType> normalVec = aORSPPoint.normal;
+    // aORSPPoint.normal.template cast<CastType>();
 
-    // Cast the matrix of ORSP centers to be of type T (for Ceres)
-    Eigen::Matrix<CastType, Keyframe::DIMENSION, Eigen::Dynamic> ORSPCenters =
-        mORSPCenters.template cast<CastType>();
+    // Find the minimum distance, but we need to loop through to check if the
+    // point is even valid because of angle tolerances
+    for (size_t i = 0, sz = mORSPFeaturePoints.size(); i < sz; i++) {
+        // Get potential closest point
+        const ORSP<double> &potentialClosestPoint = mORSPFeaturePoints[i];
 
-    // // Loop through all potential closest points
-    // for (size_t i = 0; i < potentialClosestPointIndices.size(); i++) {
-    //     // Get potential closest point
-    //     const ORSP<double> &potentialClosestPoint =
-    //         mORSPFeaturePoints[potentialClosestPointIndices[i]];
+        // Obtain casted version of center, normal of ORSP point
+        Vector2T<CastType> potentialCenter = potentialClosestPoint.center.template cast<CastType>();
+        Vector2T<CastType> potentialNormal =
+            potentialClosestPoint.normal.template cast<CastType>();
 
-    //     const PointCart2D potentialClosestPointCart(
-    //         potentialClosestPoint.center);
+        // Check angle tolerance
+        const CastType angle =
+            angleBetweenVectors<CastType>(potentialNormal, normalVec);
 
-    //     // Check angle tolerance
-    //     const double angle = angleBetweenVectors<double>(
-    //         potentialClosestPoint.normal, aClosestORSPPoint.normal);
+        if (ceres::abs(angle) > ANGLE_TOLERANCE_RAD_CASTED) continue;
 
-    //     if (ABS(angle) > ANGLE_TOLERANCE_RAD) continue;
+        // Calculate distance between potential closest point, and
+        // check if it is indeed the closest point
+        CastType dist = getDistance<CastType>(potentialCenter, centerPoint);
 
-    //     // Calculate distance between potential closest point, and
-    //     // check if it is indeed the closest point
-    //     double dist = centerPoint.distance(potentialClosestPointCart);
-    //     if (dist < closestDistance) {
-    //         closestDistance = dist;
-    //         aClosestORSPPoint =
-    //             potentialClosestPoint; // should be ok if reference
-    //                                     // since persistent
-    //         found = true;
-    //     }
-    // }
+        if (dist < closestDistance) {
+            closestDistance = dist;
+            aClosestORSPPoint.center = potentialCenter;
+            aClosestORSPPoint.normal = potentialNormal;
+
+            found = true;
+        }
+    }
 
     return found;
 }
