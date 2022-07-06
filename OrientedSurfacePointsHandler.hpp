@@ -23,11 +23,10 @@
  *
  */
 
-#ifndef __ORSP_H__
-#define __ORSP_H__
+#ifndef __CFEAR_ORSP_HANDLER_HPP__
+#define __CFEAR_ORSP_HANDLER_HPP__
 
 #include "PointCart2D.hpp"
-#include "PoseTransformHandler.hpp"
 #include "RadarImageHandler.hpp"
 
 #include <Eigen/Core>
@@ -72,4 +71,4 @@ void pointToGridCoordinate(const PointCart2D &aPoint,
                            const PointCart2D &aGridCenter = PointCart2D(
                                RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M));
 
-#endif
+#endif // __CFEAR_ORSP_HANDLER_HPP__

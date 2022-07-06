@@ -38,7 +38,8 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
                   aWorldPose.position[1] + RADAR_MAX_RANGE_M_SQRT2) {
     // Initialize feature points vector, which needs to be populated by
     // converted feature points from RadarImage to world coordinates
-    const ORSPVec<double> &ORSPFeaturePointsRef = aRadarImage.getORSPFeaturePoints();
+    const ORSPVec<double> &ORSPFeaturePointsRef =
+        aRadarImage.getORSPFeaturePoints();
     mORSPFeaturePoints.reserve(ORSPFeaturePointsRef.size());
 
     // TODO: Check if this is correct.
@@ -149,80 +150,4 @@ void Keyframe::worldToLocalORSP(const ORSP<double> &aWorldORSPPoint,
     // and parameter order
     convertORSPCoordinates<double>(aWorldORSPPoint, aLocalORSPPoint,
                                    mWorldToLocalTransform);
-}
-
-/**
- * @brief Find the closest feature point to a given point in world
- * coordinates
- * @note User needs to check if a feature point was found; otherwise, the
- * aClosestORSPPoint can give garbage values.
- * @return Whether a closest feature point was found
- */
-
-const bool Keyframe::findClosestORSP(const ORSP<double> &aORSPPoint,
-                                     ORSP<double> &aClosestORSPPoint) const {
-    // Init stuff
-    bool found = false;
-    double closestDistance = ORSP_RADIUS;
-
-    // Convert point to appropriate grid coordinate
-    const PointCart2D centerPoint(aORSPPoint.center);
-
-    PointCart2D gridCoord;
-
-    pointToGridCoordinate(centerPoint, gridCoord, mGridCenter);
-
-    // Check around the grid square but only up to sampling factor
-    const ssize_t gridX = static_cast<ssize_t>(gridCoord.x);
-    const ssize_t gridY = static_cast<ssize_t>(gridCoord.y);
-    const ssize_t f = static_cast<ssize_t>(ORSP_RESAMPLE_FACTOR);
-    const ssize_t N = static_cast<ssize_t>(ORSP_KF_GRID_N);
-
-    for (ssize_t dx = -f; dx <= f; dx++) {
-        // Bounds check: X
-        ssize_t neighGridX = gridX + dx;
-        if (neighGridX < 0 || neighGridX >= N) continue;
-
-        for (ssize_t dy = -f; dy <= f; dy++) {
-            // Bounds check: Y
-            ssize_t neighGridY = gridY + dy;
-            if (neighGridY < 0 || neighGridY >= N) continue;
-
-            // Now look through all filtered points in neighbours
-            const IndexList &potentialClosestPointIndices =
-                mORSPIndexGrid[neighGridX][neighGridY];
-
-            // No potential closest point, continue
-            if (potentialClosestPointIndices.size() == 0) continue;
-
-            // Loop through all potential closest points
-            for (size_t i = 0; i < potentialClosestPointIndices.size(); i++) {
-                // Get potential closest point
-                const ORSP<double> &potentialClosestPoint =
-                    mORSPFeaturePoints[potentialClosestPointIndices[i]];
-
-                const PointCart2D potentialClosestPointCart(
-                    potentialClosestPoint.center);
-
-                // Check angle tolerance
-                const double angle = angleBetweenVectors<double>(
-                    potentialClosestPoint.normal, aClosestORSPPoint.normal);
-
-                if (ABS(angle) > ANGLE_TOLERANCE_RAD) continue;
-
-                // Calculate distance between potential closest point, and
-                // check if it is indeed the closest point
-                double dist = centerPoint.distance(potentialClosestPointCart);
-                if (dist < closestDistance) {
-                    closestDistance = dist;
-                    aClosestORSPPoint =
-                        potentialClosestPoint; // should be ok if reference
-                                               // since persistent
-                    found = true;
-                }
-            }
-        }
-    }
-
-    return found;
 }

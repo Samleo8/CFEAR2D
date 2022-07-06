@@ -8,8 +8,8 @@
  * @copyright Copyright (c) 2022
  */
 
-#ifndef __POSE_2D_HPP__
-#define __POSE_2D_HPP__
+#ifndef __CFEAR_POSE_2D_HPP__
+#define __CFEAR_POSE_2D_HPP__
 
 #include <Eigen/Geometry>
 
@@ -62,4 +62,4 @@ struct Pose2D {
 
 typedef struct Pose2D Pose2D; ///< typedef for struct Pose2D
 
-#endif // __POSE_2D_HPP__
+#endif // __CFEAR_POSE_2D_HPP__

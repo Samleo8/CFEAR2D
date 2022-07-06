@@ -15,6 +15,7 @@
 #include "Keyframe.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
+#include "TransformDefines.hpp"
 
 #include <Eigen/Geometry>
 #include <Eigen/LU>
@@ -34,7 +35,7 @@
 // TOOD: 2D for now
 template <typename T> struct OptimParams {
     // Eigen::Quaterniond q;     ///< rotation
-    Eigen::Matrix<T, 2, 1> translation; ///< translation
+    Vector2T<T> translation; ///< translation
     T theta;                            ///< rotation
 };
 

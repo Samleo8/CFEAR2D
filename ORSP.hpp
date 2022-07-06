@@ -4,15 +4,16 @@
  * @brief Templated ORSP Representation class
  * @version 0.1
  * @date 2022-07-06
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 
 #ifndef __ORSP_HPP__
 #define __ORSP_HPP__
 
 #include "TransformDefines.hpp"
+#include <vector>
 
 /**
  * @brief Oriented Surface Point representation, holds mean and normal

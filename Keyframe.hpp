@@ -22,9 +22,11 @@
 #include <Eigen/Geometry>
 #include <vector>
 
+#include "ORSP.hpp"
 #include "OrientedSurfacePointsHandler.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
+#include "TransformDefines.hpp"
 
 /**
  * @brief Maximum number of grid squares, used in ORSP grid formation.
@@ -99,9 +101,12 @@ class Keyframe {
                           ORSP<double> &aLocalORSPPoint) const;
 
     // Find the closest ORSP point to a given point
+    template <typename CastType>
     [[nodiscard]] const bool
     findClosestORSP(const ORSP<double> &aORSPPoint,
                     ORSP<double> &aClosestORSPPoint) const;
 };
+
+#include "Keyframe.tpp"
 
 #endif // __KEYFRAME_HPP__

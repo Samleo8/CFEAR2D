@@ -87,7 +87,7 @@ const bool RegistrationCostFunctor::point2LineCost(
         // Get the ORSP point in world coordinates
         // TODO: Need templated here, because Jacobian needed for transform?
         ORSP<T> worldORSPPoint;
-        convertORSPCoordinates<T>(static_cast<ORSP<T>>(featurePt),
+        convertORSPCoordinates<T>(featurePt,
                                   worldORSPPoint, rImgTransform);
                                   
         ORSP<T> closestORSPPoint;
