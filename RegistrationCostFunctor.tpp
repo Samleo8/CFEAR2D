@@ -105,8 +105,9 @@ const bool RegistrationCostFunctor::point2LineCost(
                 worldORSPPoint.center - closestORSPPoint.center);
             
             // TODO: Huber loss here or from Ceres?
-            cost +=
-                HuberLoss<T>(dotted, HUBER_DELTA_DEFAULT_TEMPLATED);
+            cost += dotted;
+            // cost +=
+            //     HuberLoss<T>(dotted, HUBER_DELTA_DEFAULT_TEMPLATED);
         }
     }
 
