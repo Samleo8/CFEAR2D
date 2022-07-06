@@ -17,14 +17,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS)
 # Need to disable multithreading
 add_compile_definitions(EIGEN_DONT_PARALLELIZE)
 
-# Ceres Solver Test
-add_executable(
-  CeresTest
-  CeresSolverTest.cpp)
-set_property(TARGET CeresTest PROPERTY C_STANDARD 11)
-set_property(TARGET CeresTest PROPERTY CXX_STANDARD 17)
-target_link_libraries(CeresTest ${CERES_LIBRARIES})
-
 # Radar Testing Module
 add_executable(
   TestRadar
