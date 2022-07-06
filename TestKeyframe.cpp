@@ -178,7 +178,7 @@ void outputImgFromRImg(const RadarImage &aRImg, cv::Mat &outputImgORSP,
     // Draw ORSP points
     const double VEC_LEN = 2;
     for (size_t i = 0, sz = featurePoints.size(); i < sz; i++) {
-        const ORSP &featPt = featurePoints[i];
+        const ORSP<double> &featPt = featurePoints[i];
 
         // Calculate center of point and end of normal vector
         Eigen::Vector2d featPtCenter = featPt.center;

@@ -45,6 +45,22 @@ template <typename T> class ORSP {
      * @param[in] aORSP ORSP to copy
      */
     ORSP(const ORSP<T> &aORSP) : center(aORSP.center), normal(aORSP.normal) {}
+
+    // template <typename BaseType>
+    // ORSP(const ORSP<BaseType> &aORSP)
+    //     : center(aORSP.center.template cast<T>()),
+    //       normal(aORSP.normal.template cast<T>()) {}
+
+    /**
+     * @brief Templated casting function for a different type
+     *
+     * @tparam CastType Type to cast to
+     * @param[out] aORSP ORSP point to transfer casted data into
+     */
+    template <typename CastType> void cast(ORSP<CastType> &aORSP) const {
+        aORSP.center = center.template cast<CastType>();
+        aORSP.normal = normal.template cast<CastType>();
+    }
 };
 
 /** @brief Typedef for OrientedSurfacePoint struct */

@@ -39,7 +39,7 @@ template <typename T> T constrainAngle(const T &aAngleRad) {
 template <typename T>
 const T angleBetweenVectors(const VectorXT<T> &aVec1,
                             const VectorXT<T> &aVec2) {
-    double unnormalizedAngle =
+    T unnormalizedAngle =
         ceres::acos(aVec1.dot(aVec2) / (aVec1.norm() * aVec2.norm()));
 
     return constrainAngle<T>(unnormalizedAngle);

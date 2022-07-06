@@ -85,11 +85,13 @@ const bool RegistrationCostFunctor::point2LineCost(
     const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
     for (const ORSP<double> &featurePt : rImgFeaturePts) {
         // Get the ORSP point in world coordinates
-        // TODO: Need templated here, because Jacobian needed for transform?
+        // NOTE: Need templated here, because Jacobian needed for transform
         ORSP<T> worldORSPPoint;
-        convertORSPCoordinates<T>(featurePt,
-                                  worldORSPPoint, rImgTransform);
-                                  
+        ORSP<T> featurePtCasted;
+        featurePt.template cast<T>(featurePtCasted);
+
+        convertORSPCoordinates<T>(featurePtCasted, worldORSPPoint, rImgTransform);
+
         ORSP<T> closestORSPPoint;
         const bool found =
             aKeyframe.findClosestORSP<T>(worldORSPPoint, closestORSPPoint);
@@ -99,13 +101,12 @@ const bool RegistrationCostFunctor::point2LineCost(
             foundMatch = true;
 
             // TODO: now compute cost according to formula
-            double dotted = closestORSPPoint.normal.dot(
+            T dotted = closestORSPPoint.normal.dot(
                 worldORSPPoint.center - closestORSPPoint.center);
-            T dotted_templated = static_cast<T>(dotted);
-
+            
             // TODO: Huber loss here or from Ceres?
             cost +=
-                HuberLoss<T>(dotted_templated, HUBER_DELTA_DEFAULT_TEMPLATED);
+                HuberLoss<T>(dotted, HUBER_DELTA_DEFAULT_TEMPLATED);
         }
     }
 
