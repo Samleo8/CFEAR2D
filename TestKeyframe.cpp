@@ -275,7 +275,7 @@ int main(int argc, char **argv) {
     RegistrationCostFunctor functor(currRImg, keyframeList);
     ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
         RegistrationCostFunctor, REGOPT_NUM_RESIDUALS, REGOPT_POS_PARAM_SIZE,
-        REGOPT_ORIENT_PARAM_SIZE>(&functor, ceres::DO_NOT_TAKE_OWNERSHIP);
+        REGOPT_ORIENT_PARAM_SIZE>(&functor);
 
     // NOTE: If want to keep functor pointer, by updating currRImg and
     // keyframeList instead of creating new functor each iteration,
