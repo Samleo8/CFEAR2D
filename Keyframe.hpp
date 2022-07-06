@@ -22,6 +22,8 @@
 #include <Eigen/Geometry>
 #include <vector>
 
+#include <boost/circular_buffer.hpp>
+
 #include "ORSP.hpp"
 #include "OrientedSurfacePointsHandler.hpp"
 #include "PoseTransformHandler.hpp"
@@ -42,7 +44,7 @@ typedef std::vector<size_t> IndexList;
 class Keyframe {
   private:
     static const size_t DIMENSION = 2;
-    
+
     /** @brief World pose, probably mainly for plotting */
     Pose2D mWorldPose;
 
@@ -88,6 +90,9 @@ class Keyframe {
     findClosestORSP(const ORSP<CastType> &aORSPPoint,
                     ORSP<CastType> &aClosestORSPPoint) const;
 };
+
+/** @brief Keyframe buffer typedef */
+typedef boost::circular_buffer<Keyframe> KeyframeBuffer;
 
 #include "Keyframe.tpp"
 
