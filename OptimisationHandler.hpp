@@ -36,7 +36,7 @@
 template <typename T> struct OptimParams {
     // Eigen::Quaterniond q;     ///< rotation
     Vector2T<T> translation; ///< translation
-    T theta;                            ///< rotation
+    T theta;                 ///< rotation
 };
 
 /** @brief Keyframe buffer size */
@@ -56,8 +56,9 @@ const double HUBER_DELTA_DEFAULT = 0.1;
 
 template <typename T> T constrainAngle(const T &aAngleRad);
 
-template <typename T>
-const T angleBetweenVectors(const VectorXT<T> &aVec1, const VectorXT<T> &aVec2);
+template <typename T, int Dimension = 2>
+const T angleBetweenVectors(const VectorDimT<T, Dimension> &aVec1,
+                            const VectorDimT<T, Dimension> &aVec2);
 
 template <typename T>
 const PoseTransform2D<T>

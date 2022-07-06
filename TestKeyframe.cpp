@@ -263,7 +263,7 @@ int main(int argc, char **argv) {
 
     // TODO: Ceres problem, maybe put into function
     ceres::Problem problem;
-    ceres::Solver::Summary;
+    ceres::Solver::Summary summary;
     ceres::Solver::Options options;
     // as specified by paper, can potentially use L-BFGS
     options.line_search_direction_type = ceres::BFGS;
@@ -281,7 +281,7 @@ int main(int argc, char **argv) {
     // keyframeList instead of creating new functor each iteration,
     // then use ceres::DO_NOT_TAKE_OWNERSHIP
 
-    ceres::LossFunction *lossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
+    ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
 
     // Angle Manifold
     ceres::Manifold *angleManifold = AngleManifold::Create();
@@ -307,8 +307,8 @@ int main(int argc, char **argv) {
         double positionArr[2] = { currWorldPose.position[0],
                                   currWorldPose.position[1] };
         double orientationArr[1] = { currWorldPose.orientation };
-        problem.AddResidualBlock(regCostFn, regLossFn, positionArr,
-                                 orientationArr);
+        ceres::ResidualBlockId resBlockID = problem.AddResidualBlock(
+            regCostFn, regLossFn, positionArr, orientationArr);
         problem.SetManifold(orientationArr, angleManifold);
 
         // TODO: only set once perhaps?
@@ -321,7 +321,8 @@ int main(int argc, char **argv) {
                       << std::endl;
 
             // Save the parameters
-            currWorldPose.position << positionArr;
+            currWorldPose.position =
+                Eigen::Vector2d(positionArr[0], positionArr[1]);
             currWorldPose.orientation = orientationArr[0];
         }
         else {
@@ -330,7 +331,7 @@ int main(int argc, char **argv) {
 
         problem.RemoveParameterBlock(positionArr);
         problem.RemoveParameterBlock(orientationArr);
-        problem.RemoveResidualBlock(regCostFn);
+        problem.RemoveResidualBlock(resBlockID);
 
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);

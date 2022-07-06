@@ -1,8 +1,8 @@
 /**
  * @file OptimisationHandler.tpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
- * @brief Implementation file for templated functions related to optimization and cost functions for bundle
- * adjustment
+ * @brief Implementation file for templated functions related to optimization
+ * and cost functions for bundle adjustment
  * @version 0.1
  * @date 2022-06-28
  *
@@ -36,9 +36,9 @@ template <typename T> T constrainAngle(const T &aAngleRad) {
  * @param[in] aVec2 Vector 2 of arbitrary dimenion k
  * @return Constrained Angle between the two vectors in radians
  */
-template <typename T>
-const T angleBetweenVectors(const VectorXT<T> &aVec1,
-                            const VectorXT<T> &aVec2) {
+template <typename T, int Dimension>
+const T angleBetweenVectors(const VectorDimT<T, Dimension> &aVec1,
+                            const VectorDimT<T, Dimension> &aVec2) {
     T unnormalizedAngle =
         ceres::acos(aVec1.dot(aVec2) / (aVec1.norm() * aVec2.norm()));
 
