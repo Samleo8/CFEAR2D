@@ -47,7 +47,7 @@ getCentroid(const VectorDimdList<Dimension> &aPoints) {
 template <size_t Dimension>
 void getMeanCovariance(const VectorDimdList<Dimension> &aPoints,
                        VectorDimd<Dimension> &aMean,
-                       VectorDimd<Dimension> &aCovMatrix) {
+                       MatrixDimd<Dimension> &aCovMatrix) {
     // Convert list of points into Eigen matrix, then use vectorization
     // NOTe: Eigen is col-major, so colwise access is faster.
     const size_t sz = aPoints.size();

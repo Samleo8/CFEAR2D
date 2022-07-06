@@ -71,7 +71,7 @@ getCentroid(const VectorDimdList<Dimension> &aPoints);
 template <size_t Dimension>
 void getMeanCovariance(const VectorDimdList<Dimension> &aPoints,
                        VectorDimd<Dimension> &aMean,
-                       VectorDimd<Dimension> &aCovMatrix);
+                       MatrixDimd<Dimension> &aCovMatrix);
 
 void pointToGridCoordinate(const Eigen::Vector2d &aPoint,
                            Eigen::Vector2d &aGridCoordinate,

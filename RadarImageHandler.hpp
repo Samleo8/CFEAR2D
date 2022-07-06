@@ -85,6 +85,10 @@ typedef std::vector<Eigen::VectorXd> PointXDList;
 template <size_t Dimension>
 using VectorDimd = Eigen::Matrix<double, Dimension, 1>;
 
+/** @brief Typedef for NxN Matrix of templated dimension */
+template <size_t Dimension>
+using MatrixDimd = Eigen::Matrix<double, Dimension, Dimension>;
+
 /** @brief Typedef for std::vector of Eigen::Vector of templated dimension */
 template <size_t Dimension>
 using VectorDimdList = std::vector<VectorDimd<Dimension>>;
