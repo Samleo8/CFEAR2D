@@ -60,41 +60,6 @@ const size_t ORSP_VALID_NEIGHBOUR_MIN = 6;
  * defined */
 const double ORSP_EIGENVAL_THRESHOLD = 10e5;
 
-/**
- * @brief Oriented Surface Point representation, holds mean and normal
- * vector obtained from covariance
- */
-template <typename T> class ORSP {
-  public:
-    /// @brief Mean / center of point
-    Vector2T<T> center;
-
-    /// @brief Normal vector
-    Vector2T<T> normal;
-
-    /**
-     * @brief Empty constructor for OrientedSurfacePoint
-     */
-    ORSP() : center(Vector2T<T>::Zero()), normal(Vector2T<T>::Zero()) {}
-
-    /**
-     * @brief Constructor for OrientedSurfacePoint
-     * @param[in] aCenter Center of point
-     * @param[in] aNormal Normal vector
-     */
-    ORSP(const Vector2T<T> &aCenter, const Vector2T<T> &aNormal)
-        : center(aCenter), normal(aNormal) {}
-
-    /**
-     * @brief Copy Constructor for OrientedSurfacePoint
-     * @param[in] aORSP ORSP to copy
-     */
-    ORSP(const ORSP<T> &aORSP) : center(aORSP.center), normal(aORSP.normal) {}
-};
-
-/** @brief Typedef for OrientedSurfacePoint struct */
-template <typename T = double> using ORSPVec = std::vector<ORSP<T>>;
-
 /// NOTE: All class related functions are declared in @see RadarImage.hpp.
 /// Helper functions are here.
 const PointCart2D getCentroid(const Point2DList &aPoints);
