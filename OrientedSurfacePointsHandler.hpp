@@ -27,6 +27,7 @@
 #define __CFEAR_ORSP_HANDLER_HPP__
 
 #include "RadarImageHandler.hpp"
+#include "TransformDefines.hpp"
 
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>

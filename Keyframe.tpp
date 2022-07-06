@@ -11,6 +11,7 @@
 #ifndef __CFEAR_KEYFRAME_TPP__
 #define __CFEAR_KEYFRAME_TPP__
 
+#include "OptimisationHandler.hpp" // for angleBetweenVectors
 #include <ceres/jet.h> // for functions like abs, max
 
 // External declaration of ANGLE_TOLERANCE_RAD, defined in OptimizationHandler.hpp
