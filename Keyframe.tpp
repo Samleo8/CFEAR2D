@@ -58,7 +58,7 @@ const bool Keyframe::findClosestORSP(const ORSP<CastType> &aORSPPoint,
 
         // Check angle tolerance
         const CastType angle =
-            angleBetweenVectors<CastType>(potentialNormal, normalVec);
+            angleBetweenVectors<CastType, Keyframe::DIMENSION>(potentialNormal, normalVec);
 
         if (ceres::abs(angle) > ANGLE_TOLERANCE_RAD_CASTED) continue;
 
