@@ -14,6 +14,18 @@
 #define __CFEAR_ORSP_HANDLER_TPP__
 
 /**
+ * @brief Get distance (2-norm) between 2 points/vectors in X-Dim space
+ *
+ * @param[in] aVec1 First vector
+ * @param[in] aVec2 Second vector
+ * @return Distance between these 2 vectors (2-norm)
+ */
+template <typename T>
+const double getDistance(const VectorXT<T> &aVec1, const VectorXT<T> &aVec2) {
+    return (aVec1 - aVec2).norm();
+}
+
+/**
  * @brief Get Centroid from list of X-D points
  *
  * @param[in] aPoints List of points
