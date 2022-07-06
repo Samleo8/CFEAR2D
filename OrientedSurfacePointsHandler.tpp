@@ -21,7 +21,7 @@
  * @return Distance between these 2 vectors (2-norm)
  */
 template <typename T>
-const double getDistance(const VectorXT<T> &aVec1, const VectorXT<T> &aVec2) {
+const T getDistance(const VectorXT<T> &aVec1, const VectorXT<T> &aVec2) {
     return (aVec1 - aVec2).norm();
 }
 

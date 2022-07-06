@@ -62,7 +62,7 @@ const double ORSP_EIGENVAL_THRESHOLD = 10e5;
 /// NOTE: All class related functions are declared in @see RadarImage.hpp.
 /// Helper functions are here.
 template <typename T>
-const double getDistance(const VectorXT<T> &aVec1, const VectorXT<T> &aVec2);
+const T getDistance(const VectorXT<T> &aVec1, const VectorXT<T> &aVec2);
 
 template <size_t Dimension>
 const VectorDimd<Dimension>
