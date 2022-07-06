@@ -39,8 +39,8 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
  class RegistrationCostFunctor {
   private:
     // TODO: is it ok if this is a reference?
-    const RadarImage mRImg;
-    const KeyframeBuffer mKFBuffer;
+    const RadarImage &mRImg;
+    const KeyframeBuffer &mKFBuffer;
 
   public:
     // Constructors
