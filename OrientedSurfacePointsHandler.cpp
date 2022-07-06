@@ -11,11 +11,11 @@
 
 #include "OrientedSurfacePointsHandler.hpp"
 #include "RadarImage.hpp"
-#include <cstddef>
+#include <Eigen/Core>
 
 /**
  * @brief Get distance (2-norm) between 2 points/vectors in X-Dim space
- * 
+ *
  * @param[in] aVec1 First vector
  * @param[in] aVec2 Second vector
  * @return Distance between these 2 vectors (2-norm)
@@ -23,58 +23,6 @@
 const double getDistance(const Eigen::VectorXd &aVec1,
                          const Eigen::VectorXd &aVec2) {
     return (aVec1 - aVec2).norm();
-}
-
-/**
- * @brief Get Centroid from list of X-D points
- *
- * @param[in] aPoints List of points
- * @param[in] aDimension Dimension of points
- * @return const Point2D
- */
-const Eigen::VectorXd getCentroid(const PointXDList &aPoints,
-                                  const size_t aDimension) {
-    Eigen::VectorXd centroid = Eigen::VectorXd::Zero(aDimension);
-
-    // Empty list: Return (0,0) for centroid
-    if (aPoints.size() == 0) return centroid;
-
-    // Otherwise, calculate centroid by summing up all coordinates
-    for (const Eigen::VectorXd &point : aPoints) {
-        centroid += point;
-    }
-
-    // And dividing by size
-    size_t sz = aPoints.size();
-    return centroid / sz;
-}
-
-/**
- * @brief Get mean and covariance matrix from list of 2D points
- *
- * @param[in] aPoints
- * @param[in] aMean
- * @param[in] aCovMatrix
- */
-void getMeanCovariance(const PointXDList &aPoints, Eigen::VectorXd &aMean,
-                       Eigen::MatrixXd &aCovMatrix, const size_t aDimension) {
-    // Convert list of points into Eigen matrix, then use vectorization
-    // NOTe: Eigen is col-major, so colwise access is faster.
-    const size_t sz = aPoints.size();
-    Eigen::MatrixXd pointsListMat(aDimension, sz);
-
-    for (size_t i = 0; i < sz; i++) {
-        pointsListMat.col(i) = aPoints[i];
-    }
-    pointsListMat.transposeInPlace();
-
-    // Use vectorisation to get mean and covariance
-    aMean = pointsListMat.colwise().mean();
-
-    Eigen::MatrixXd deltaExpected(sz, aDimension);
-    deltaExpected = pointsListMat.rowwise() - aMean.transpose();
-
-    aCovMatrix = deltaExpected.transpose() * deltaExpected / sz;
 }
 
 /**
@@ -95,9 +43,9 @@ void pointToGridCoordinate(const Eigen::Vector2d &aPoint,
     //     floor((aPoint[1] + aGridCenter[1]) / ORSP_GRID_SQUARE_WIDTH);
 
     // Vectorized operations, TODO: also allowing for multidimensional cases?
-    aGridCoordinate = (aPoint + aGridCenter);
-    aGridCoordinate.floor();
-    aGridCoordinate /= ORSP_GRID_SQUARE_WIDTH;
+    aGridCoordinate = (aPoint + aGridCenter) / ORSP_GRID_SQUARE_WIDTH;
+
+    // TODO: Floor the thing but Eigen 3.37 doesnt have floor() yet, now rely on int casting
 
     // TODO: Bound aGridCoordinate to be within grid
 }
@@ -138,7 +86,7 @@ void RadarImage::downsamplePointCloud() {
     // Now find the centroids
     for (size_t i = 0; i < ORSP_GRID_N; i++) {
         for (size_t j = 0; j < ORSP_GRID_N; j++) {
-            mORSPCentroidGrid[i][j] = getCentroid(mORSPGrid[i][j]);
+            mORSPCentroidGrid[i][j] = getCentroid<2>(mORSPGrid[i][j]);
         }
     }
 
@@ -240,7 +188,7 @@ void RadarImage::estimatePointDistribution() {
             Eigen::Vector2d normalVector;
             Eigen::Matrix2d covMatrix;
 
-            getMeanCovariance(validNeighbours, mean, covMatrix);
+            getMeanCovariance<2>(validNeighbours, mean, covMatrix);
 
             // From covariance matrix, use SVD to get eigenvectors
             Eigen::EigenSolver<Eigen::Matrix2d> eigenSolver(covMatrix);

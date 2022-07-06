@@ -177,7 +177,8 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
         FilteredPoint point = filteredPoints[i];
 
         cv::Point2d pointCV;
-        point.toCV(pointCV);
+        pointCV.x = point[0];
+        pointCV.y = point[1];
 
         // Draw filtered point on image
         // NOTE: Point is in meters, but we want to display it in pixels

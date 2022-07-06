@@ -14,9 +14,9 @@
 #ifndef __RADAR_IMAGE_H__
 #define __RADAR_IMAGE_H__
 
+#include "ORSP.hpp"
 #include "OrientedSurfacePointsHandler.hpp" // some ORSP-related functions for the
 #include "RadarImageHandler.hpp" // needed to handle file path and data
-#include <eigen3/Eigen/src/Core/Matrix.h>
                                  // RadarImage class are defined here
 
 // Constants

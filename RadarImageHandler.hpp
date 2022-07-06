@@ -11,7 +11,6 @@
 #define __RADAR_IMAGE_HANDLER_H__
 
 /** @note Needed on Windows to ensure math constants like M_PI are included */
-#include <eigen3/Eigen/src/Core/Matrix.h>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -72,6 +71,27 @@ typedef struct {
  * @see RadarImage::getTopK()
  */
 typedef std::pair<double, size_t> ValueIndexPair;
+
+/** @brief Typedef for list of 2-dimensional points */
+typedef std::vector<Eigen::Vector2d> Point2DList;
+
+/** @brief Typedef for list of 3-dimensional points */
+typedef std::vector<Eigen::Vector2d> Point3DList;
+
+/** @brief Typedef for list of X-dimensional points */
+typedef std::vector<Eigen::VectorXd> PointXDList;
+
+/** @brief Typedef for Vector of templated dimension */
+template <size_t Dimension>
+using VectorDimd = Eigen::Matrix<double, Dimension, 1>;
+
+/** @brief Typedef for NxN Matrix of templated dimension */
+template <size_t Dimension>
+using MatrixDimd = Eigen::Matrix<double, Dimension, Dimension>;
+
+/** @brief Typedef for std::vector of Eigen::Vector of templated dimension */
+template <size_t Dimension>
+using VectorDimdList = std::vector<VectorDimd<Dimension>>;
 
 // Defines
 /** @brief Simple MAX function */

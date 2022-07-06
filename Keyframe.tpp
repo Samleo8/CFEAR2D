@@ -24,7 +24,7 @@
  */
 template <typename CastType>
 const bool Keyframe::findClosestORSP(const ORSP<CastType> &aORSPPoint,
-                                     ORSP<double> &aClosestORSPPoint) const {
+                                     ORSP<CastType> &aClosestORSPPoint) const {
     // Init stuff
     bool found = false;
     double closestDistance = ORSP_RADIUS;
@@ -37,8 +37,8 @@ const bool Keyframe::findClosestORSP(const ORSP<CastType> &aORSPPoint,
     pointToGridCoordinate(centerPoint, gridCoord, mGridCenter);
 
     // Check around the grid square but only up to sampling factor
-    const ssize_t gridX = static_cast<ssize_t>(gridCoord.x);
-    const ssize_t gridY = static_cast<ssize_t>(gridCoord.y);
+    const ssize_t gridX = static_cast<ssize_t>(gridCoord[0]);
+    const ssize_t gridY = static_cast<ssize_t>(gridCoord[1]);
     const ssize_t f = static_cast<ssize_t>(ORSP_RESAMPLE_FACTOR);
     const ssize_t N = static_cast<ssize_t>(ORSP_KF_GRID_N);
 

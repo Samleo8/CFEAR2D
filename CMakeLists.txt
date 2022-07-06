@@ -25,31 +25,15 @@ set_property(TARGET CeresTest PROPERTY C_STANDARD 11)
 set_property(TARGET CeresTest PROPERTY CXX_STANDARD 17)
 target_link_libraries(CeresTest ${CERES_LIBRARIES})
 
-
-# Pose Graph Test
-# add_executable(
-#   TestPoseGraph
-#   CVColor.cpp
-#   ImageProcessing.cpp
-#   OdometryVisualiser.cpp
-#   RadarImageHandler.cpp
-#   RadarImage.cpp
-#   PoseGraph.cpp
-#   TestPoseGraph.cpp)
-# set_property(TARGET TestPoseGraph PROPERTY C_STANDARD 11)
-# set_property(TARGET TestPoseGraph PROPERTY CXX_STANDARD 17)
-# target_link_libraries(TestPoseGraph ${CERES_LIBRARIES} ${OpenCV_LIBS})
-
 # Radar Testing Module
 add_executable(
   TestRadar
   CVColor.cpp
   ImageProcessing.cpp
   PointPolar.cpp 
-  # PoseTransformHandler.cpp
   RadarImageHandler.cpp
   RadarImage.cpp
-  # Keyframe.cpp
+  Keyframe.cpp
   OrientedSurfacePointsHandler.cpp
   TestRadar.cpp
 )
@@ -58,23 +42,23 @@ set_property(TARGET TestRadar PROPERTY CXX_STANDARD 17)
 target_link_libraries(TestRadar ${OpenCV_LIBS})
 
 # Keyframe Testing Module
-add_executable(
-  TestKeyframe
-  CVColor.cpp
-  ImageProcessing.cpp
-  PointPolar.cpp 
-  RadarImageHandler.cpp
-  Keyframe.cpp
-  RadarImage.cpp
-  OrientedSurfacePointsHandler.cpp
-  OdometryVisualiser.cpp
-  RadarFeedHandler.cpp
-  RadarFeed.cpp
-  TestKeyframe.cpp
-)
-set_property(TARGET TestKeyframe PROPERTY C_STANDARD 11)
-set_property(TARGET TestKeyframe PROPERTY CXX_STANDARD 17)
-target_link_libraries(TestKeyframe ${OpenCV_LIBS} ${CERES_LIBRARIES})
+# add_executable(
+#   TestKeyframe
+#   CVColor.cpp
+#   ImageProcessing.cpp
+#   PointPolar.cpp 
+#   RadarImageHandler.cpp
+#   Keyframe.cpp
+#   RadarImage.cpp
+#   OrientedSurfacePointsHandler.cpp
+#   OdometryVisualiser.cpp
+#   RadarFeedHandler.cpp
+#   RadarFeed.cpp
+#   TestKeyframe.cpp
+# )
+# set_property(TARGET TestKeyframe PROPERTY C_STANDARD 11)
+# set_property(TARGET TestKeyframe PROPERTY CXX_STANDARD 17)
+# target_link_libraries(TestKeyframe ${OpenCV_LIBS} ${CERES_LIBRARIES})
 
 # Main Visualiser Testing module
 # add_executable(
