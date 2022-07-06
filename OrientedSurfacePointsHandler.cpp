@@ -11,11 +11,11 @@
 
 #include "OrientedSurfacePointsHandler.hpp"
 #include "RadarImage.hpp"
-#include <cstddef>
+#include <Eigen/Core>
 
 /**
  * @brief Get distance (2-norm) between 2 points/vectors in X-Dim space
- * 
+ *
  * @param[in] aVec1 First vector
  * @param[in] aVec2 Second vector
  * @return Distance between these 2 vectors (2-norm)
@@ -95,9 +95,9 @@ void pointToGridCoordinate(const Eigen::Vector2d &aPoint,
     //     floor((aPoint[1] + aGridCenter[1]) / ORSP_GRID_SQUARE_WIDTH);
 
     // Vectorized operations, TODO: also allowing for multidimensional cases?
-    aGridCoordinate = (aPoint + aGridCenter);
-    aGridCoordinate.floor();
-    aGridCoordinate /= ORSP_GRID_SQUARE_WIDTH;
+    aGridCoordinate = (aPoint + aGridCenter) / ORSP_GRID_SQUARE_WIDTH;
+
+    // TODO: Floor the thing but Eigen 3.37 doesnt have floor() yet, now rely on int casting
 
     // TODO: Bound aGridCoordinate to be within grid
 }

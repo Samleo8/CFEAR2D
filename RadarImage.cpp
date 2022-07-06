@@ -12,7 +12,6 @@
 
 #include "RadarImage.hpp"
 #include "RadarImageHandler.hpp"
-#include <eigen3/Eigen/src/Core/Matrix.h>
 
 /******************************************************
  * @section RadarImage-ConstInit Constructors

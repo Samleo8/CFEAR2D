@@ -59,9 +59,6 @@ const size_t ORSP_VALID_NEIGHBOUR_MIN = 6;
  * defined */
 const double ORSP_EIGENVAL_THRESHOLD = 10e5;
 
-/** @brief Typedef for list of X-dimensional points */
-typedef std::vector<Eigen::VectorXd> PointXDList;
-
 /// NOTE: All class related functions are declared in @see RadarImage.hpp.
 /// Helper functions are here.
 const double getDistance(const Eigen::VectorXd &aVec1,
