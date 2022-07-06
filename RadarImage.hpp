@@ -16,6 +16,7 @@
 
 #include "OrientedSurfacePointsHandler.hpp" // some ORSP-related functions for the
 #include "RadarImageHandler.hpp" // needed to handle file path and data
+#include <eigen3/Eigen/src/Core/Matrix.h>
                                  // RadarImage class are defined here
 
 // Constants
@@ -82,7 +83,7 @@ class RadarImage {
     /**
      * @brief Downsampled grid of centroid of filtered points
      */
-    PointCart2D mORSPCentroidGrid[ORSP_GRID_N][ORSP_GRID_N];
+    Eigen::Vector2d mORSPCentroidGrid[ORSP_GRID_N][ORSP_GRID_N];
 
     /** @brief Vector of oriented surface points */
     ORSPVec<double> mORSPFeaturePoints;

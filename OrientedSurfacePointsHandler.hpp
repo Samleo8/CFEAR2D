@@ -26,12 +26,12 @@
 #ifndef __CFEAR_ORSP_HANDLER_HPP__
 #define __CFEAR_ORSP_HANDLER_HPP__
 
-#include "PointCart2D.hpp"
 #include "RadarImageHandler.hpp"
 
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
 #include <math.h>
+#include <vector>
 
 /** @brief Oriented surface point radius, used for both point cloud downsampling
  * and finding point distribution */
@@ -59,16 +59,24 @@ const size_t ORSP_VALID_NEIGHBOUR_MIN = 6;
  * defined */
 const double ORSP_EIGENVAL_THRESHOLD = 10e5;
 
+/** @brief Typedef for list of X-dimensional points */
+typedef std::vector<Eigen::VectorXd> PointXDList;
+
 /// NOTE: All class related functions are declared in @see RadarImage.hpp.
 /// Helper functions are here.
-const PointCart2D getCentroid(const Point2DList &aPoints);
-const PointCart3D getCentroid(const Point3DList &aPoints);
+const double getDistance(const Eigen::VectorXd &aVec1,
+                         const Eigen::VectorXd &aVec2);
 
-void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
-                       Eigen::Matrix2d &aCovMatrix);
-void pointToGridCoordinate(const PointCart2D &aPoint,
-                           PointCart2D &aGridCoordinate,
-                           const PointCart2D &aGridCenter = PointCart2D(
+const Eigen::VectorXd getCentroid(const PointXDList &aPoints,
+                                  const size_t aDimension = 2);
+
+void getMeanCovariance(const PointXDList &aPoints, Eigen::VectorXd &aMean,
+                       Eigen::MatrixXd &aCovMatrix,
+                       const size_t aDimension = 2);
+
+void pointToGridCoordinate(const Eigen::Vector2d &aPoint,
+                           Eigen::Vector2d &aGridCoordinate,
+                           const Eigen::Vector2d &aGridCenter = Eigen::Vector2d(
                                RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M));
 
 #endif // __CFEAR_ORSP_HANDLER_HPP__

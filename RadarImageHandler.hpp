@@ -11,6 +11,7 @@
 #define __RADAR_IMAGE_HANDLER_H__
 
 /** @note Needed on Windows to ensure math constants like M_PI are included */
+#include <eigen3/Eigen/src/Core/Matrix.h>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -27,7 +28,6 @@
 #include <vector>
 
 #include "ImageProcessing.hpp"
-#include "PointCart2D.hpp"
 #include "PointPolar.hpp"
 
 /**
@@ -50,7 +50,7 @@ typedef struct {
 } RotTransData;
 
 /** @brief Feature Point */
-typedef PointCart2D FilteredPoint;
+typedef Eigen::Vector2d FilteredPoint;
 
 /** @brief Typedef for vector of feature points */
 typedef std::vector<FilteredPoint> FilteredPointsVec;

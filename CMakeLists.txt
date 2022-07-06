@@ -45,7 +45,6 @@ add_executable(
   TestRadar
   CVColor.cpp
   ImageProcessing.cpp
-  PointCart2D.cpp
   PointPolar.cpp 
   # PoseTransformHandler.cpp
   RadarImageHandler.cpp
@@ -63,7 +62,6 @@ add_executable(
   TestKeyframe
   CVColor.cpp
   ImageProcessing.cpp
-  PointCart2D.cpp
   PointPolar.cpp 
   RadarImageHandler.cpp
   Keyframe.cpp
@@ -84,7 +82,6 @@ target_link_libraries(TestKeyframe ${OpenCV_LIBS} ${CERES_LIBRARIES})
 #   CVColor.cpp
 #   OdometryVisualiser.cpp
 #   ImageProcessing.cpp
-#   PointCart2D.cpp 
 #   PointPolar.cpp 
 #   RadarImageHandler.cpp
 #   RadarImage.cpp

@@ -10,31 +10,43 @@
  */
 
 #include "OrientedSurfacePointsHandler.hpp"
-#include "PointCart2D.hpp"
 #include "RadarImage.hpp"
+#include <cstddef>
 
 /**
- * @brief Get Centroid from list of 2D points
+ * @brief Get distance (2-norm) between 2 points/vectors in X-Dim space
+ * 
+ * @param[in] aVec1 First vector
+ * @param[in] aVec2 Second vector
+ * @return Distance between these 2 vectors (2-norm)
+ */
+const double getDistance(const Eigen::VectorXd &aVec1,
+                         const Eigen::VectorXd &aVec2) {
+    return (aVec1 - aVec2).norm();
+}
+
+/**
+ * @brief Get Centroid from list of X-D points
  *
  * @param[in] aPoints List of points
+ * @param[in] aDimension Dimension of points
  * @return const Point2D
  */
-const PointCart2D getCentroid(const Point2DList &aPoints) {
-    PointCart2D centroid(0, 0);
+const Eigen::VectorXd getCentroid(const PointXDList &aPoints,
+                                  const size_t aDimension) {
+    Eigen::VectorXd centroid = Eigen::VectorXd::Zero(aDimension);
 
     // Empty list: Return (0,0) for centroid
     if (aPoints.size() == 0) return centroid;
 
     // Otherwise, calculate centroid by summing up all coordinates
-    for (const PointCart2D &point : aPoints) {
+    for (const Eigen::VectorXd &point : aPoints) {
         centroid += point;
     }
 
     // And dividing by size
     size_t sz = aPoints.size();
-    centroid /= sz;
-
-    return centroid;
+    return centroid / sz;
 }
 
 /**
@@ -44,27 +56,22 @@ const PointCart2D getCentroid(const Point2DList &aPoints) {
  * @param[in] aMean
  * @param[in] aCovMatrix
  */
-void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
-                       Eigen::Matrix2d &aCovMatrix) {
+void getMeanCovariance(const PointXDList &aPoints, Eigen::VectorXd &aMean,
+                       Eigen::MatrixXd &aCovMatrix, const size_t aDimension) {
     // Convert list of points into Eigen matrix, then use vectorization
     // NOTe: Eigen is col-major, so colwise access is faster.
     const size_t sz = aPoints.size();
-    Eigen::MatrixXd pointsListMat(2, sz);
+    Eigen::MatrixXd pointsListMat(aDimension, sz);
 
     for (size_t i = 0; i < sz; i++) {
-        pointsListMat(0, i) = aPoints[i].x;
-        pointsListMat(1, i) = aPoints[i].y;
+        pointsListMat.col(i) = aPoints[i];
     }
     pointsListMat.transposeInPlace();
 
     // Use vectorisation to get mean and covariance
     aMean = pointsListMat.colwise().mean();
 
-    // std::cout << "aMean size: " << aMean.rows() << "x"
-    //           << aMean.cols() << std::endl;
-
-    // Xvec - E[Xvec]
-    Eigen::MatrixXd deltaExpected(sz, 2);
+    Eigen::MatrixXd deltaExpected(sz, aDimension);
     deltaExpected = pointsListMat.rowwise() - aMean.transpose();
 
     aCovMatrix = deltaExpected.transpose() * deltaExpected / sz;
@@ -75,17 +82,22 @@ void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
  * @param[in] aPoint Filtered point to associate
  * @param[out] aGridCoordinate Output grid coordinate
  */
-void pointToGridCoordinate(const PointCart2D &aPoint,
-                           PointCart2D &aGridCoordinate,
-                           const PointCart2D &aGridCenter) {
+void pointToGridCoordinate(const Eigen::Vector2d &aPoint,
+                           Eigen::Vector2d &aGridCoordinate,
+                           const Eigen::Vector2d &aGridCenter) {
     // TODO: Check correctness
     // NOTE: Need to add grid center to convert to correct coordinate system
     // where (0,0) is at top left
     // In the default, non keyframe case, this is (MAX_RANGE_M, MAX_RANGE_M)
-    aGridCoordinate.x =
-        floor((aPoint.x + aGridCenter.x) / ORSP_GRID_SQUARE_WIDTH);
-    aGridCoordinate.y =
-        floor((aPoint.y + aGridCenter.y) / ORSP_GRID_SQUARE_WIDTH);
+    // aGridCoordinate[0] =
+    //     floor((aPoint[0] + aGridCenter[0]) / ORSP_GRID_SQUARE_WIDTH);
+    // aGridCoordinate[1] =
+    //     floor((aPoint[1] + aGridCenter[1]) / ORSP_GRID_SQUARE_WIDTH);
+
+    // Vectorized operations, TODO: also allowing for multidimensional cases?
+    aGridCoordinate = (aPoint + aGridCenter);
+    aGridCoordinate.floor();
+    aGridCoordinate /= ORSP_GRID_SQUARE_WIDTH;
 
     // TODO: Bound aGridCoordinate to be within grid
 }
@@ -110,11 +122,11 @@ void RadarImage::downsamplePointCloud() {
 
     for (size_t i = 0; i < sz; i++) {
         const FilteredPoint &filtPt = filteredPoints[i];
-        PointCart2D gridCoordinate;
+        Eigen::Vector2d gridCoordinate;
         pointToGridCoordinate(filtPt, gridCoordinate);
 
-        size_t gridX = static_cast<size_t>(gridCoordinate.x);
-        size_t gridY = static_cast<size_t>(gridCoordinate.y);
+        size_t gridX = static_cast<size_t>(gridCoordinate[0]);
+        size_t gridY = static_cast<size_t>(gridCoordinate[1]);
 
         // std::cout << "Raw XY: (" << filtPt.x << ", " << filtPt.y << ") | ";
         // std::cout << "Grid coordinate: (" << gridX << ", " << gridY << ")" <<
@@ -147,7 +159,7 @@ void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
     // Prep valid neighbours
     aValidNeighbours.clear();
 
-    const PointCart2D centroid = mORSPCentroidGrid[aGridX][aGridY];
+    const Eigen::Vector2d centroid = mORSPCentroidGrid[aGridX][aGridY];
 
     // Check around the grid square but only up to sampling factor
     const ssize_t gridX = static_cast<ssize_t>(aGridX);
@@ -169,11 +181,11 @@ void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
             const Point2DList &potentialNeighbourPoints =
                 mORSPGrid[neighGridX][neighGridY];
 
-            for (const PointCart2D &point : potentialNeighbourPoints) {
+            for (const Eigen::Vector2d &point : potentialNeighbourPoints) {
                 // Check if point is within search radius
                 // TODO: Extra efficiency constraint: if dx == dy == 0, then
                 // guarenteed to be in
-                const double dist = point.distance(centroid);
+                const double dist = getDistance(point, centroid);
 
                 if (dist <= ORSP_RADIUS) {
                     aValidNeighbours.push_back(point);

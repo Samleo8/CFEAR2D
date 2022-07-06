@@ -12,6 +12,7 @@
 
 #include "RadarImage.hpp"
 #include "RadarImageHandler.hpp"
+#include <eigen3/Eigen/src/Core/Matrix.h>
 
 /******************************************************
  * @section RadarImage-ConstInit Constructors
@@ -216,16 +217,11 @@ const cv::Mat &RadarImage::getImageLogPolar() const {
  */
 const cv::Mat &RadarImage::getImage(ImageType aType) const {
     switch (aType) {
-        case RIMG_RAW:
-            return getImageRaw();
-        case RIMG_POLAR:
-            [[fallthrough]];
-        case RIMG_RANGE_AZIM:
-            return getImagePolar();
-        case RIMG_CART:
-            return getImageCart();
-        case RIMG_LOGPOLAR:
-            return getImageLogPolar();
+        case RIMG_RAW: return getImageRaw();
+        case RIMG_POLAR: [[fallthrough]];
+        case RIMG_RANGE_AZIM: return getImagePolar();
+        case RIMG_CART: return getImageCart();
+        case RIMG_LOGPOLAR: return getImageLogPolar();
         default:
             printf_err("Invalid image type! Returning raw image!\n");
             return mRawImage;
@@ -427,7 +423,7 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
 
             // Only accept values which are also above Zmin
             if (val > aZmin) {
-                PointCart2D pointCart;
+                Eigen::Vector2d pointCart;
                 PointPolar pointPolar;
 
                 const double range =
