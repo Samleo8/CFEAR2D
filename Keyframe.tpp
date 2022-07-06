@@ -35,15 +35,15 @@ const bool Keyframe::findClosestORSP(const ORSP<CastType> &aORSPPoint,
                                      ORSP<CastType> &aClosestORSPPoint) const {
     // Init stuff
     bool found = false;
-    CastType closestDistance = static_cast<CastType>(ORSP_RADIUS);
     CastType ANGLE_TOLERANCE_RAD_CASTED =
         static_cast<CastType>(ANGLE_TOLERANCE_RAD);
 
-    // TODO: If necessary, appropriately cast to CastType (for Ceres)
+    // NOTE: Closest distance set to radius because we only want points at a close enough distance
+    CastType closestDistance = static_cast<CastType>(ORSP_RADIUS);
+
+    // center and normal vector of reference ORSP to find closest point against
     const Vector2T<CastType> centerPoint = aORSPPoint.center;
-    // aORSPPoint.center.template cast<CastType>();
     const Vector2T<CastType> normalVec = aORSPPoint.normal;
-    // aORSPPoint.normal.template cast<CastType>();
 
     // Find the minimum distance, but we need to loop through to check if the
     // point is even valid because of angle tolerances
