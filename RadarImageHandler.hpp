@@ -27,8 +27,7 @@
 #include <vector>
 
 #include "ImageProcessing.hpp"
-#include "PointCart2D.hpp"
-#include "PointPolar2D.hpp"
+#include "PointPolar.hpp"
 
 /**
  * @brief Translation data struct (no rotation). Used in pose graph and sliding
@@ -50,7 +49,7 @@ typedef struct {
 } RotTransData;
 
 /** @brief Feature Point */
-typedef PointCart2D FilteredPoint;
+typedef Eigen::Vector2d FilteredPoint;
 
 /** @brief Typedef for vector of feature points */
 typedef std::vector<FilteredPoint> FilteredPointsVec;
@@ -72,6 +71,27 @@ typedef struct {
  * @see RadarImage::getTopK()
  */
 typedef std::pair<double, size_t> ValueIndexPair;
+
+/** @brief Typedef for list of 2-dimensional points */
+typedef std::vector<Eigen::Vector2d> Point2DList;
+
+/** @brief Typedef for list of 3-dimensional points */
+typedef std::vector<Eigen::Vector2d> Point3DList;
+
+/** @brief Typedef for list of X-dimensional points */
+typedef std::vector<Eigen::VectorXd> PointXDList;
+
+/** @brief Typedef for Vector of templated dimension */
+template <size_t Dimension>
+using VectorDimd = Eigen::Matrix<double, Dimension, 1>;
+
+/** @brief Typedef for NxN Matrix of templated dimension */
+template <size_t Dimension>
+using MatrixDimd = Eigen::Matrix<double, Dimension, Dimension>;
+
+/** @brief Typedef for std::vector of Eigen::Vector of templated dimension */
+template <size_t Dimension>
+using VectorDimdList = std::vector<VectorDimd<Dimension>>;
 
 // Defines
 /** @brief Simple MAX function */

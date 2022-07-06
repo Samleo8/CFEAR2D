@@ -17,40 +17,15 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS)
 # Need to disable multithreading
 add_compile_definitions(EIGEN_DONT_PARALLELIZE)
 
-# Ceres Solver Test
-add_executable(
-  CeresTest
-  CeresSolverTest.cpp)
-set_property(TARGET CeresTest PROPERTY C_STANDARD 11)
-set_property(TARGET CeresTest PROPERTY CXX_STANDARD 17)
-target_link_libraries(CeresTest ${CERES_LIBRARIES})
-
-
-# Pose Graph Test
-# add_executable(
-#   TestPoseGraph
-#   CVColor.cpp
-#   ImageProcessing.cpp
-#   OdometryVisualiser.cpp
-#   RadarImageHandler.cpp
-#   RadarImage.cpp
-#   PoseGraph.cpp
-#   TestPoseGraph.cpp)
-# set_property(TARGET TestPoseGraph PROPERTY C_STANDARD 11)
-# set_property(TARGET TestPoseGraph PROPERTY CXX_STANDARD 17)
-# target_link_libraries(TestPoseGraph ${CERES_LIBRARIES} ${OpenCV_LIBS})
-
 # Radar Testing Module
 add_executable(
   TestRadar
   CVColor.cpp
   ImageProcessing.cpp
-  PointCart2D.cpp
-  PointPolar2D.cpp 
-  # PoseTransformHandler.cpp
+  PointPolar.cpp 
   RadarImageHandler.cpp
   RadarImage.cpp
-  # Keyframe.cpp
+  Keyframe.cpp
   OrientedSurfacePointsHandler.cpp
   TestRadar.cpp
 )
@@ -63,15 +38,11 @@ add_executable(
   TestKeyframe
   CVColor.cpp
   ImageProcessing.cpp
-  PointCart2D.cpp
-  PointPolar2D.cpp 
-  PoseTransformHandler.cpp
+  PointPolar.cpp 
   RadarImageHandler.cpp
-  RadarImage.cpp
   Keyframe.cpp
+  RadarImage.cpp
   OrientedSurfacePointsHandler.cpp
-  OptimisationHandler.cpp
-  RegistrationCostFunctor.cpp
   OdometryVisualiser.cpp
   RadarFeedHandler.cpp
   RadarFeed.cpp
@@ -87,8 +58,7 @@ target_link_libraries(TestKeyframe ${OpenCV_LIBS} ${CERES_LIBRARIES})
 #   CVColor.cpp
 #   OdometryVisualiser.cpp
 #   ImageProcessing.cpp
-#   PointCart2D.cpp 
-#   PointPolar2D.cpp 
+#   PointPolar.cpp 
 #   RadarImageHandler.cpp
 #   RadarImage.cpp
 #   PoseGraph.cpp

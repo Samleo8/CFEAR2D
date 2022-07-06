@@ -10,82 +10,31 @@
  */
 
 #include "OrientedSurfacePointsHandler.hpp"
-#include "PointCart2D.hpp"
 #include "RadarImage.hpp"
+#include <Eigen/Core>
 
-/**
- * @brief Get Centroid from list of 2D points
- *
- * @param[in] aPoints List of points
- * @return const Point2D
- */
-const PointCart2D getCentroid(const Point2DList &aPoints) {
-    PointCart2D centroid(0, 0);
-
-    // Empty list: Return (0,0) for centroid
-    if (aPoints.size() == 0) return centroid;
-
-    // Otherwise, calculate centroid by summing up all coordinates
-    for (const PointCart2D &point : aPoints) {
-        centroid += point;
-    }
-
-    // And dividing by size
-    size_t sz = aPoints.size();
-    centroid /= sz;
-
-    return centroid;
-}
-
-/**
- * @brief Get mean and covariance matrix from list of 2D points
- *
- * @param[in] aPoints
- * @param[in] aMean
- * @param[in] aCovMatrix
- */
-void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
-                       Eigen::Matrix2d &aCovMatrix) {
-    // Convert list of points into Eigen matrix, then use vectorization
-    // NOTe: Eigen is col-major, so colwise access is faster.
-    const size_t sz = aPoints.size();
-    Eigen::MatrixXd pointsListMat(2, sz);
-
-    for (size_t i = 0; i < sz; i++) {
-        pointsListMat(0, i) = aPoints[i].x;
-        pointsListMat(1, i) = aPoints[i].y;
-    }
-    pointsListMat.transposeInPlace();
-
-    // Use vectorisation to get mean and covariance
-    aMean = pointsListMat.colwise().mean();
-
-    // std::cout << "aMean size: " << aMean.rows() << "x"
-    //           << aMean.cols() << std::endl;
-
-    // Xvec - E[Xvec]
-    Eigen::MatrixXd deltaExpected(sz, 2);
-    deltaExpected = pointsListMat.rowwise() - aMean.transpose();
-
-    aCovMatrix = deltaExpected.transpose() * deltaExpected / sz;
-}
 
 /**
  * @brief Associate filtered point coordinate to downsampled grid coordinate
  * @param[in] aPoint Filtered point to associate
  * @param[out] aGridCoordinate Output grid coordinate
  */
-void pointToGridCoordinate(const PointCart2D &aPoint,
-                           PointCart2D &aGridCoordinate,
-                           const PointCart2D &aGridCenter) {
+void pointToGridCoordinate(const Eigen::Vector2d &aPoint,
+                           Eigen::Vector2d &aGridCoordinate,
+                           const Eigen::Vector2d &aGridCenter) {
     // TODO: Check correctness
     // NOTE: Need to add grid center to convert to correct coordinate system
     // where (0,0) is at top left
     // In the default, non keyframe case, this is (MAX_RANGE_M, MAX_RANGE_M)
-    aGridCoordinate.x =
-        floor((aPoint.x + aGridCenter.x) / ORSP_GRID_SQUARE_WIDTH);
-    aGridCoordinate.y =
-        floor((aPoint.y + aGridCenter.y) / ORSP_GRID_SQUARE_WIDTH);
+    // aGridCoordinate[0] =
+    //     floor((aPoint[0] + aGridCenter[0]) / ORSP_GRID_SQUARE_WIDTH);
+    // aGridCoordinate[1] =
+    //     floor((aPoint[1] + aGridCenter[1]) / ORSP_GRID_SQUARE_WIDTH);
+
+    // Vectorized operations, TODO: also allowing for multidimensional cases?
+    aGridCoordinate = (aPoint + aGridCenter) / ORSP_GRID_SQUARE_WIDTH;
+
+    // TODO: Floor the thing but Eigen 3.37 doesnt have floor() yet, now rely on int casting
 
     // TODO: Bound aGridCoordinate to be within grid
 }
@@ -110,11 +59,11 @@ void RadarImage::downsamplePointCloud() {
 
     for (size_t i = 0; i < sz; i++) {
         const FilteredPoint &filtPt = filteredPoints[i];
-        PointCart2D gridCoordinate;
+        Eigen::Vector2d gridCoordinate;
         pointToGridCoordinate(filtPt, gridCoordinate);
 
-        size_t gridX = static_cast<size_t>(gridCoordinate.x);
-        size_t gridY = static_cast<size_t>(gridCoordinate.y);
+        size_t gridX = static_cast<size_t>(gridCoordinate[0]);
+        size_t gridY = static_cast<size_t>(gridCoordinate[1]);
 
         // std::cout << "Raw XY: (" << filtPt.x << ", " << filtPt.y << ") | ";
         // std::cout << "Grid coordinate: (" << gridX << ", " << gridY << ")" <<
@@ -126,7 +75,7 @@ void RadarImage::downsamplePointCloud() {
     // Now find the centroids
     for (size_t i = 0; i < ORSP_GRID_N; i++) {
         for (size_t j = 0; j < ORSP_GRID_N; j++) {
-            mORSPCentroidGrid[i][j] = getCentroid(mORSPGrid[i][j]);
+            mORSPCentroidGrid[i][j] = getCentroid<2>(mORSPGrid[i][j]);
         }
     }
 
@@ -147,7 +96,7 @@ void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
     // Prep valid neighbours
     aValidNeighbours.clear();
 
-    const PointCart2D centroid = mORSPCentroidGrid[aGridX][aGridY];
+    const Eigen::Vector2d centroid = mORSPCentroidGrid[aGridX][aGridY];
 
     // Check around the grid square but only up to sampling factor
     const ssize_t gridX = static_cast<ssize_t>(aGridX);
@@ -169,11 +118,11 @@ void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
             const Point2DList &potentialNeighbourPoints =
                 mORSPGrid[neighGridX][neighGridY];
 
-            for (const PointCart2D &point : potentialNeighbourPoints) {
+            for (const Eigen::Vector2d &point : potentialNeighbourPoints) {
                 // Check if point is within search radius
                 // TODO: Extra efficiency constraint: if dx == dy == 0, then
                 // guarenteed to be in
-                const double dist = point.distance(centroid);
+                const double dist = getDistance<double>(point, centroid);
 
                 if (dist <= ORSP_RADIUS) {
                     aValidNeighbours.push_back(point);
@@ -228,7 +177,7 @@ void RadarImage::estimatePointDistribution() {
             Eigen::Vector2d normalVector;
             Eigen::Matrix2d covMatrix;
 
-            getMeanCovariance(validNeighbours, mean, covMatrix);
+            getMeanCovariance<2>(validNeighbours, mean, covMatrix);
 
             // From covariance matrix, use SVD to get eigenvectors
             Eigen::EigenSolver<Eigen::Matrix2d> eigenSolver(covMatrix);
@@ -256,7 +205,7 @@ void RadarImage::estimatePointDistribution() {
             }
 
             // Build the oriented feature point and add to list
-            ORSP featurePt;
+            ORSP<double> featurePt;
             featurePt.center = mean;
             featurePt.normal = normalVector;
 
@@ -279,6 +228,6 @@ void RadarImage::computeOrientedSurfacePoints() {
     estimatePointDistribution();
 }
 
-const ORSPVec &RadarImage::getORSPFeaturePoints() const {
+const ORSPVec<double> &RadarImage::getORSPFeaturePoints() const {
     return mORSPFeaturePoints;
 }

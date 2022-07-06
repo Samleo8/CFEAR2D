@@ -23,15 +23,16 @@
  *
  */
 
-#ifndef __ORSP_H__
-#define __ORSP_H__
+#ifndef __CFEAR_ORSP_HANDLER_HPP__
+#define __CFEAR_ORSP_HANDLER_HPP__
 
-#include "PointCart2D.hpp"
 #include "RadarImageHandler.hpp"
+#include "TransformDefines.hpp"
 
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
 #include <math.h>
+#include <vector>
 
 /** @brief Oriented surface point radius, used for both point cloud downsampling
  * and finding point distribution */
@@ -59,53 +60,25 @@ const size_t ORSP_VALID_NEIGHBOUR_MIN = 6;
  * defined */
 const double ORSP_EIGENVAL_THRESHOLD = 10e5;
 
-/**
- * @brief Oriented Surface Point representation, holds mean and normal
- * vector obtained from covariance
- */
-struct ORSP {
-    /// @brief Mean / center of point
-    Eigen::Vector2d center;
-
-    /// @brief Normal vector
-    Eigen::Vector2d normal;
-
-    /**
-     * @brief Empty constructor for OrientedSurfacePoint
-     */
-    ORSP() : center(Eigen::Vector2d::Zero()), normal(Eigen::Vector2d::Zero()) {}
-
-    /**
-     * @brief Constructor for OrientedSurfacePoint
-     * @param[in] aCenter Center of point
-     * @param[in] aNormal Normal vector
-     */
-    ORSP(const Eigen::Vector2d &aCenter, const Eigen::Vector2d &aNormal)
-        : center(aCenter), normal(aNormal) {}
-
-    /**
-     * @brief Copy Constructor for OrientedSurfacePoint
-     * @param[in] aORSP ORSP to copy
-     */
-    ORSP(const ORSP &aORSP) : center(aORSP.center), normal(aORSP.normal) {}
-};
-
-/** @brief Oriented surface point struct typedef */
-typedef struct ORSP ORSP;
-
-/** @brief Typedef for OrientedSurfacePoint struct */
-typedef std::vector<ORSP> ORSPVec;
-
 /// NOTE: All class related functions are declared in @see RadarImage.hpp.
 /// Helper functions are here.
-const PointCart2D getCentroid(const Point2DList &aPoints);
-const PointCart3D getCentroid(const Point3DList &aPoints);
+template <typename T>
+const T getDistance(const VectorXT<T> &aVec1, const VectorXT<T> &aVec2);
 
-void getMeanCovariance(const Point2DList &aPoints, Eigen::Vector2d &aMean,
-                       Eigen::Matrix2d &aCovMatrix);
-void pointToGridCoordinate(const PointCart2D &aPoint,
-                           PointCart2D &aGridCoordinate,
-                           const PointCart2D &aGridCenter = PointCart2D(
+template <size_t Dimension>
+const VectorDimd<Dimension>
+getCentroid(const VectorDimdList<Dimension> &aPoints);
+
+template <size_t Dimension>
+void getMeanCovariance(const VectorDimdList<Dimension> &aPoints,
+                       VectorDimd<Dimension> &aMean,
+                       MatrixDimd<Dimension> &aCovMatrix);
+
+void pointToGridCoordinate(const Eigen::Vector2d &aPoint,
+                           Eigen::Vector2d &aGridCoordinate,
+                           const Eigen::Vector2d &aGridCenter = Eigen::Vector2d(
                                RADAR_MAX_RANGE_M, RADAR_MAX_RANGE_M));
 
-#endif
+#include "OrientedSurfacePointsHandler.tpp"
+
+#endif // __CFEAR_ORSP_HANDLER_HPP__

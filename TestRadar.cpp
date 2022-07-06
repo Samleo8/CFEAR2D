@@ -177,7 +177,8 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
         FilteredPoint point = filteredPoints[i];
 
         cv::Point2d pointCV;
-        point.toCV(pointCV);
+        pointCV.x = point[0];
+        pointCV.y = point[1];
 
         // Draw filtered point on image
         // NOTE: Point is in meters, but we want to display it in pixels
@@ -191,12 +192,12 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
 
     // Compute ORSP and draw those points with vectors
     r1.computeOrientedSurfacePoints();
-    const ORSPVec &featurePoints = r1.getORSPFeaturePoints();
+    const ORSPVec<double> &featurePoints = r1.getORSPFeaturePoints();
 
     // Draw ORSP points
     const double VEC_LEN = 2;
     for (size_t i = 0, sz = featurePoints.size(); i < sz; i++) {
-        const ORSP &featPt = featurePoints[i];
+        const ORSP<double> &featPt = featurePoints[i];
 
         // Calculate center of point and end of normal vector
         Eigen::Vector2d featPtCenter = featPt.center;

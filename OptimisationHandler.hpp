@@ -15,6 +15,7 @@
 #include "Keyframe.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
+#include "TransformDefines.hpp"
 
 #include <Eigen/Geometry>
 #include <Eigen/LU>
@@ -32,15 +33,17 @@
 
 // TODO: Integrate with ceres somehow
 // TOOD: 2D for now
-typedef struct {
+template <typename T> struct OptimParams {
     // Eigen::Quaterniond q;     ///< rotation
-    Eigen::Vector2d translation; ///< translation
-    double theta;                ///< rotation
-} OptimParams;
+    Vector2T<T> translation; ///< translation
+    T theta;                            ///< rotation
+};
 
+/** @brief Keyframe buffer size */
 const size_t KF_BUFF_SIZE = 3;
+
+/** @brief Keyframe buffer typedef */
 typedef boost::circular_buffer<Keyframe> KeyframeBuffer;
-// typedef std::vector<Keyframe> KeyframeBuffer;
 
 /** @brief Angle tolerance threshold in radians */
 const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
@@ -51,14 +54,18 @@ const double HUBER_DELTA_DEFAULT = 0.1;
 // TODO: Create a cost functor for computing cost function. See
 // http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
 
-const double constrainAngle(const double aAngleRad);
+template <typename T> T constrainAngle(const T &aAngleRad);
 
-const double angleBetweenVectors(const Eigen::VectorXd &aVec1,
-                                 const Eigen::VectorXd &aVec2);
+template <typename T>
+const T angleBetweenVectors(const VectorXT<T> &aVec1, const VectorXT<T> &aVec2);
 
-const PoseTransform2D transformFromOptimParams(const OptimParams &aParams);
+template <typename T>
+const PoseTransform2D<T>
+transformFromOptimParams(const struct OptimParams<T> &aParams);
 
-const double HuberLoss(const double a,
-                       const double delta = HUBER_DELTA_DEFAULT);
+template <typename T> const T HuberLoss(const T &a, const T &delta);
+
+// Implementation file for optimisation handler functions
+#include "OptimisationHandler.tpp"
 
 #endif // __OPTIMISATION_HANDLER_HPP__

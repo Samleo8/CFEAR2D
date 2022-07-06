@@ -173,12 +173,12 @@ void outputImgFromRImg(const RadarImage &aRImg, cv::Mat &outputImgORSP,
         cv::Point2d(outputImgORSP.cols, outputImgORSP.rows) / 2;
 
     // Compute ORSP and draw those points with vectors
-    const ORSPVec &featurePoints = aRImg.getORSPFeaturePoints();
+    const ORSPVec<double> &featurePoints = aRImg.getORSPFeaturePoints();
 
     // Draw ORSP points
     const double VEC_LEN = 2;
     for (size_t i = 0, sz = featurePoints.size(); i < sz; i++) {
-        const ORSP &featPt = featurePoints[i];
+        const ORSP<double> &featPt = featurePoints[i];
 
         // Calculate center of point and end of normal vector
         Eigen::Vector2d featPtCenter = featPt.center;
@@ -280,11 +280,10 @@ int main(int argc, char **argv) {
         // inverse of pose.
         RegistrationCostFunctor functor(currRImg, keyframeList);
 
-        // NOTE: Parameters: <cost functor type, num residuals, num pos params,
+        // // NOTE: Parameters: <cost functor type, num residuals, num pos params,
         // num orientation params>
         ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
-            RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
-            REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
+            RegistrationCostFunctor, REGOPT_NUM_RESIDUALS, REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
             &functor, ceres::DO_NOT_TAKE_OWNERSHIP);
 
         // NOTE: If want to keep functor pointer, by updating currRImg and
@@ -297,7 +296,7 @@ int main(int argc, char **argv) {
         // TODO: actually go through the frames
 
         // Free memory for cost function
-        delete regCostFn;
+        // delete regCostFn;
 
         break;
     }

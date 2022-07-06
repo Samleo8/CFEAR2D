@@ -14,9 +14,10 @@
 #ifndef __RADAR_IMAGE_H__
 #define __RADAR_IMAGE_H__
 
-#include "RadarImageHandler.hpp" // needed to handle file path and data
+#include "ORSP.hpp"
 #include "OrientedSurfacePointsHandler.hpp" // some ORSP-related functions for the
-                                            // RadarImage class are defined here
+#include "RadarImageHandler.hpp" // needed to handle file path and data
+                                 // RadarImage class are defined here
 
 // Constants
 /** @brief Tau = 2 * Pi. Used for radian conversion and img proc */
@@ -82,10 +83,10 @@ class RadarImage {
     /**
      * @brief Downsampled grid of centroid of filtered points
      */
-    PointCart2D mORSPCentroidGrid[ORSP_GRID_N][ORSP_GRID_N];
+    Eigen::Vector2d mORSPCentroidGrid[ORSP_GRID_N][ORSP_GRID_N];
 
     /** @brief Vector of oriented surface points */
-    ORSPVec mORSPFeaturePoints;
+    ORSPVec<double> mORSPFeaturePoints;
 
     // TODO: Unused for now
     cv::Mat mLogPolarImage; ///< Downsampled log-polar image
@@ -159,7 +160,7 @@ class RadarImage {
     void estimatePointDistribution();
     void computeOrientedSurfacePoints();
 
-    const ORSPVec &getORSPFeaturePoints() const;
+    const ORSPVec<double> &getORSPFeaturePoints() const;
 
     // NOTE: UNUSED
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);

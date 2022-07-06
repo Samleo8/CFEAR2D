@@ -36,7 +36,7 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
  * @see
  * http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
  */
-class RegistrationCostFunctor {
+ class RegistrationCostFunctor {
   private:
     // TODO: is it ok if this is a reference?
     const RadarImage mRImg;
@@ -53,18 +53,22 @@ class RegistrationCostFunctor {
     const Keyframe &getKeyframe(const size_t aIdx) const;
 
     // Helper function for cost function
-    [[nodiscard]] const bool point2LineCost(const RadarImage &aRImage,
-                                            const Keyframe &aKeyframe,
-                                            const OptimParams &aParams,
-                                            double *aOutputCost) const;
-    [[nodiscard]] const bool point2LineCost(const Keyframe &aKeyframe,
-                                            const OptimParams &aParams,
-                                            double *aOutputCost) const;
+    template <typename T>
+    [[nodiscard]] const bool
+    point2LineCost(const RadarImage &aRImage, const Keyframe &aKeyframe,
+                   const struct OptimParams<T> &aParams, T *aOutputCost) const;
 
-    // Actual cost function
+    template <typename T>
+    [[nodiscard]] const bool
+    point2LineCost(const Keyframe &aKeyframe,
+                   const struct OptimParams<T> &aParams, T *aOutputCost) const;
+
+    // Actual cost functor
     template <typename T>
     bool operator()(const T *const aPositionArray,
                     const T *const aOrientationArray, T *aResidualArray) const;
 };
+
+#include "RegistrationCostFunctor.tpp"
 
 #endif // __REGISTRATION_COST_FUNCTOR_HPP__
