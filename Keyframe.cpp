@@ -47,27 +47,23 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
     // convert to world coordinate
     for (size_t i = 0; i < ORSPFeaturePointsRef.size(); i++) {
         // First convert existing point to world coordinate
-        ORSP worldORSPPoint;
+        ORSP<double> worldORSPPoint;
         localToWorldORSP(ORSPFeaturePointsRef[i], worldORSPPoint);
 
         // Populate grid accordingly
-        PointCart2D centerPoint(worldORSPPoint.center);
-        PointCart2D gridCoord;
+        Eigen::Vector2d gridCoord;
 
-        pointToGridCoordinate(centerPoint, gridCoord, mGridCenter);
+        pointToGridCoordinate(worldORSPPoint.center, gridCoord, mGridCenter);
 
         // TODO: Check if gridCoord is in bounds
 
-        size_t gridX = static_cast<size_t>(gridCoord.x);
-        size_t gridY = static_cast<size_t>(gridCoord.y);
+        size_t gridX = static_cast<size_t>(gridCoord[0]);
+        size_t gridY = static_cast<size_t>(gridCoord[1]);
         mORSPIndexGrid[gridX][gridY].push_back(i);
 
         // Copy over ORSP point
         mORSPFeaturePoints.push_back(worldORSPPoint);
     }
-
-    // TODO: Use Eigen::Map if necessary to (quickly) batch convert a set of
-    // coordinates from world to local or vice versa
 }
 
 /**

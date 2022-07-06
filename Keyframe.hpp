@@ -62,7 +62,7 @@ class Keyframe {
      * `const` because circular_buffer needs the copy assignment
      * @see pointToGridCoordinate()
      */
-    PointCart2D mGridCenter;
+    Eigen::Vector2d mGridCenter;
 
     /** @brief ORSP feature points in WORLD coordinates */
     ORSPVec<double> mORSPFeaturePoints;

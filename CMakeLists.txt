@@ -31,10 +31,9 @@ add_executable(
   CVColor.cpp
   ImageProcessing.cpp
   PointPolar.cpp 
-  # PoseTransformHandler.cpp
   RadarImageHandler.cpp
   RadarImage.cpp
-  # Keyframe.cpp
+  Keyframe.cpp
   OrientedSurfacePointsHandler.cpp
   TestRadar.cpp
 )
