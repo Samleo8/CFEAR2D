@@ -1,11 +1,14 @@
-#include <ceres/autodiff_cost_function.h>
-#include <ceres/cost_function.h>
+#include <ceres/ceres.h>
+#include <ceres/loss_function.h>
+#include <ceres/solver.h>
+#include <ceres/types.h>
 #include <filesystem>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 
+#include "AngleManifold.hpp"
 #include "CVColor.hpp"
 #include "Keyframe.hpp"
 #include "OptimisationHandler.hpp"
@@ -251,12 +254,37 @@ int main(int argc, char **argv) {
     KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
 
     // First image is always a keyframe
-    const Pose2D initWorldPose(1, 2, 0.4);
+    Pose2D currWorldPose(0, 0, 0);
 
     // TODO: Keyframe handling
-    Keyframe keyframe(prevRImg, initWorldPose);
+    Keyframe keyframe(prevRImg, currWorldPose);
 
     keyframeList.push_back(keyframe);
+
+    // TODO: Ceres problem, maybe put into function
+    ceres::Problem problem;
+    ceres::Solver::Summary;
+    ceres::Solver::Options options;
+    // as specified by paper, can potentially use L-BFGS
+    options.line_search_direction_type = ceres::BFGS;
+    // options.max_num_iterations = 100;
+
+    // TODO: For now, optimization is returning the world pose, so to get
+    // odometry, we need to multiply by inverse of pose.
+    // Create cost functor
+    RegistrationCostFunctor functor(currRImg, keyframeList);
+    ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
+        RegistrationCostFunctor, REGOPT_NUM_RESIDUALS, REGOPT_POS_PARAM_SIZE,
+        REGOPT_ORIENT_PARAM_SIZE>(&functor, ceres::DO_NOT_TAKE_OWNERSHIP);
+
+    // NOTE: If want to keep functor pointer, by updating currRImg and
+    // keyframeList instead of creating new functor each iteration,
+    // then use ceres::DO_NOT_TAKE_OWNERSHIP
+
+    ceres::LossFunction *lossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
+
+    // Angle Manifold
+    ceres::Manifold *angleManifold = AngleManifold::Create();
 
     // Keep finding frames
     while (feed.nextFrame()) {
@@ -275,31 +303,44 @@ int main(int argc, char **argv) {
         cv::Mat outputImgORSP;
         outputImgFromRImg(currRImg, outputImgORSP);
 
-        // TODO: find odometry / optimization. For now, optimization is
-        // returning the world pose, so to get odometry, we need to multiply by
-        // inverse of pose.
-        RegistrationCostFunctor functor(currRImg, keyframeList);
+        // Ceres add residual blocks
+        double positionArr[2] = { currWorldPose.position[0],
+                                  currWorldPose.position[1] };
+        double orientationArr[1] = { currWorldPose.orientation };
+        problem.AddResidualBlock(regCostFn, regLossFn, positionArr,
+                                 orientationArr);
+        problem.SetManifold(orientationArr, angleManifold);
 
-        // // NOTE: Parameters: <cost functor type, num residuals, num pos params,
-        // num orientation params>
-        ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
-            RegistrationCostFunctor, REGOPT_NUM_RESIDUALS, REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
-            &functor, ceres::DO_NOT_TAKE_OWNERSHIP);
+        ceres::Solve(options, &problem, &summary);
 
-        // NOTE: If want to keep functor pointer, by updating currRImg and
-        // keyframeList instead of creating new functor each iteration,
-        // then use ceres::DO_NOT_TAKE_OWNERSHIP
+        if (summary.IsSolutionUsable()) {
+            // std::cout << "Success!";
+            std::cout << "Frame Pose: " << positionArr[0] << " "
+                      << positionArr[1] << " " << orientationArr[0]
+                      << std::endl;
+
+            // Save the parameters
+            currWorldPose.position << positionArr;
+            currWorldPose.orientation = orientationArr[0];
+        }
+        else {
+            std::cout << "No solution found!" << std::endl;
+        }
+
+        problem.RemoveParameterBlock(positionArr);
+        problem.RemoveParameterBlock(orientationArr);
+        problem.RemoveResidualBlock(regCostFn);
 
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
 
         // TODO: actually go through the frames
 
-        // Free memory for cost function
-        // delete regCostFn;
-
         break;
     }
+
+    // Free memory for cost function
+    delete regCostFn;
 
     return 0;
 }
