@@ -311,6 +311,7 @@ int main(int argc, char **argv) {
                                  orientationArr);
         problem.SetManifold(orientationArr, angleManifold);
 
+        // TODO: only set once perhaps?
         ceres::Solve(options, &problem, &summary);
 
         if (summary.IsSolutionUsable()) {
