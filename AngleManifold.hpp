@@ -15,6 +15,7 @@
 #define __ANGLE_MANIFOLD_HPP__
 
 #include "ceres/autodiff_manifold.h"
+#include "ceres/manifold.h"
 
 // Extern declare
 template <typename T> extern T constrainAngle(const T &aAngleRad);
