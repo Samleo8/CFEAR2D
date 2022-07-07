@@ -248,8 +248,8 @@ int main(int argc, char **argv) {
     RadarFeed feed(dataPath);
 
     feed.loadFrame(startID);
-    RadarImage prevRImg, currRImg;
-    feed.getCurrentRadarImage(prevRImg);
+    RadarImage currRImg;
+    feed.getCurrentRadarImage(currRImg);
 
     KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
 
@@ -257,7 +257,7 @@ int main(int argc, char **argv) {
     Pose2D currWorldPose(0, 0, 0);
 
     // TODO: Keyframe handling
-    Keyframe keyframe(prevRImg, currWorldPose);
+    Keyframe keyframe(currRImg, currWorldPose);
 
     keyframeList.push_back(keyframe);
 
@@ -272,16 +272,15 @@ int main(int argc, char **argv) {
     // TODO: For now, optimization is returning the world pose, so to get
     // odometry, we need to multiply by inverse of pose.
     // Create cost functor
-    RegistrationCostFunctor functor(currRImg, keyframeList);
-    ceres::CostFunction *regCostFn = new ceres::AutoDiffCostFunction<
-        RegistrationCostFunctor, REGOPT_NUM_RESIDUALS, REGOPT_POS_PARAM_SIZE,
-        REGOPT_ORIENT_PARAM_SIZE>(&functor);
+    ceres::CostFunction *regCostFn =
+        RegistrationCostFunctor::Create(currRImg, keyframeList);
 
-    // NOTE: If want to keep functor pointer, by updating currRImg and
-    // keyframeList instead of creating new functor each iteration,
-    // then use ceres::DO_NOT_TAKE_OWNERSHIP
+        // NOTE: If want to keep functor pointer, by updating currRImg and
+        // keyframeList instead of creating new functor each iteration,
+        // then use ceres::DO_NOT_TAKE_OWNERSHIP
 
-    ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
+        ceres::LossFunction *regLossFn =
+            new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
 
     // Angle Manifold
     ceres::Manifold *angleManifold = AngleManifold::Create();

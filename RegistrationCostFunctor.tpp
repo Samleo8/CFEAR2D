@@ -23,6 +23,23 @@ RegistrationCostFunctor::RegistrationCostFunctor(
     : mRImg(aRImg), mKFBuffer(aKFBuffer) {}
 
 /**
+ * @brief Static creation of cost function with new cost functor.
+ * Ceres should handle ownership.
+ *
+ * @param[in] aRImg Radar image to register against
+ * @param[in] aKFBuffer Circular buffer of keyframes
+ * @return ceres::CostFunction Ceres cost function
+ */
+ceres::CostFunction *
+RegistrationCostFunctor::Create(const RadarImage &aRImg,
+                                const KeyframeBuffer &aKFBuffer) {
+    return (new ceres::AutoDiffCostFunction<
+            RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
+            REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
+        new RegistrationCostFunctor(aRImg, aKFBuffer)));
+}
+
+/**
  * @brief Get the internal radar image of cost functor
  *
  * @return const RadarImage& Internal radar image to register against
@@ -90,7 +107,8 @@ const bool RegistrationCostFunctor::point2LineCost(
         ORSP<T> featurePtCasted;
         featurePt.template cast<T>(featurePtCasted);
 
-        convertORSPCoordinates<T>(featurePtCasted, worldORSPPoint, rImgTransform);
+        convertORSPCoordinates<T>(featurePtCasted, worldORSPPoint,
+                                  rImgTransform);
 
         ORSP<T> closestORSPPoint;
         const bool found =
@@ -101,9 +119,9 @@ const bool RegistrationCostFunctor::point2LineCost(
             foundMatch = true;
 
             // TODO: now compute cost according to formula
-            T dotted = closestORSPPoint.normal.dot(
-                worldORSPPoint.center - closestORSPPoint.center);
-            
+            T dotted = closestORSPPoint.normal.dot(worldORSPPoint.center -
+                                                   closestORSPPoint.center);
+
             // TODO: Huber loss here or from Ceres?
             cost += dotted;
             // cost +=

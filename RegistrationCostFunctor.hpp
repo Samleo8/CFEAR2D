@@ -14,7 +14,9 @@
 #ifndef __REGISTRATION_COST_FUNCTOR_HPP__
 #define __REGISTRATION_COST_FUNCTOR_HPP__
 
+#include "Keyframe.hpp"
 #include "OptimisationHandler.hpp"
+#include "RadarImage.hpp"
 
 /** @brief number of residuals for registration cost optimization */
 const int REGOPT_NUM_RESIDUALS = 1;
@@ -36,7 +38,7 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
  * @see
  * http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
  */
- class RegistrationCostFunctor {
+class RegistrationCostFunctor {
   private:
     // TODO: is it ok if this is a reference?
     const RadarImage &mRImg;
@@ -52,6 +54,10 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
     const KeyframeBuffer &getKFBuffer() const;
     const Keyframe &getKeyframe(const size_t aIdx) const;
 
+    // Cost function
+    static ceres::CostFunction *Create(const RadarImage &aRImg,
+                                       const KeyframeBuffer &aKFBuffer);
+                                       
     // Helper function for cost function
     template <typename T>
     [[nodiscard]] const bool
