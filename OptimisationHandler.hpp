@@ -16,6 +16,8 @@
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
 #include "TransformDefines.hpp"
+#include "RegistrationCostFunctor.hpp"
+#include "ORSP.hpp"
 
 #include <Eigen/Geometry>
 #include <Eigen/LU>

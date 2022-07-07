@@ -15,8 +15,8 @@
 #define __REGISTRATION_COST_FUNCTOR_HPP__
 
 #include "Keyframe.hpp"
-#include "OptimisationHandler.hpp"
 #include "RadarImage.hpp"
+#include "TransformDefines.hpp"
 
 /** @brief number of residuals for registration cost optimization */
 const int REGOPT_NUM_RESIDUALS = 1;
@@ -41,7 +41,8 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
 class RegistrationCostFunctor {
   private:
     // TODO: is it ok if this is a reference?
-    // TODO: Save only the vector of feature points instead of keyframe reference
+    // TODO: Save only the vector of feature points instead of keyframe
+    // reference
     const ORSP<double> mFeaturePoint;
     const Keyframe &mKeyframe;
 
@@ -50,11 +51,6 @@ class RegistrationCostFunctor {
     RegistrationCostFunctor(const ORSP<double> &aFeaturePoint,
                             const Keyframe &aKeyframe);
 
-    // Getters
-    const RadarImage &getRImg() const;
-    const KeyframeBuffer &getKFBuffer() const;
-    const Keyframe &getKeyframe(const size_t aIdx) const;
-
     // Cost function
     static ceres::CostFunction *Create(const RadarImage &aRImg,
                                        const KeyframeBuffer &aKFBuffer);
@@ -62,7 +58,8 @@ class RegistrationCostFunctor {
     // Actual cost functor
     template <typename T>
     [[nodiscard]] bool operator()(const T *const aPositionArray,
-                    const T *const aOrientationArray, T *aResidualArray) const;
+                                  const T *const aOrientationArray,
+                                  T *aResidualArray) const;
 };
 
 #include "RegistrationCostFunctor.tpp"

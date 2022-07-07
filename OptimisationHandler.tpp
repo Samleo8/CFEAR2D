@@ -46,19 +46,6 @@ const T angleBetweenVectors(const VectorDimT<T, Dimension> &aVec1,
 }
 
 /**
- * @brief Get pose transform from optimisation parameters, currently a pose
- *
- * @param[in] aParams Optimisation parameters, basically a pose. @see
- * OptimParams struct
- * @return Pose transform from optimisation parameters
- */
-template <typename T>
-const PoseTransform2D<T>
-transformFromOptimParams(const struct OptimParams<T> &aParams) {
-    return rotTransToTransform<T>(aParams.theta, aParams.translation);
-}
-
-/**
  * @brief Huber loss according to formula
  * @see https://en.wikipedia.org/wiki/Huber_loss
  *
@@ -83,8 +70,7 @@ template <typename T> const T HuberLoss(const T &a, const T &delta) {
  * @tparam T Type of data to use for optimization, used by Ceres
  * @param[in] aRImage Radar image to register against
  * @param[in] aKeyframe Keyframe to register against
- * @param[in] aParams Optimization parameters (in this case a pose) @see
- * OptimParams struct
+ * @param[in] aPose Optimization parameters (in this case a pose)
  * @param[out] aOutputCost Pointer to output cost between point to line as
  indicated by cost function
  *
@@ -103,19 +89,16 @@ const void buildPoint2LineProblem(ceres::Problem &aProblem,
             RegistrationCostFunctor::Create(aKeyframe, featurePt);
 
         problem.AddResidualBlock(regCostFn, regLossFn, positionArr,
-                                  orientationArr);
+                                 orientationArr);
     }
-
-    return foundMatch;
 }
 
-const bool
-buildAndSolveRegistrationProblem(const RadarImage &aRImage,
-                                 const KeyframeBuffer &aKFBuffer,
-                                 struct OptimParams<double> &aParams) {
+const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
+                                            const KeyframeBuffer &aKFBuffer,
+                                            Pose2D<double> &aPose) {
     // Create array pointers from params to feed into problem residual solver
-    double positionArr[2] = { aParams.position[0], aParams.position[1] };
-    double orientationArr[1] = { aParams.orientation };
+    double positionArr[2] = { aPose.position[0], aPose.position[1] };
+    double orientationArr[1] = { aPose.orientation };
 
     // Create Ceres problem
     ceres::Problem problem;
@@ -127,7 +110,7 @@ buildAndSolveRegistrationProblem(const RadarImage &aRImage,
 
     ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
 
-    problem->SetManifold(&aParams.orientation, angleManifold);
+    problem->SetManifold(&aPose.orientation, angleManifold);
 
     for (size_t i = 0, sz = aKFBuffer.size(); i < sz; i++) {
         const Keyframe &kf = aKFBuffer[i];
@@ -146,8 +129,8 @@ buildAndSolveRegistrationProblem(const RadarImage &aRImage,
                   << positionArr[1] << " " << orientationArr[0] << std::endl;
 
         // Save the parameters
-        aParams.position = Eigen::Vector2d(positionArr[0], positionArr[1]);
-        aParams.orientation = orientationArr[0];
+        aPose.position = Eigen::Vector2d(positionArr[0], positionArr[1]);
+        aPose.orientation = orientationArr[0];
     }
     else {
         std::cout << "==================" << std::endl;

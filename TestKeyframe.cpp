@@ -284,17 +284,12 @@ int main(int argc, char **argv) {
         cv::Mat outputImgORSP;
         outputImgFromRImg(currRImg, outputImgORSP);
 
-        // Ceres add residual blocks
-        double positionArr[2] = { currWorldPose.position[0],
-                                  currWorldPose.position[1] };
-        double orientationArr[1] = { currWorldPose.orientation };
-        ceres::ResidualBlockId resBlockID = problem.AddResidualBlock(
-            regCostFn, regLossFn, positionArr, orientationArr);
-        problem.SetManifold(orientationArr, angleManifold);
+        // Ceres build and solve problem
+        buildAndSolveRegistrationProblem(currImg, keyframeList, currWorldPose);
 
-
-        // Obtain transform from previous keyframe to current frame
-        PoseTransform2D<double> currPoseTransf = poseToTransform<double>(currWorldPose);
+            // Obtain transform from previous keyframe to current frame
+            PoseTransform2D<double>
+                currPoseTransf = poseToTransform<double>(currWorldPose);
         PoseTransform2D<double> kfPoseTransf = poseToTransform<double>(keyframeList.back().getWorldPose());
         // TODO: Check this
         PoseTransform2D<double> prevKFToCurrImgTransform = currPoseTransf * kfPoseTransf.inverse();
@@ -304,9 +299,6 @@ int main(int argc, char **argv) {
 
         // TODO: actually go through the frames
     }
-
-    // Free memory for cost function
-    // delete regCostFn;
 
     return 0;
 }
