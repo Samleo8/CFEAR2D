@@ -15,32 +15,33 @@
 #define __ANGLE_MANIFOLD_HPP__
 
 #include "ceres/autodiff_manifold.h"
-#include "OptimisationHandler.hpp"
 
-// Defines a manifold for updating the angle to be constrained in [-pi to pi).
+// Extern declare
+template <typename T> extern T constrainAngle(const T &aAngleRad);
+
+// Defines a manifold for updating the angle to be constrained in [-pi to
+// pi).
 class AngleManifold {
- public:
-  template <typename T>
-  bool Plus(const T* x_radians,
-            const T* delta_radians,
-            T* x_plus_delta_radians) const {
-    *x_plus_delta_radians = constrainAngle(*x_radians + *delta_radians);
-    return true;
-  }
+  public:
+    template <typename T>
+    bool Plus(const T *x_radians, const T *delta_radians,
+              T *x_plus_delta_radians) const {
+        *x_plus_delta_radians = constrainAngle<T>(*x_radians + *delta_radians);
+        return true;
+    }
 
-  template <typename T>
-  bool Minus(const T* y_radians,
-             const T* x_radians,
-             T* y_minus_x_radians) const {
-    *y_minus_x_radians =
-        constrainAngle(*y_radians) - constrainAngle(*x_radians);
+    template <typename T>
+    bool Minus(const T *y_radians, const T *x_radians,
+               T *y_minus_x_radians) const {
+        *y_minus_x_radians =
+            constrainAngle<T>(*y_radians) - constrainAngle<T>(*x_radians);
 
-    return true;
-  }
+        return true;
+    }
 
-  static ceres::Manifold* Create() {
-    return new ceres::AutoDiffManifold<AngleManifold, 1, 1>;
-  }
+    static ceres::Manifold *Create() {
+        return new ceres::AutoDiffManifold<AngleManifold, 1, 1>;
+    }
 };
 
-#endif  // __ANGLE_MANIFOLD_HPP__
+#endif // __ANGLE_MANIFOLD_HPP__
