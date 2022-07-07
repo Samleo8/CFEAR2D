@@ -20,8 +20,8 @@
  */
 #include <ostream>
 RegistrationCostFunctor::RegistrationCostFunctor(
-    const RadarImage &aRImg, const KeyframeBuffer &aKFBuffer)
-    : mRImg(aRImg), mKFBuffer(aKFBuffer) {}
+    const ORSP<double> aFeaturePoint, const Keyframe &aKeyframe)
+    : mFeaturePoint(aFeaturePoint), mKeyframe(aKeyframe){};
 
 /**
  * @brief Static creation of cost function with new cost functor.
@@ -38,121 +38,6 @@ RegistrationCostFunctor::Create(const RadarImage &aRImg,
             RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
             REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
         new RegistrationCostFunctor(aRImg, aKFBuffer)));
-}
-
-/**
- * @brief Get the internal radar image of cost functor
- *
- * @return const RadarImage& Internal radar image to register against
- */
-const RadarImage &RegistrationCostFunctor::getRImg() const {
-    return mRImg;
-}
-
-/**
- * @brief Get the internal keyframe buffer of cost functor
- *
- * @return const KeyframeBuffer& Internal circular buffer of keyframes to
- * register against
- */
-const KeyframeBuffer &RegistrationCostFunctor::getKFBuffer() const {
-    return mKFBuffer;
-}
-
-/**
- * @brief Get keyframe from internal keyframe buffer at indicated index
- *
- * @pre Index must be within bounds of internal keyframe buffer
- * @param[in] aIdx Index of keyframe buffer to get
- * @return const Keyframe& Keyframe at indicated index
- */
-const Keyframe &RegistrationCostFunctor::getKeyframe(const size_t aIdx) const {
-    return mKFBuffer[aIdx];
-}
-
-/**
- * @brief Cost between point to line given a radar image, keyframe, and
- * optimization parameters (in this case, a pose)
- *
- * @tparam T Type of data to use for optimization, used by Ceres
- * @param[in] aRImage Radar image to register against
- * @param[in] aKeyframe Keyframe to register against
- * @param[in] aParams Optimization parameters (in this case a pose) @see
- * OptimParams struct
- * @param[out] aOutputCost Pointer to output cost between point to line as
- indicated by cost function
- *
- * @return Successfully found cost between point to line
- */
-template <typename T>
-const bool RegistrationCostFunctor::point2LineCost(
-    const RadarImage &aRImage, const Keyframe &aKeyframe,
-    const struct OptimParams<T> &aParams, T *aOutputCost) const {
-    // Transform to be applied on ORSP points in RImage to convert to world
-    // coord
-    const PoseTransform2D<T> rImgTransform =
-        transformFromOptimParams<T>(aParams);
-
-    // Loop through each point from ORSP point in RImage and get the cost from
-    // formula
-    bool foundMatch = false;
-
-    T cost = static_cast<T>(0.0);
-    const T HUBER_DELTA_DEFAULT_TEMPLATED = static_cast<T>(HUBER_DELTA_DEFAULT);
-
-    const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
-    for (const ORSP<double> &featurePt : rImgFeaturePts) {
-        // Get the ORSP point in world coordinates
-        // NOTE: Need templated here, because Jacobian needed for transform
-        ORSP<T> worldORSPPoint;
-        ORSP<T> featurePtCasted;
-        featurePt.template cast<T>(featurePtCasted);
-
-        convertORSPCoordinates<T>(featurePtCasted, worldORSPPoint,
-                                  rImgTransform);
-
-        ORSP<T> closestORSPPoint;
-        const bool found =
-            aKeyframe.findClosestORSP<T>(worldORSPPoint, closestORSPPoint);
-
-        // Only parse if found a match
-        if (found) {
-            foundMatch = true;
-
-            // Compute cost according to formula
-            T dotted = closestORSPPoint.normal.dot(worldORSPPoint.center -
-                                                   closestORSPPoint.center);
-
-            // TODO: Huber loss here or from Ceres?
-            cost += dotted;
-            // cost +=
-            //     HuberLoss<T>(dotted, HUBER_DELTA_DEFAULT_TEMPLATED);
-        }
-    }
-
-    *aOutputCost = cost;
-    return foundMatch;
-}
-
-/**
- * @brief Cost between point to line using internal radar image and given
- * keyframe, and optimization parameters (in this case, a pose)
- *
- * @param[in] aKeyframe Keyframe to register against
- * @param[in] aParams Optimization parameters (in this case a pose) @see
- * OptimParams struct
- * @param[out] aOutputCost Pointer to output cost
- * @param[out] aOutputCost Pointer to output cost between point to line as
- indicated by cost function
- *
- * @return Successfully found cost between point to line
- */
-template <typename T>
-const bool
-RegistrationCostFunctor::point2LineCost(const Keyframe &aKeyframe,
-                                        const struct OptimParams<T> &aParams,
-                                        T *aOutputCost) const {
-    return point2LineCost<T>(mRImg, aKeyframe, aParams, aOutputCost);
 }
 
 /**
@@ -184,38 +69,35 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     T y = aPositionArray[1];
     T theta = aOrientationArray[0];
 
-    // TODO: Need to think in terms of manifolds, and template everything
-
     OptimParams<T> params;
     params.theta = theta;
     params.translation = Vector2T<T>(x, y);
 
-    // TODO: Point to line cost, sum by looping through all keyframes in the
-    // buffer
-    T regCost = static_cast<T>(0.0);
-    bool success = false;
+    // Transform to be applied on ORSP points in RImage to convert to world
+    // coord. Cannot be cached cos casting necessary.
+    const PoseTransform2D<T> rImgTransform =
+        transformFromOptimParams<T>(aParams);
 
-    for (size_t i = 0, sz = mKFBuffer.size(); i < sz; i++) {
-        const Keyframe &kf = getKeyframe(i);
+    // Get the ORSP point in world coordinates
+    // NOTE: Need templated here, because Jacobian needed for transform
+    ORSP<T> worldORSPPoint;
+    ORSP<T> featurePtCasted;
+    mFeaturePoint.template cast<T>(featurePtCasted);
 
-        // std::cout << "Associating keyframe " << (i + 1) << " of " << sz <<
-        // "..." << std::flush;
+    convertORSPCoordinates<T>(featurePtCasted, worldORSPPoint, rImgTransform);
 
-        T p2lCost = static_cast<T>(0.0);
-        if (point2LineCost<T>(kf, params, &p2lCost)) {
-            success = true;
-            regCost += p2lCost;
+    ORSP<T> closestORSPPoint;
+    const bool found =
+        mKeyframe.findClosestORSP<T>(worldORSPPoint, closestORSPPoint);
 
-            // std::cout << "Sucess with cost " << p2lCost << std::endl;
-        }
-        // else {
-        //     std::cout << "Failed!" << std::endl;
-        // }
+    // Only parse if found a match
+    if (found) {
+        // Compute cost according to formula
+        aResidualArray[0] = closestORSPPoint.normal.dot(
+            worldORSPPoint.center - closestORSPPoint.center);
     }
 
-    aResidualArray[0] = regCost;
-
-    return success;
+    return found;
 }
 
 #endif // __REGISTRATION_COST_FUNCTOR_TPP__

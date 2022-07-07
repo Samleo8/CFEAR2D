@@ -267,26 +267,6 @@ int main(int argc, char **argv) {
     Keyframe keyframe(currRImg, currWorldPose);
     keyframeList.push_back(keyframe);
 
-    // TODO: Ceres problem, maybe put into function
-    ceres::Problem problem;
-    ceres::Solver::Summary summary;
-    ceres::Solver::Options options;
-    // as specified by paper, can potentially use L-BFGS
-    options.line_search_direction_type = ceres::BFGS;
-    // options.max_num_iterations = 100;
-
-    // TODO: For now, optimization is returning the world pose, so to get
-    // odometry, we need to multiply by inverse of pose.
-    // Create cost functor
-    ceres::CostFunction *regCostFn =
-        RegistrationCostFunctor::Create(currRImg, keyframeList);
-
-    // NOTE: If want to keep functor pointer, by updating currRImg and
-    // keyframeList instead of creating new functor each iteration,
-    // then use ceres::DO_NOT_TAKE_OWNERSHIP
-
-    ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
-
     // Angle Manifold
     ceres::Manifold *angleManifold = AngleManifold::Create();
 
@@ -312,30 +292,6 @@ int main(int argc, char **argv) {
             regCostFn, regLossFn, positionArr, orientationArr);
         problem.SetManifold(orientationArr, angleManifold);
 
-        // TODO: only set once perhaps?
-        ceres::Solve(options, &problem, &summary);
-
-        if (summary.IsSolutionUsable()) {
-            std::cout << "Success!";
-            std::cout << "New frame pose: " << positionArr[0] << " "
-                      << positionArr[1] << " " << orientationArr[0]
-                      << std::endl;
-
-            // Save the parameters
-            currWorldPose.position =
-                Eigen::Vector2d(positionArr[0], positionArr[1]);
-            currWorldPose.orientation = orientationArr[0];
-        }
-        else {
-            std::cout << "==================" << std::endl;
-            std::cout << "No solution found!" << std::endl;
-            std::cout << summary.FullReport() << std::endl;
-            std::cout << "==================" << std::endl;
-        }
-
-        // problem.RemoveParameterBlock(positionArr);
-        // problem.RemoveParameterBlock(orientationArr);
-        problem.RemoveResidualBlock(resBlockID);
 
         // Obtain transform from previous keyframe to current frame
         PoseTransform2D<double> currPoseTransf = poseToTransform<double>(currWorldPose);

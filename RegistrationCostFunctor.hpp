@@ -41,13 +41,14 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
 class RegistrationCostFunctor {
   private:
     // TODO: is it ok if this is a reference?
-    const RadarImage &mRImg;
-    const KeyframeBuffer &mKFBuffer;
+    // TODO: Save only the vector of feature points instead of keyframe reference
+    const ORSP<double> mFeaturePoint;
+    const Keyframe &mKeyframe;
 
   public:
     // Constructors
-    RegistrationCostFunctor(const RadarImage &aRImg,
-                            const KeyframeBuffer &aKFBuffer);
+    RegistrationCostFunctor(const ORSP<double> &aFeaturePoint,
+                            const Keyframe &aKeyframe);
 
     // Getters
     const RadarImage &getRImg() const;
@@ -57,21 +58,10 @@ class RegistrationCostFunctor {
     // Cost function
     static ceres::CostFunction *Create(const RadarImage &aRImg,
                                        const KeyframeBuffer &aKFBuffer);
-                                       
-    // Helper function for cost function
-    template <typename T>
-    [[nodiscard]] const bool
-    point2LineCost(const RadarImage &aRImage, const Keyframe &aKeyframe,
-                   const struct OptimParams<T> &aParams, T *aOutputCost) const;
-
-    template <typename T>
-    [[nodiscard]] const bool
-    point2LineCost(const Keyframe &aKeyframe,
-                   const struct OptimParams<T> &aParams, T *aOutputCost) const;
 
     // Actual cost functor
     template <typename T>
-    bool operator()(const T *const aPositionArray,
+    [[nodiscard]] bool operator()(const T *const aPositionArray,
                     const T *const aOrientationArray, T *aResidualArray) const;
 };
 

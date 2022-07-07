@@ -75,4 +75,86 @@ template <typename T> const T HuberLoss(const T &a, const T &delta) {
     }
 }
 
+/**
+ * @brief Cost between point to line given a radar image and specific keyframe,
+ and
+ * optimization parameters (in this case, a pose)
+ *
+ * @tparam T Type of data to use for optimization, used by Ceres
+ * @param[in] aRImage Radar image to register against
+ * @param[in] aKeyframe Keyframe to register against
+ * @param[in] aParams Optimization parameters (in this case a pose) @see
+ * OptimParams struct
+ * @param[out] aOutputCost Pointer to output cost between point to line as
+ indicated by cost function
+ *
+ * @return Successfully found cost between point to line
+ */
+const void buildPoint2LineProblem(ceres::Problem &aProblem,
+                                  ceres::LossFunction *aLossFn,
+                                  const RadarImage &aRImage,
+                                  const Keyframe &aKeyframe,
+                                  double *positionArr, double *orientationArr) {
+    // Loop through each point from ORSP point in RImage and get the cost from
+    // formula
+    const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
+    for (const ORSP<double> &featurePt : rImgFeaturePts) {
+        ceres::CostFunction *regCostFn =
+            RegistrationCostFunctor::Create(aKeyframe, featurePt);
+
+        problem.AddResidualBlock(regCostFn, regLossFn, positionArr,
+                                  orientationArr);
+    }
+
+    return foundMatch;
+}
+
+const bool
+buildAndSolveRegistrationProblem(const RadarImage &aRImage,
+                                 const KeyframeBuffer &aKFBuffer,
+                                 struct OptimParams<double> &aParams) {
+    // Create array pointers from params to feed into problem residual solver
+    double positionArr[2] = { aParams.position[0], aParams.position[1] };
+    double orientationArr[1] = { aParams.orientation };
+
+    // Create Ceres problem
+    ceres::Problem problem;
+    ceres::Solver::Summary summary;
+    ceres::Solver::Options options;
+    // as specified by paper, can potentially use L-BFGS
+    options.line_search_direction_type = ceres::BFGS;
+    // options.max_num_iterations = 100;
+
+    ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
+
+    problem->SetManifold(&aParams.orientation, angleManifold);
+
+    for (size_t i = 0, sz = aKFBuffer.size(); i < sz; i++) {
+        const Keyframe &kf = aKFBuffer[i];
+
+        buildPoint2LineProblem(problem, regLossFn, aRImage, kf, positionArr,
+                               orientationArr);
+    }
+
+    ceres::Solve(options, &problem, &summary);
+
+    bool success = summary.IsSolutionUsable();
+
+    if (success) {
+        std::cout << "Success!";
+        std::cout << "New frame pose: " << positionArr[0] << " "
+                  << positionArr[1] << " " << orientationArr[0] << std::endl;
+
+        // Save the parameters
+        aParams.position = Eigen::Vector2d(positionArr[0], positionArr[1]);
+        aParams.orientation = orientationArr[0];
+    }
+    else {
+        std::cout << "==================" << std::endl;
+        std::cout << "No solution found!" << std::endl;
+        std::cout << summary.FullReport() << std::endl;
+        std::cout << "==================" << std::endl;
+    }
+}
+
 #endif // __OPTIMISATION_HANDLER_TPP__
