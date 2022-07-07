@@ -100,6 +100,8 @@ const bool RegistrationCostFunctor::point2LineCost(
     const T HUBER_DELTA_DEFAULT_TEMPLATED = static_cast<T>(HUBER_DELTA_DEFAULT);
 
     const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
+    std::cout << "point2LineCost: " << rImgFeaturePts.size() << std::endl;
+
     for (const ORSP<double> &featurePt : rImgFeaturePts) {
         // Get the ORSP point in world coordinates
         // NOTE: Need templated here, because Jacobian needed for transform
@@ -193,6 +195,8 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     // buffer
     T regCost = static_cast<T>(0.0);
     bool success = false;
+
+    std::cout << "RegistrationCostFunctor::operator(): " << mKFBuffer.size() << std::endl;
 
     for (size_t i = 0, sz = mKFBuffer.size(); i < sz; i++) {
         const Keyframe &kf = getKeyframe(i);

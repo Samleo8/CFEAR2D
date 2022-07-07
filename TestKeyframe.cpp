@@ -265,6 +265,7 @@ int main(int argc, char **argv) {
 
     // TODO: Keyframe handling
     Keyframe keyframe(currRImg, currWorldPose);
+    keyframeList.push_back(keyframe);
 
     // TODO: Ceres problem, maybe put into function
     ceres::Problem problem;
@@ -343,7 +344,7 @@ int main(int argc, char **argv) {
     }
 
     // Free memory for cost function
-    delete regCostFn;
+    // delete regCostFn;
 
     return 0;
 }
