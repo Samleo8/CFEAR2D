@@ -4,9 +4,9 @@
 #include <Eigen/Geometry>
 #include <Eigen/LU>
 
-#include "TransformDefines.hpp"
 #include "ORSP.hpp"
 #include "Pose2D.hpp"
+#include "TransformDefines.hpp"
 
 template <typename T>
 const PoseTransform2D<T>
@@ -21,13 +21,17 @@ template <typename T>
 const PoseTransform2D<T> poseToTransform(const Pose2D &aPose);
 
 template <typename T>
+const Pose2D transformToPose(const PoseTransform2D<T> &aPoseTransform);
+
+template <typename T>
 const Vector2T<T>
 convertCoordinate(const Vector2T<T> &aCoordinate,
                   const PoseTransform2D<T> &aConversionTransform,
                   bool isVector = false);
 
 template <typename T>
-void convertORSPCoordinates(const ORSP<T> &aLocalORSPPoint, ORSP<T> &aWorldORSPPoint,
+void convertORSPCoordinates(const ORSP<T> &aLocalORSPPoint,
+                            ORSP<T> &aWorldORSPPoint,
                             const PoseTransform2D<T> &aWorldPoseTransform);
 
 // Include implementation file

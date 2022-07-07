@@ -12,6 +12,7 @@
 #include "CVColor.hpp"
 #include "Keyframe.hpp"
 #include "OptimisationHandler.hpp"
+#include "PoseTransformHandler.hpp"
 #include "RadarFeed.hpp"
 #include "RadarImage.hpp"
 #include "RegistrationCostFunctor.hpp"
@@ -258,12 +259,11 @@ int main(int argc, char **argv) {
     currRImg.performKStrong(K, Z_min);
     currRImg.computeOrientedSurfacePoints();
 
-    KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
-
-    // First image is always a keyframe
+    // Saving of current world pose (initial pose for previous frame)
     Pose2D currWorldPose(0, 0, 0);
 
-    // TODO: Keyframe handling
+    // First image is always a keyframe
+    KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
     Keyframe keyframe(currRImg, currWorldPose);
     keyframeList.push_back(keyframe);
 
@@ -316,8 +316,8 @@ int main(int argc, char **argv) {
         ceres::Solve(options, &problem, &summary);
 
         if (summary.IsSolutionUsable()) {
-            // std::cout << "Success!";
-            std::cout << "Frame Pose: " << positionArr[0] << " "
+            std::cout << "Success!";
+            std::cout << "New frame pose: " << positionArr[0] << " "
                       << positionArr[1] << " " << orientationArr[0]
                       << std::endl;
 
@@ -337,6 +337,12 @@ int main(int argc, char **argv) {
         // problem.RemoveParameterBlock(orientationArr);
         problem.RemoveResidualBlock(resBlockID);
 
+        // Obtain transform from previous keyframe to current frame
+        PoseTransform2D<double> currPoseTransf = poseToTransform<double>(currWorldPose);
+        PoseTransform2D<double> kfPoseTransf = poseToTransform<double>(keyframeList.back().getWorldPose());
+        // TODO: Check this
+        PoseTransform2D<double> prevKFToCurrImgTransform = currPoseTransf * kfPoseTransf.inverse();
+        
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
 

@@ -49,9 +49,32 @@ const PoseTransform2D<T> rotTransToTransform(const T &aAngleRad,
     return rotTransToTransform<T>(rotMat, aTrans);
 }
 
+/**
+ * @brief Convert pose to transform
+ *
+ * @tparam T Scalar type, used for Ceres
+ * @param[in] aPose Pose object to convert
+ * @return const PoseTransform2D<T> Transform constructred from pose
+ */
 template <typename T>
 const PoseTransform2D<T> poseToTransform(const Pose2D &aPose) {
     return rotTransToTransform<T>(aPose.orientation, aPose.position);
+}
+
+/**
+ * @brief Convert transform to pose
+ *
+ * @tparam T Scalar type, used for Ceres
+ * @param[in] aPoseTransform Pose transform to convert into pose form
+ * @return const Pose2D Pose constructed from transform
+ */
+template <typename T>
+const Pose2D transformToPose(const PoseTransform2D<T> &aPoseTransform) {
+    Pose2D pose;
+    // Between [-pi, pi]
+    pose.orientation = static_cast<double>(aPoseTransform.rotation().smallestAngle());
+    pose.position = static_cast<double>(aPoseTransform.translation());
+    return pose;
 }
 
 /**
@@ -89,7 +112,8 @@ convertCoordinate(const Vector2T<T> &aCoordinate,
  * conversion
  */
 template <typename T>
-void convertORSPCoordinates(const ORSP<T> &aInputORSPPoint, ORSP<T> &aOutputORSPPoint,
+void convertORSPCoordinates(const ORSP<T> &aInputORSPPoint,
+                            ORSP<T> &aOutputORSPPoint,
                             const PoseTransform2D<T> &aConversionTransform) {
     aOutputORSPPoint.center = convertCoordinate<T>(aInputORSPPoint.center,
                                                    aConversionTransform, false);
