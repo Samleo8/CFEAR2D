@@ -46,7 +46,7 @@ class Keyframe {
     static const size_t DIMENSION = 2;
 
     /** @brief World pose, probably mainly for plotting */
-    Pose2D mWorldPose;
+    Pose2D<double> mWorldPose;
 
     /**
      * @brief World pose as homogeneous transformation matrix that converts
@@ -67,12 +67,12 @@ class Keyframe {
     ORSPVec<double> mORSPFeaturePoints;
 
   public:
-    Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
+    Keyframe(const RadarImage &aRadarImage, const Pose2D<double> &aWorldPose);
     ~Keyframe();
 
     // Getters
-    const Pose2D &getPose() const;
-    const Pose2D &getWorldPose() const;
+    const Pose2D<double> &getPose() const;
+    const Pose2D<double> &getWorldPose() const;
     const ORSPVec<double> &getORSPFeaturePoints() const;
 
     const PoseTransform2D<double> &getLocalToWorldTransform() const;

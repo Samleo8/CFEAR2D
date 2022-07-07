@@ -30,7 +30,7 @@
  * keyframe
  * @param[in] aWorldPose
  */
-Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose)
+Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D<double> &aWorldPose)
     : mWorldPose(aWorldPose),
       mLocalToWorldTransform(poseToTransform<double>(aWorldPose)),
       mWorldToLocalTransform(mLocalToWorldTransform.inverse()){
@@ -68,7 +68,7 @@ Keyframe::~Keyframe() {}
  *
  * @return const Pose2D& World pose
  */
-const Pose2D &Keyframe::getPose() const {
+const Pose2D<double> &Keyframe::getPose() const {
     return getWorldPose();
 }
 
@@ -77,7 +77,7 @@ const Pose2D &Keyframe::getPose() const {
  *
  * @return const Pose2D& World pose
  */
-const Pose2D &Keyframe::getWorldPose() const {
+const Pose2D<double> &Keyframe::getWorldPose() const {
     return mWorldPose;
 }
 

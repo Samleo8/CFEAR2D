@@ -57,7 +57,7 @@ const PoseTransform2D<T> rotTransToTransform(const T &aAngleRad,
  * @return const PoseTransform2D<T> Transform constructred from pose
  */
 template <typename T>
-const PoseTransform2D<T> poseToTransform(const Pose2D &aPose) {
+const PoseTransform2D<T> poseToTransform(const Pose2D<T> &aPose) {
     return rotTransToTransform<T>(aPose.orientation, aPose.position);
 }
 
@@ -66,11 +66,11 @@ const PoseTransform2D<T> poseToTransform(const Pose2D &aPose) {
  *
  * @tparam T Scalar type, used for Ceres
  * @param[in] aPoseTransform Pose transform to convert into pose form
- * @return const Pose2D Pose constructed from transform
+ * @return const Pose2D<T> Pose constructed from transform
  */
 template <typename T>
-const Pose2D transformToPose(const PoseTransform2D<T> &aPoseTransform) {
-    Pose2D pose;
+const Pose2D<T> transformToPose(const PoseTransform2D<T> &aPoseTransform) {
+    Pose2D<T> pose;
     // Between [-pi, pi]
     pose.orientation = static_cast<double>(aPoseTransform.rotation().smallestAngle());
     pose.position = static_cast<double>(aPoseTransform.translation());

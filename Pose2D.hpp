@@ -11,17 +11,21 @@
 #ifndef __CFEAR_POSE_2D_HPP__
 #define __CFEAR_POSE_2D_HPP__
 
+#include "TransformDefines.hpp"
+
 #include <Eigen/Geometry>
 
 /**
- * @brief Struct for storing 2D pose information as position(x,y),
+ * @brief Class for storing 2D pose information as position(x,y),
  * orientation(theta)
  * @note 3D pose will be similar but orientation will probably be a quaternion
  * or set of euler angles
+ * @tparam Type for pose
  */
-struct Pose2D {
-    Eigen::Vector2d position = Eigen::Vector2d::Zero(); ///< position as x, y
-    double orientation = 0; ///< orientation as theta
+template <typename T = double> class Pose2D {
+  public:
+    Vector2T<T> position = Vector2T<T>::Zero(); ///< position as x, y
+    T orientation = 0;                          ///< orientation as theta
 
     /** @brief Default constructor */
     Pose2D() {}
@@ -32,7 +36,7 @@ struct Pose2D {
      * @param[in] aPosition Position (x, y)
      * @param[in] aOrientation Orientation (theta)
      */
-    Pose2D(const Eigen::Vector2d &aPosition, const double aOrientation)
+    Pose2D(const Vector2T<T> &aPosition, const T aOrientation)
         : position(aPosition), orientation(aOrientation) {}
 
     /**
@@ -40,7 +44,7 @@ struct Pose2D {
      * @param[in] aPosition Position (x, y)
      * @param[in] aOrientation Orientation (theta)
      */
-    Pose2D(const double ax, const double ay, const double aOrientation)
+    Pose2D(const T ax, const T ay, const T aOrientation)
         : orientation(aOrientation) {
         position << ax, ay;
     }
@@ -53,13 +57,11 @@ struct Pose2D {
      * @return std::ostream& Output stream reference
      */
     friend std::ostream &operator<<(std::ostream &aOutputStream,
-                                    const Pose2D &aPose) {
+                                    const Pose2D<T> &aPose) {
         aOutputStream << aPose.position << std::endl
                       << aPose.orientation << std::endl;
         return aOutputStream;
     }
 };
-
-typedef struct Pose2D Pose2D; ///< typedef for struct Pose2D
 
 #endif // __CFEAR_POSE_2D_HPP__
