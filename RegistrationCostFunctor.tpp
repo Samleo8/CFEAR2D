@@ -194,12 +194,19 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     T regCost = static_cast<T>(0.0);
     bool success = false;
 
-    for (size_t i = 0; i < mKFBuffer.size(); i++) {
-        const Keyframe &keyframe = getKeyframe(i);
-        T p2lCost;
-        if (point2LineCost<T>(keyframe, params, &p2lCost)) {
+    for (size_t i = 0, sz = mKFBuffer.size(); i < sz; i++) {
+        const Keyframe &kf = getKeyframe(i);
+
+        std::cout << "Associating keyframe " << i << " of " << sz << "..." << std::endl;
+        std::cout << kf.getWorldPose() << std::endl;
+
+        T p2lCost = static_cast<T>(0.0);
+        if (point2LineCost<T>(kf, params, &p2lCost)) {
             success = true;
             regCost += p2lCost;
+        }
+        else {
+            std::cout << "Failed to associate with keyframe " << i << std::endl;
         }
     }
 

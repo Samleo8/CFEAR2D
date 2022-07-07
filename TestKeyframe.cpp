@@ -251,6 +251,13 @@ int main(int argc, char **argv) {
     RadarImage currRImg;
     feed.getCurrentRadarImage(currRImg);
 
+    // K-filtering and ORSP
+    const size_t K = 12;
+    const double Z_min = 55;
+
+    currRImg.performKStrong(K, Z_min);
+    currRImg.computeOrientedSurfacePoints();
+
     KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
 
     // First image is always a keyframe
@@ -258,8 +265,6 @@ int main(int argc, char **argv) {
 
     // TODO: Keyframe handling
     Keyframe keyframe(currRImg, currWorldPose);
-
-    keyframeList.push_back(keyframe);
 
     // TODO: Ceres problem, maybe put into function
     ceres::Problem problem;
@@ -291,9 +296,6 @@ int main(int argc, char **argv) {
         feed.getCurrentRadarImage(currRImg);
 
         // K-filtering and ORSP
-        const size_t K = 12;
-        const double Z_min = 55;
-
         currRImg.performKStrong(K, Z_min);
         currRImg.computeOrientedSurfacePoints();
 

@@ -12,10 +12,7 @@
 #define __CFEAR_KEYFRAME_TPP__
 
 #include "OptimisationHandler.hpp" // for angleBetweenVectors
-#include <ceres/jet.h> // for functions like abs, max
-
-// External declaration of ANGLE_TOLERANCE_RAD, defined in OptimizationHandler.hpp
-extern const double ANGLE_TOLERANCE_RAD;
+#include <ceres/jet.h>             // for functions like abs, max
 
 /**
  * @brief Find the closest feature point to a given point in world
@@ -33,12 +30,15 @@ extern const double ANGLE_TOLERANCE_RAD;
 template <typename CastType>
 const bool Keyframe::findClosestORSP(const ORSP<CastType> &aORSPPoint,
                                      ORSP<CastType> &aClosestORSPPoint) const {
+    std::cout << "findClosestORSP " << mORSPFeaturePoints.size() << std::endl;
+
     // Init stuff
     bool found = false;
     CastType ANGLE_TOLERANCE_RAD_CASTED =
         static_cast<CastType>(ANGLE_TOLERANCE_RAD);
 
-    // NOTE: Closest distance set to radius because we only want points at a close enough distance
+    // NOTE: Closest distance set to radius because we only want points at a
+    // close enough distance
     CastType closestDistance = static_cast<CastType>(ORSP_RADIUS);
 
     // center and normal vector of reference ORSP to find closest point against
@@ -52,19 +52,24 @@ const bool Keyframe::findClosestORSP(const ORSP<CastType> &aORSPPoint,
         const ORSP<double> &potentialClosestPoint = mORSPFeaturePoints[i];
 
         // Obtain casted version of center, normal of ORSP point
-        Vector2T<CastType> potentialCenter = potentialClosestPoint.center.template cast<CastType>();
+        Vector2T<CastType> potentialCenter =
+            potentialClosestPoint.center.template cast<CastType>();
         Vector2T<CastType> potentialNormal =
             potentialClosestPoint.normal.template cast<CastType>();
 
         // Check angle tolerance
         const CastType angle =
-            angleBetweenVectors<CastType, Keyframe::DIMENSION>(potentialNormal, normalVec);
+            angleBetweenVectors<CastType, Keyframe::DIMENSION>(potentialNormal,
+                                                               normalVec);
+
+        std::cout << "Angle " << i << " " << angle << std::endl;
 
         if (ceres::abs(angle) > ANGLE_TOLERANCE_RAD_CASTED) continue;
 
         // Calculate distance between potential closest point, and
         // check if it is indeed the closest point
         CastType dist = getDistance<CastType>(potentialCenter, centerPoint);
+        std::cout << dist << std::endl;
 
         if (dist < closestDistance) {
             closestDistance = dist;
