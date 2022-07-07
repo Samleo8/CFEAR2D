@@ -275,12 +275,11 @@ int main(int argc, char **argv) {
     ceres::CostFunction *regCostFn =
         RegistrationCostFunctor::Create(currRImg, keyframeList);
 
-        // NOTE: If want to keep functor pointer, by updating currRImg and
-        // keyframeList instead of creating new functor each iteration,
-        // then use ceres::DO_NOT_TAKE_OWNERSHIP
+    // NOTE: If want to keep functor pointer, by updating currRImg and
+    // keyframeList instead of creating new functor each iteration,
+    // then use ceres::DO_NOT_TAKE_OWNERSHIP
 
-        ceres::LossFunction *regLossFn =
-            new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
+    ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
 
     // Angle Manifold
     ceres::Manifold *angleManifold = AngleManifold::Create();
@@ -325,19 +324,20 @@ int main(int argc, char **argv) {
             currWorldPose.orientation = orientationArr[0];
         }
         else {
+            std::cout << "==================" << std::endl;
             std::cout << "No solution found!" << std::endl;
+            std::cout << summary.FullReport() << std::endl;
+            std::cout << "==================" << std::endl;
         }
 
-        problem.RemoveParameterBlock(positionArr);
-        problem.RemoveParameterBlock(orientationArr);
+        // problem.RemoveParameterBlock(positionArr);
+        // problem.RemoveParameterBlock(orientationArr);
         problem.RemoveResidualBlock(resBlockID);
 
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
 
         // TODO: actually go through the frames
-
-        break;
     }
 
     // Free memory for cost function
