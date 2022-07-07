@@ -18,6 +18,7 @@
  * @param[in] aRImg Radar image to register against
  * @param[in] aKFBuffer Circular buffer of keyframes
  */
+#include <ostream>
 RegistrationCostFunctor::RegistrationCostFunctor(
     const RadarImage &aRImg, const KeyframeBuffer &aKFBuffer)
     : mRImg(aRImg), mKFBuffer(aKFBuffer) {}
@@ -100,8 +101,6 @@ const bool RegistrationCostFunctor::point2LineCost(
     const T HUBER_DELTA_DEFAULT_TEMPLATED = static_cast<T>(HUBER_DELTA_DEFAULT);
 
     const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
-    std::cout << "point2LineCost: " << rImgFeaturePts.size() << std::endl;
-
     for (const ORSP<double> &featurePt : rImgFeaturePts) {
         // Get the ORSP point in world coordinates
         // NOTE: Need templated here, because Jacobian needed for transform
@@ -120,7 +119,7 @@ const bool RegistrationCostFunctor::point2LineCost(
         if (found) {
             foundMatch = true;
 
-            // TODO: now compute cost according to formula
+            // Compute cost according to formula
             T dotted = closestORSPPoint.normal.dot(worldORSPPoint.center -
                                                    closestORSPPoint.center);
 
@@ -196,25 +195,23 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     T regCost = static_cast<T>(0.0);
     bool success = false;
 
-    std::cout << "RegistrationCostFunctor::operator(): " << mKFBuffer.size() << std::endl;
-
     for (size_t i = 0, sz = mKFBuffer.size(); i < sz; i++) {
         const Keyframe &kf = getKeyframe(i);
 
-        std::cout << "Associating keyframe " << i << " of " << sz << "..." << std::endl;
-        std::cout << kf.getWorldPose() << std::endl;
+        // std::cout << "Associating keyframe " << (i + 1) << " of " << sz <<
+        // "..." << std::flush;
 
         T p2lCost = static_cast<T>(0.0);
         if (point2LineCost<T>(kf, params, &p2lCost)) {
             success = true;
             regCost += p2lCost;
-        }
-        else {
-            std::cout << "Failed to associate with keyframe " << i << std::endl;
-        }
-    }
 
-    //     // TODO: Huber loss from Ceres?
+            // std::cout << "Sucess with cost " << p2lCost << std::endl;
+        }
+        // else {
+        //     std::cout << "Failed!" << std::endl;
+        // }
+    }
 
     aResidualArray[0] = regCost;
 

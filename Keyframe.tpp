@@ -30,8 +30,6 @@
 template <typename CastType>
 const bool Keyframe::findClosestORSP(const ORSP<CastType> &aORSPPoint,
                                      ORSP<CastType> &aClosestORSPPoint) const {
-    std::cout << "findClosestORSP " << mORSPFeaturePoints.size() << std::endl;
-
     // Init stuff
     bool found = false;
     CastType ANGLE_TOLERANCE_RAD_CASTED =
@@ -62,14 +60,11 @@ const bool Keyframe::findClosestORSP(const ORSP<CastType> &aORSPPoint,
             angleBetweenVectors<CastType, Keyframe::DIMENSION>(potentialNormal,
                                                                normalVec);
 
-        std::cout << "Angle " << i << " " << angle << std::endl;
-
         if (ceres::abs(angle) > ANGLE_TOLERANCE_RAD_CASTED) continue;
 
         // Calculate distance between potential closest point, and
         // check if it is indeed the closest point
         CastType dist = getDistance<CastType>(potentialCenter, centerPoint);
-        std::cout << dist << std::endl;
 
         if (dist < closestDistance) {
             closestDistance = dist;
