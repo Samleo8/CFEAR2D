@@ -86,10 +86,10 @@ const void buildPoint2LineProblem(ceres::Problem &aProblem,
     const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
     for (const ORSP<double> &featurePt : rImgFeaturePts) {
         ceres::CostFunction *regCostFn =
-            RegistrationCostFunctor::Create(aKeyframe, featurePt);
+            RegistrationCostFunctor::Create(featurePt, aKeyframe);
 
-        problem.AddResidualBlock(regCostFn, regLossFn, positionArr,
-                                 orientationArr);
+        aProblem.AddResidualBlock(regCostFn, aLossFn, positionArr,
+                                  orientationArr);
     }
 }
 
@@ -110,8 +110,13 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
 
     ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
 
-    problem->SetManifold(&aPose.orientation, angleManifold);
+    // TODO: When 3D set to EigenQuaternion manifold
+    // Angle Manifold
+    ceres::Manifold *angleManifold = AngleManifold::Create();
+    problem.SetManifold(&aPose.orientation, angleManifold);
 
+    // Build the point to line problem for each keyframe, adding residual blocks
+    // for each associated point
     for (size_t i = 0, sz = aKFBuffer.size(); i < sz; i++) {
         const Keyframe &kf = aKFBuffer[i];
 
@@ -119,6 +124,7 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
                                orientationArr);
     }
 
+    // Solve after building problem
     ceres::Solve(options, &problem, &summary);
 
     bool success = summary.IsSolutionUsable();

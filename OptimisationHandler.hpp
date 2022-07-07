@@ -12,12 +12,13 @@
 #ifndef __OPTIMISATION_HANDLER_HPP__
 #define __OPTIMISATION_HANDLER_HPP__
 
+#include "AngleManifold.hpp"
 #include "Keyframe.hpp"
+#include "ORSP.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
-#include "TransformDefines.hpp"
 #include "RegistrationCostFunctor.hpp"
-#include "ORSP.hpp"
+#include "TransformDefines.hpp"
 
 #include <Eigen/Geometry>
 #include <Eigen/LU>
@@ -29,14 +30,6 @@
 
 #define ANGLE_RAD_TO_DEG (180.0 / M_PI)
 #define ANGLE_DEG_TO_RAD (M_PI / 180.0)
-
-// TODO: Integrate with ceres somehow
-// TOOD: 2D for now
-template <typename T> struct OptimParams {
-    // Eigen::Quaterniond q;     ///< rotation
-    Vector2T<T> position; ///< translation
-    T orientation;        ///< rotation
-};
 
 /** @brief Keyframe buffer size */
 const size_t KF_BUFF_SIZE = 3;
@@ -56,16 +49,12 @@ template <typename T, int Dimension = 2>
 const T angleBetweenVectors(const VectorDimT<T, Dimension> &aVec1,
                             const VectorDimT<T, Dimension> &aVec2);
 
-template <typename T>
-const PoseTransform2D<T>
-transformFromOptimParams(const struct OptimParams<T> &aParams);
-
 template <typename T> const T HuberLoss(const T &a, const T &delta);
 
-[[nodiscard]] const bool
-buildPoint2LineProblem(ceres::Problem *aProblem, const RadarImage &aRImage,
-                       const Keyframe &aKeyframe,
-                       const struct OptimParams<double> &aParams);
+[[nodiscard]] const bool buildPoint2LineProblem(ceres::Problem *aProblem,
+                                                const RadarImage &aRImage,
+                                                const Keyframe &aKeyframe,
+                                                Pose2D<double> &aPose);
 
 // Implementation file for optimisation handler functions
 #include "OptimisationHandler.tpp"

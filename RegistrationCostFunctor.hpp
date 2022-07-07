@@ -17,6 +17,7 @@
 #include "Keyframe.hpp"
 #include "RadarImage.hpp"
 #include "TransformDefines.hpp"
+#include <ceres/ceres.h>
 
 /** @brief number of residuals for registration cost optimization */
 const int REGOPT_NUM_RESIDUALS = 1;
@@ -52,8 +53,8 @@ class RegistrationCostFunctor {
                             const Keyframe &aKeyframe);
 
     // Cost function
-    static ceres::CostFunction *Create(const RadarImage &aRImg,
-                                       const KeyframeBuffer &aKFBuffer);
+    static ceres::CostFunction *Create(const ORSP<double> &aFeaturePoint,
+                                       const Keyframe &aKeyframe);
 
     // Actual cost functor
     template <typename T>

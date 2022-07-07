@@ -14,6 +14,7 @@
 #include "TransformDefines.hpp"
 
 #include <Eigen/Geometry>
+#include <ostream>
 
 /**
  * @brief Class for storing 2D pose information as position(x,y),
@@ -25,7 +26,7 @@
 template <typename T = double> class Pose2D {
   public:
     Vector2T<T> position = Vector2T<T>::Zero(); ///< position as x, y
-    T orientation = 0;                          ///< orientation as theta
+    T orientation = static_cast<T>(0);          ///< orientation as theta
 
     /** @brief Default constructor */
     Pose2D() {}

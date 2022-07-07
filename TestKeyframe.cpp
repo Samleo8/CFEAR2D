@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <string>
 
-#include "AngleManifold.hpp"
 #include "CVColor.hpp"
 #include "Keyframe.hpp"
 #include "OptimisationHandler.hpp"
@@ -260,15 +259,12 @@ int main(int argc, char **argv) {
     currRImg.computeOrientedSurfacePoints();
 
     // Saving of current world pose (initial pose for previous frame)
-    Pose2D currWorldPose(0, 0, 0);
+    Pose2D<double> currWorldPose(0, 0, 0);
 
     // First image is always a keyframe
     KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
     Keyframe keyframe(currRImg, currWorldPose);
     keyframeList.push_back(keyframe);
-
-    // Angle Manifold
-    ceres::Manifold *angleManifold = AngleManifold::Create();
 
     // Keep finding frames
     while (feed.nextFrame()) {

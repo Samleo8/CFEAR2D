@@ -18,7 +18,7 @@
  * @param[in] aRImg Radar image to register against
  * @param[in] aKFBuffer Circular buffer of keyframes
  */
-#include <ostream>
+
 RegistrationCostFunctor::RegistrationCostFunctor(
     const ORSP<double> aFeaturePoint, const Keyframe &aKeyframe)
     : mFeaturePoint(aFeaturePoint), mKeyframe(aKeyframe){};
@@ -32,12 +32,12 @@ RegistrationCostFunctor::RegistrationCostFunctor(
  * @return ceres::CostFunction Ceres cost function
  */
 ceres::CostFunction *
-RegistrationCostFunctor::Create(const RadarImage &aRImg,
-                                const KeyframeBuffer &aKFBuffer) {
+RegistrationCostFunctor::Create(const ORSP<double> &aFeaturePoint,
+                                const Keyframe &aKeyframe) {
     return (new ceres::AutoDiffCostFunction<
             RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
             REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
-        new RegistrationCostFunctor(aRImg, aKFBuffer)));
+        new RegistrationCostFunctor(aFeaturePoint, aKeyframe)));
 }
 
 /**
@@ -69,14 +69,13 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     T y = aPositionArray[1];
     T theta = aOrientationArray[0];
 
-    OptimParams<T> params;
-    params.theta = theta;
-    params.translation = Vector2T<T>(x, y);
+    Pose2D<T> paramsAsPose(x, y, theta);
+    // paramsAsPose.orientation = theta;
+    // paramsAsPose.position = Vector2T<T>(x, y);
 
     // Transform to be applied on ORSP points in RImage to convert to world
     // coord. Cannot be cached cos casting necessary.
-    const PoseTransform2D<T> rImgTransform =
-        transformFromOptimParams<T>(aParams);
+    const PoseTransform2D<T> rImgTransform = poseToTransform<T>(paramsAsPose);
 
     // Get the ORSP point in world coordinates
     // NOTE: Need templated here, because Jacobian needed for transform
@@ -86,6 +85,7 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
 
     convertORSPCoordinates<T>(featurePtCasted, worldORSPPoint, rImgTransform);
 
+    // Because of distance calculation, need to be templated also
     ORSP<T> closestORSPPoint;
     const bool found =
         mKeyframe.findClosestORSP<T>(worldORSPPoint, closestORSPPoint);
