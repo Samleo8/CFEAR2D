@@ -12,6 +12,7 @@
 
 #include "OptimisationHandler.hpp"
 #include "ORSP.hpp"
+#include <ceres/types.h>
 
 /**
  * @brief Given optimization parameters (pose in this case), add residual blocks
@@ -75,7 +76,9 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     ceres::Problem problem;
     ceres::Solver::Summary summary;
     ceres::Solver::Options options;
+
     // as specified by paper, can potentially use L-BFGS
+    options.minimizer_type = ceres::LINE_SEARCH;
     options.line_search_direction_type = ceres::BFGS;
     options.max_num_iterations = 100;
 
@@ -99,6 +102,8 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
 
     // Solve after building problem
     ceres::Solve(options, &problem, &summary);
+
+    std::cout << summary.final_cost << std::endl;
 
     bool success = summary.IsSolutionUsable();
 
