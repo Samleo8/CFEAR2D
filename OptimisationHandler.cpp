@@ -2,7 +2,7 @@
  * @file OptimisationHandler.cpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
  * @brief Handler for optimisation functions, including the building and solving
- * of registration and motion distortion optimisation problems. 
+ * of registration and motion distortion optimisation problems.
  * Notably, @see buildAndSolveRegistrationProblem()
  * @version 0.1
  * @date 2022-07-08
@@ -80,11 +80,6 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
 
     ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
 
-    // TODO: When 3D set to EigenQuaternion manifold
-    // Angle Manifold
-    ceres::Manifold *angleManifold = AngleManifold::Create();
-    problem.SetManifold(&aPose.orientation, angleManifold);
-
     // Build the point to line problem for each keyframe, adding residual blocks
     // for each associated point
     for (size_t i = 0, sz = aKFBuffer.size(); i < sz; i++) {
@@ -93,6 +88,12 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
         buildPoint2LineProblem(problem, regLossFn, aRImage, kf, positionArr,
                                orientationArr);
     }
+
+    // NOTE: Manifold must be set after residual blocks are added
+    // TODO: When 3D set to EigenQuaternion manifold
+    // Angle Manifold
+    ceres::Manifold *angleManifold = AngleManifold::Create();
+    problem.SetManifold(orientationArr, angleManifold);
 
     // Solve after building problem
     ceres::Solve(options, &problem, &summary);
