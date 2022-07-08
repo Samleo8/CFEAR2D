@@ -39,9 +39,9 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
                                          const T *const aOrientationArray,
                                          T *aResidualArray) const {
     // Build parameter object from input params
-    T x = aPositionArray[0];
-    T y = aPositionArray[1];
-    T theta = aOrientationArray[0];
+    const T &x = aPositionArray[0];
+    const T &y = aPositionArray[1];
+    const T &theta = aOrientationArray[0];
 
     Pose2D<T> paramsAsPose(x, y, theta);
     // paramsAsPose.orientation = theta;
