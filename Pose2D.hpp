@@ -26,7 +26,7 @@
 template <typename T = double> class Pose2D {
   public:
     Vector2T<T> position = Vector2T<T>::Zero(); ///< position as x, y
-    T orientation = static_cast<T>(0);          ///< orientation as theta
+    T orientation = static_cast<T>(0.0);          ///< orientation as theta
 
     /** @brief Default constructor */
     Pose2D() {}
@@ -48,6 +48,18 @@ template <typename T = double> class Pose2D {
     Pose2D(const T &ax, const T &ay, const T &aOrientation)
         : orientation(aOrientation) {
         position << ax, ay;
+    }
+
+    /**
+     * @brief Perform a deep copy from other Pose2D class
+     * 
+     * @param[in] aPose Pose2D to copy from
+     */
+    void copyFrom(const Pose2D<T> &aPose) {
+        position[0] = aPose.position[0];
+        position[1] = aPose.position[1];
+
+        orientation = aPose.orientation;
     }
 
     /**
