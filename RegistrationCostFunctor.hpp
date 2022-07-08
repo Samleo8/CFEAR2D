@@ -42,23 +42,21 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
  */
 class RegistrationCostFunctor {
   private:
-    // TODO: is it ok if this is a reference?
-    // TODO: Save only the vector of feature points instead of keyframe
-    // reference
+    /** @brief Feature point from radar image to optimise */
     const ORSP<double> mFeaturePoint;
-    const ORSPVec<double> &mKeyframeFeaturePoints;
 
-    static constexpr double DEFAULT_FAIL_COST = 1e6;
+    /** @brief Associated feature point from keyframe */
+    const ORSP<double> mKeyframeFeaturePoint;
 
   public:
     // Constructors
     RegistrationCostFunctor(const ORSP<double> &aFeaturePoint,
-                            const ORSPVec<double> &aKeyframeFeaturePoints);
+                            const ORSP<double> &aKeyframeFeaturePoint);
 
     // Cost function
     static ceres::CostFunction *
     Create(const ORSP<double> &aFeaturePoint,
-           const ORSPVec<double> &aKeyframeFeaturePoints);
+           const ORSP<double> &aKeyframeFeaturePoint);
 
     // Actual cost functor
     template <typename T>
