@@ -68,6 +68,8 @@ void buildPoint2LineProblem(ceres::Problem *aProblem,
 const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
                                             const KeyframeBuffer &aKFBuffer,
                                             Pose2D<double> &aPose) {
+    std::cout << "Init Pose: " << aPose << std::endl;
+
     // Create array (pointers) from params to feed into problem residual solver
     double positionArr[2] = { aPose.position[0], aPose.position[1] };
     double orientationArr[1] = { aPose.orientation };
@@ -101,9 +103,37 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     problem.SetManifold(orientationArr, angleManifold);
 
     // Solve after building problem
-    ceres::Solve(options, &problem, &summary);
+    double cost = 0.0;
+    std::vector<double> residuals;
+    std::vector<double> gradients;
+    ceres::CRSMatrix jacobian;
 
-    std::cout << summary.final_cost << std::endl;
+    problem.Evaluate(ceres::Problem::EvaluateOptions(), &cost, &residuals,
+                     &gradients, &jacobian);
+
+    std::cout << "================Eval Debug================" << std::endl;
+    std::cout << "Evaluated Cost: " << cost << std::endl;
+
+    std::cout << "Residuals: ";
+    for (double residual : residuals)
+        std::cout << residual << " ";
+    std::cout << std::endl;
+
+    std::cout << "Gradients: ";
+    for (double gradient : gradients)
+        std::cout << gradient << " ";
+    std::cout << std::endl;
+
+    // TODO: Print jacobian via Eigen map
+    // std::cout << "Jacobian: " << std::endl;
+    // Eigen::Map<Eigen::MatrixXd> jacobianEigen(jacobian, jacobian.num_rows,
+    //                                           jacobian.num_cols);
+
+    // ceres::Solve(options, &problem, &summary);
+
+    std::cout << "Final Cost: " << summary.final_cost << std::endl;
+
+    return false;
 
     bool success = summary.IsSolutionUsable();
 

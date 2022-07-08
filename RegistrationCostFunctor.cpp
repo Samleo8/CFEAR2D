@@ -11,7 +11,6 @@
  */
 
 #include "RegistrationCostFunctor.hpp"
-#include "ORSP.hpp"
 
 /**
  * @brief Constructor for RegistrationCostFunctor::RegistrationCostFunctor
