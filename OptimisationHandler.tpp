@@ -93,6 +93,15 @@ const void buildPoint2LineProblem(ceres::Problem &aProblem,
     }
 }
 
+/**
+ * @brief Build and solve registration problem using Ceres
+ *
+ * @param[in] aRImage Radar image to register against
+ * @param[in] aKFBuffer Circular buffer of keyframes
+ * @param[in] aPose
+ * @return true
+ * @return false
+ */
 const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
                                             const KeyframeBuffer &aKFBuffer,
                                             Pose2D<double> &aPose) {
@@ -144,6 +153,8 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
         std::cout << summary.FullReport() << std::endl;
         std::cout << "==================" << std::endl;
     }
+
+    return success;
 }
 
 #endif // __OPTIMISATION_HANDLER_TPP__
