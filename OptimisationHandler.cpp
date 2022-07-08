@@ -67,7 +67,7 @@ void buildPoint2LineProblem(ceres::Problem *aProblem,
 const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
                                             const KeyframeBuffer &aKFBuffer,
                                             Pose2D<double> &aPose) {
-    // Create array pointers from params to feed into problem residual solver
+    // Create array (pointers) from params to feed into problem residual solver
     double positionArr[2] = { aPose.position[0], aPose.position[1] };
     double orientationArr[1] = { aPose.orientation };
 

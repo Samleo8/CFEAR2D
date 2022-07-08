@@ -12,7 +12,7 @@
 #ifndef __REGISTRATION_COST_FUNCTOR_TPP__
 #define __REGISTRATION_COST_FUNCTOR_TPP__
 
-#include "OptimisationHandler.hpp"
+#include "OptimisationHandler.hpp" // for findClosestORSPInSet
 
 /**
  * @brief The key function of the cost functor. Will return the calculated
@@ -66,7 +66,8 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
 
     std::cout << "Found: " << found << std::endl
               << worldORSPPoint.center << std::endl
-              << closestORSPPoint.center << std::endl << std::endl;
+              << closestORSPPoint.center << std::endl
+              << std::endl;
 
     // Only parse if found a match
     if (found) {
