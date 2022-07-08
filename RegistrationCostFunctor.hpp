@@ -48,6 +48,8 @@ class RegistrationCostFunctor {
     const ORSP<double> mFeaturePoint;
     const ORSPVec<double> &mKeyframeFeaturePoints;
 
+    static constexpr double DEFAULT_FAIL_COST = 1e6;
+
   public:
     // Constructors
     RegistrationCostFunctor(const ORSP<double> &aFeaturePoint,

@@ -18,6 +18,8 @@
  * @brief The key function of the cost functor. Will return the calculated
  * cost for optimization, given the inputs, as pointers of varying lengths,
  * and the end parameter as a pointer to the residuals/costs.
+ * @note If a match is not found, the cost is simply set to a large value @see DEFAULT_FAIL_COST
+ * @todo Not sure if i should be removing the entire ResidualBlock instead of having a large cost.
  *
  * @todo Extend to 3D
  * @note Size of the input parameters are variable and are determined when
@@ -32,7 +34,7 @@
  * (theta) in this 2D case
  * @param[in] aResidualArray Pointer to residual output (can consider this
  * as an array)
- * @return Whether the function is successful.
+ * @return whether the cost function successfully completed
  */
 template <typename T>
 bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
@@ -75,10 +77,14 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
         aResidualArray[0] = closestORSPPoint.normal.dot(
             worldORSPPoint.center - closestORSPPoint.center);
 
-        std::cout << "Cost: " << aResidualArray[0] << std::endl;
+        // std::cout << "Cost: " << aResidualArray[0] << std::endl;
+    }
+    else {
+        // std::cout << "Failed!" << std::endl;
+        aResidualArray[0] = static_cast<T>(DEFAULT_FAIL_COST);
     }
 
-    return found;
+    return true;
 }
 
 #endif // __REGISTRATION_COST_FUNCTOR_TPP__

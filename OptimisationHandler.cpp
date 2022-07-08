@@ -102,7 +102,9 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     ceres::Manifold *angleManifold = AngleManifold::Create();
     problem.SetManifold(orientationArr, angleManifold);
 
-    // Solve after building problem
+    // For debugging of evaluation values
+#ifdef __DEBUG_OPTIMISATION__
+
     double cost = 0.0;
     std::vector<double> residuals;
     std::vector<double> gradients;
@@ -124,27 +126,23 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
         std::cout << gradient << " ";
     std::cout << std::endl;
 
-    // TODO: Print jacobian via Eigen map
-    // std::cout << "Jacobian: " << std::endl;
-    // Eigen::Map<Eigen::MatrixXd> jacobianEigen(jacobian, jacobian.num_rows,
-    //                                           jacobian.num_cols);
+// TODO: Print jacobian via Eigen map
+// std::cout << "Jacobian: " << std::endl;
+// Eigen::Map<Eigen::MatrixXd> jacobianEigen(jacobian, jacobian.num_rows,
+//                                           jacobian.num_cols);
+#endif
 
-    // ceres::Solve(options, &problem, &summary);
+    // Solve after building problem
+    ceres::Solve(options, &problem, &summary);
 
-    std::cout << "Final Cost: " << summary.final_cost << std::endl;
-
-    return false;
-
+    // Check if solution is usable
     bool success = summary.IsSolutionUsable();
-
     if (success) {
-        std::cout << "Success!";
-        std::cout << "New frame pose: " << positionArr[0] << " "
-                  << positionArr[1] << " " << orientationArr[0] << std::endl;
-
         // Save the parameters
         aPose.position = Eigen::Vector2d(positionArr[0], positionArr[1]);
         aPose.orientation = orientationArr[0];
+
+        std::cout << "New frame pose: " << aPose << std::endl;
     }
     else {
         std::cout << "==================" << std::endl;
