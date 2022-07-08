@@ -1,7 +1,4 @@
 #include <ceres/ceres.h>
-#include <ceres/loss_function.h>
-#include <ceres/solver.h>
-#include <ceres/types.h>
 #include <filesystem>
 #include <fstream>
 #include <stdbool.h>
@@ -279,7 +276,8 @@ int main(int argc, char **argv) {
                       std::to_string(endID) + ".txt";
 
     std::ofstream poseOutputFile;
-    poseOutputFile.open(poseOutputPath, std::ios::out | std::ios::trunc);
+    poseOutputFile.open(poseOutputPath,
+                        std::ofstream::out | std::ofstream::trunc);
 
     // Keep finding frames
     while (feed.nextFrame()) {
