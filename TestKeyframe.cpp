@@ -3,6 +3,7 @@
 #include <ceres/solver.h>
 #include <ceres/types.h>
 #include <filesystem>
+#include <fstream>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -272,6 +273,14 @@ int main(int argc, char **argv) {
     Keyframe keyframe(currRImg, currWorldPose);
     keyframeList.push_back(keyframe);
 
+    // Output the frames to a file
+    fs::path poseOutputPath(saveImagesPath);
+    poseOutputPath /= "poses_" + std::to_string(startID) + "_" +
+                      std::to_string(endID) + ".txt";
+
+    std::ofstream poseOutputFile;
+    poseOutputFile.open(poseOutputPath, std::ios::out | std::ios::trunc);
+
     // Keep finding frames
     while (feed.nextFrame()) {
         if (feed.getCurrentFrame() == endID) break;
@@ -308,7 +317,12 @@ int main(int argc, char **argv) {
 
             Keyframe keyframe2(currRImg, currWorldPose);
             keyframeList.push_back(keyframe2);
+
+            poseOutputFile << "kf ";
         }
+
+        // Save pose to file
+        poseOutputFile << currWorldPose.toString() << std::endl;
 
         // Obtain transform from current world pose to previous pose for
         // velocity/seed pose propagation
@@ -319,6 +333,9 @@ int main(int argc, char **argv) {
         Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
         currWorldPose += deltaPose;
     }
+
+    // Remember to close file
+    poseOutputFile.close();
 
     return 0;
 }
