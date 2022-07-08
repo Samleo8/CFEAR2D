@@ -26,7 +26,7 @@
 template <typename T = double> class Pose2D {
   public:
     Vector2T<T> position = Vector2T<T>::Zero(); ///< position as x, y
-    T orientation = static_cast<T>(0.0);          ///< orientation as theta
+    T orientation = static_cast<T>(0.0);        ///< orientation as theta
 
     /** @brief Default constructor */
     Pose2D() {}
@@ -52,7 +52,7 @@ template <typename T = double> class Pose2D {
 
     /**
      * @brief Perform a deep copy from other Pose2D class
-     * 
+     *
      * @param[in] aPose Pose2D to copy from
      */
     void copyFrom(const Pose2D<T> &aPose) {
@@ -62,11 +62,46 @@ template <typename T = double> class Pose2D {
         orientation = aPose.orientation;
     }
 
-    Pose2D<T> &operator+=(const Pose2D<T> &aOtherPose) { 
+    /**
+     * @brief Operator += for Pose2D class. Adds another Pose2D (probably delta)
+     * to this one.
+     *
+     * @param[in] aOtherPose Other pose
+     *
+     * @return Pose2D<T>& Reference to this pose
+     */
+    Pose2D<T> &operator+=(const Pose2D<T> &aOtherPose) {
         position += aOtherPose.position;
         orientation += aOtherPose.orientation;
 
         return *this; // return the result by reference
+    }
+
+    /**
+     * @brief Operator -= for Pose2D class. Subtracts another Pose2D (probably
+     * delta) from this one.
+     *
+     * @param[in] aOtherPose
+     *
+     * @return Pose2D<T>&
+     */
+    Pose2D<T> &operator-=(const Pose2D<T> &aOtherPose) {
+        position -= aOtherPose.position;
+        orientation -= aOtherPose.orientation;
+
+        return *this; // return the result by reference
+    }
+
+    /**
+     * @brief Return pose 2D as string
+     *
+     * @return const std::string
+     */
+    const std::string toString() const {
+        std::stringstream ss;
+        ss << "Pose2D: " << position[0] << " " << position[1] << " "
+           << orientation;
+        return ss.str();
     }
 
     /**
