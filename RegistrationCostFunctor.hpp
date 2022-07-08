@@ -45,7 +45,7 @@ class RegistrationCostFunctor {
     // TODO: is it ok if this is a reference?
     // TODO: Save only the vector of feature points instead of keyframe
     // reference
-    const ORSP<double> &mFeaturePoint;
+    const ORSP<double> mFeaturePoint;
     const ORSPVec<double> &mKeyframeFeaturePoints;
 
   public:
