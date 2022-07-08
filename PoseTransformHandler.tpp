@@ -8,8 +8,8 @@
  * @copyright Copyright (c) 2022
  */
 
-#ifndef __POSE_TRANSFORM_HANDLER_CPP__
-#define __POSE_TRANSFORM_HANDLER_CPP__
+#ifndef __POSE_TRANSFORM_HANDLER_TPP__
+#define __POSE_TRANSFORM_HANDLER_TPP__
 
 /**
  * @brief Convert rotation and translation to transformation matrix
@@ -71,10 +71,15 @@ const PoseTransform2D<T> poseToTransform(const Pose2D<T> &aPose) {
 template <typename T>
 const Pose2D<T> transformToPose(const PoseTransform2D<T> &aPoseTransform) {
     Pose2D<T> pose;
+
+    // Convert linear part as rotation matrix
+    Eigen::Rotation2D<T> rotMat;
+    rotMat = aPoseTransform.rotation();
+
     // Between [-pi, pi]
-    pose.orientation =
-        static_cast<T>(aPoseTransform.rotation().smallestAngle());
-    pose.position = static_cast<T>(aPoseTransform.translation());
+    pose.orientation = rotMat.smallestAngle();
+    pose.position = aPoseTransform.translation();
+
     return pose;
 }
 
@@ -85,7 +90,8 @@ const Pose2D<T> transformToPose(const PoseTransform2D<T> &aPoseTransform) {
  * @param[in] aPositionArray Pointer (as an array) to position parameters
  * @param[in] aOrientationArray Pointer (as an array) to orientation parameters
  *
- * @return const PoseTransform2D<T> Pose transform constructed from optimization parameters
+ * @return const PoseTransform2D<T> Pose transform constructed from optimization
+ * parameters
  */
 template <typename T>
 const PoseTransform2D<T> paramsToTransform(const T *const aPositionArray,
@@ -99,6 +105,25 @@ const PoseTransform2D<T> paramsToTransform(const T *const aPositionArray,
     // Transform to be applied on ORSP points in RImage to convert to world
     // coord. Cannot be cached cos casting necessary.
     return poseToTransform<T>(paramsAsPose);
+}
+
+/**
+ * @brief Get transforms required to take use between previous and current pose
+ *
+ * @tparam T Templated type for pose transform
+ * @param[in] aPrevPose Previous pose
+ * @param[in] aCurrPose Current pose
+ *
+ * @return const PoseTransform2D<T> Transform to get from previous pose to
+ * current pose
+ */
+template <typename T>
+const PoseTransform2D<T> getTransformsBetweenPoses(const Pose2D<T> &aPrevPose,
+                                                   const Pose2D<T> &aCurrPose) {
+    PoseTransform2D<T> prevPoseTransf = poseToTransform<double>(aPrevPose);
+    PoseTransform2D<T> currPoseTransf = poseToTransform<double>(aCurrPose);
+
+    return prevPoseTransf.inverse() * currPoseTransf;
 }
 
 /**
@@ -145,4 +170,4 @@ void convertORSPCoordinates(const ORSP<T> &aInputORSPPoint,
                                                    aConversionTransform, true);
 }
 
-#endif // __POSE_TRANSFORM_HANDLER_HPP__
+#endif // __POSE_TRANSFORM_HANDLER_TPP__

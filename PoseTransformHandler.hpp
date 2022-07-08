@@ -25,7 +25,11 @@ const Pose2D<T> transformToPose(const PoseTransform2D<T> &aPoseTransform);
 
 template <typename T>
 const PoseTransform2D<T> paramsToTransform(const T *const aPositionArray,
-                  const T *const aOrientationArray);
+                                           const T *const aOrientationArray);
+
+template <typename T>
+const PoseTransform2D<T> getTransformsBetweenPoses(const Pose2D<T> &aPrevPose,
+                                                   const Pose2D<T> &aCurrPose);
 
 template <typename T>
 const Vector2T<T>

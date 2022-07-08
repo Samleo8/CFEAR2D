@@ -12,6 +12,7 @@
 #include "Keyframe.hpp"
 #include "OptimisationHandler.hpp"
 #include "PoseTransformHandler.hpp"
+#include "PoseTransformHandler.tpp"
 #include "RadarFeed.hpp"
 #include "RadarImage.hpp"
 #include "RegistrationCostFunctor.hpp"
@@ -258,11 +259,16 @@ int main(int argc, char **argv) {
     currRImg.performKStrong(K, Z_min);
     currRImg.computeOrientedSurfacePoints();
 
-    // Saving of current world pose (initial pose for previous frame)
+    // Saving of previous and current world pose (initial pose for previous
+    // frame)
     Pose2D<double> currWorldPose(0, 0, 0);
+    Pose2D<double> prevWorldPose(currWorldPose);
 
-    // First image is always a keyframe
+    // First image is always a keyframe. Push it to the buffer
+    // Update the previous keyframe world pose used to deduce if another
+    // keyframe needs to be added
     KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
+
     Keyframe keyframe(currRImg, currWorldPose);
     keyframeList.push_back(keyframe);
 
@@ -277,26 +283,30 @@ int main(int argc, char **argv) {
         currRImg.computeOrientedSurfacePoints();
 
         // Output image
-        cv::Mat outputImgORSP;
-        outputImgFromRImg(currRImg, outputImgORSP);
+        // cv::Mat outputImgORSP;
+        // outputImgFromRImg(currRImg, outputImgORSP);
+
+        // Save world pose for velocity propagation later
+        prevWorldPose.copyFrom(currWorldPose);
 
         // Ceres build and solve problem
         const bool success = buildAndSolveRegistrationProblem(
             currRImg, keyframeList, currWorldPose);
 
         // Obtain transform from previous keyframe to current frame
-        PoseTransform2D<double> currPoseTransf =
-            poseToTransform<double>(currWorldPose);
-        PoseTransform2D<double> kfPoseTransf =
-            poseToTransform<double>(keyframeList.back().getWorldPose());
-        // TODO: Check this
-        PoseTransform2D<double> prevKFToCurrImgTransform =
-            currPoseTransf * kfPoseTransf.inverse();
+        PoseTransform2D<double> kf2FrameTransf = getTransformsBetweenPoses(
+            keyframeList.back().getPose(), currWorldPose);
+
+        // Get the delta pose via the general way
+        Pose2D deltaPose = transformToPose<double>(kf2FrameTransf);
 
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
 
-        // TODO: actually go through the frames
+        // Obtain transform from current world pose to previous pose for
+        // velocity/seed pose propagation
+        PoseTransform2D<double> frame2FrameTransf =
+            getTransformsBetweenPoses(prevWorldPose, currWorldPose);
     }
 
     return 0;
