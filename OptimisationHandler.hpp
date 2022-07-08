@@ -1,7 +1,9 @@
 /**
  * @file OptimisationHandler.hpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
- * @brief
+ * @brief Handler for optimisation functions, including the building and solving
+ * of registration and motion distortion optimisation problems.
+ * Notably, @see buildAndSolveRegistrationProblem()
  * @version 0.1
  * @date 2022-06-28
  *
@@ -40,9 +42,19 @@ const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
 /** @brief (Default) Delta threshold for Huber loss */
 const double HUBER_DELTA_DEFAULT = 0.1;
 
-// TODO: Create a cost functor for computing cost function. See
-// http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
+// Problem builder functions. Implemented in OptimisationHandler.cpp
+const void buildPoint2LineProblem(ceres::Problem &aProblem,
+                                  ceres::LossFunction *aLossFnPtr,
+                                  const RadarImage &aRImage,
+                                  const Keyframe &aKeyframe,
+                                  double *positionArr, double *orientationArr);
 
+[[nodiscard]] const bool
+buildAndSolveRegistrationProblem(const RadarImage &aRImage,
+                                 const KeyframeBuffer &aKFBuffer,
+                                 Pose2D<double> &aPose);
+
+// Templated helper functions. Implemented in OptimisationHandler.tpp
 template <typename T> T constrainAngle(const T &aAngleRad);
 
 template <typename T, int Dimension = 2>
@@ -50,11 +62,6 @@ const T angleBetweenVectors(const VectorDimT<T, Dimension> &aVec1,
                             const VectorDimT<T, Dimension> &aVec2);
 
 template <typename T> const T HuberLoss(const T &a, const T &delta);
-
-[[nodiscard]] const bool buildPoint2LineProblem(ceres::Problem *aProblem,
-                                                const RadarImage &aRImage,
-                                                const Keyframe &aKeyframe,
-                                                Pose2D<double> &aPose);
 
 // Implementation file for optimisation handler functions
 #include "OptimisationHandler.tpp"

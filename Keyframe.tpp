@@ -11,8 +11,14 @@
 #ifndef __CFEAR_KEYFRAME_TPP__
 #define __CFEAR_KEYFRAME_TPP__
 
-#include "OptimisationHandler.hpp" // for angleBetweenVectors
-#include <ceres/jet.h>             // for functions like abs, max
+#include <ceres/jet.h> // for functions like abs, max
+
+// Externally declare, otherwise run into circular dependency
+template <typename T, int Dimension>
+extern const T angleBetweenVectors(const VectorDimT<T, Dimension> &aVec1,
+                            const VectorDimT<T, Dimension> &aVec2);
+
+extern const double ANGLE_TOLERANCE_RAD;
 
 /**
  * @brief Find the closest feature point to a given point in world
@@ -21,8 +27,8 @@
  * aClosestORSPPoint can give garbage values.
  *
  * @tparam CastType Type to cast to
- * @param[in] aORSPPoint ORSP Point (WTF Keyframe point closest to this), world
- * coordinates
+ * @param[in] aORSPPoint ORSP Point (WTF Keyframe point closest to this),
+ * world coordinates
  * @param[out] aClosestORSPPoint Closest ORSP Point (from keyframe), world
  * coordinates
  * @return Whether a closest feature point was found

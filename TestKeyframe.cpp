@@ -281,15 +281,18 @@ int main(int argc, char **argv) {
         outputImgFromRImg(currRImg, outputImgORSP);
 
         // Ceres build and solve problem
-        buildAndSolveRegistrationProblem(currImg, keyframeList, currWorldPose);
+        const bool success = buildAndSolveRegistrationProblem(
+            currRImg, keyframeList, currWorldPose);
 
-            // Obtain transform from previous keyframe to current frame
-            PoseTransform2D<double>
-                currPoseTransf = poseToTransform<double>(currWorldPose);
-        PoseTransform2D<double> kfPoseTransf = poseToTransform<double>(keyframeList.back().getWorldPose());
+        // Obtain transform from previous keyframe to current frame
+        PoseTransform2D<double> currPoseTransf =
+            poseToTransform<double>(currWorldPose);
+        PoseTransform2D<double> kfPoseTransf =
+            poseToTransform<double>(keyframeList.back().getWorldPose());
         // TODO: Check this
-        PoseTransform2D<double> prevKFToCurrImgTransform = currPoseTransf * kfPoseTransf.inverse();
-        
+        PoseTransform2D<double> prevKFToCurrImgTransform =
+            currPoseTransf * kfPoseTransf.inverse();
+
         // TODO: Add keyframe if necessary
         // Keyframe keyframe2(currRImg);
 

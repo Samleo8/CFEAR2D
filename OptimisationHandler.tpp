@@ -2,7 +2,7 @@
  * @file OptimisationHandler.tpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
  * @brief Implementation file for templated functions related to optimization
- * and cost functions for bundle adjustment
+ * and cost functions
  * @version 0.1
  * @date 2022-06-28
  *
@@ -60,101 +60,6 @@ template <typename T> const T HuberLoss(const T &a, const T &delta) {
     else {
         return delta * (ceres::abs(a) - 0.5 * delta);
     }
-}
-
-/**
- * @brief Cost between point to line given a radar image and specific keyframe,
- and
- * optimization parameters (in this case, a pose)
- *
- * @tparam T Type of data to use for optimization, used by Ceres
- * @param[in] aRImage Radar image to register against
- * @param[in] aKeyframe Keyframe to register against
- * @param[in] aPose Optimization parameters (in this case a pose)
- * @param[out] aOutputCost Pointer to output cost between point to line as
- indicated by cost function
- *
- * @return Successfully found cost between point to line
- */
-const void buildPoint2LineProblem(ceres::Problem &aProblem,
-                                  ceres::LossFunction *aLossFn,
-                                  const RadarImage &aRImage,
-                                  const Keyframe &aKeyframe,
-                                  double *positionArr, double *orientationArr) {
-    // Loop through each point from ORSP point in RImage and get the cost from
-    // formula
-    const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
-    for (const ORSP<double> &featurePt : rImgFeaturePts) {
-        ceres::CostFunction *regCostFn =
-            RegistrationCostFunctor::Create(featurePt, aKeyframe);
-
-        aProblem.AddResidualBlock(regCostFn, aLossFn, positionArr,
-                                  orientationArr);
-    }
-}
-
-/**
- * @brief Build and solve registration problem using Ceres
- *
- * @param[in] aRImage Radar image to register against
- * @param[in] aKFBuffer Circular buffer of keyframes
- * @param[in] aPose
- * @return true
- * @return false
- */
-const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
-                                            const KeyframeBuffer &aKFBuffer,
-                                            Pose2D<double> &aPose) {
-    // Create array pointers from params to feed into problem residual solver
-    double positionArr[2] = { aPose.position[0], aPose.position[1] };
-    double orientationArr[1] = { aPose.orientation };
-
-    // Create Ceres problem
-    ceres::Problem problem;
-    ceres::Solver::Summary summary;
-    ceres::Solver::Options options;
-    // as specified by paper, can potentially use L-BFGS
-    options.line_search_direction_type = ceres::BFGS;
-    // options.max_num_iterations = 100;
-
-    ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
-
-    // TODO: When 3D set to EigenQuaternion manifold
-    // Angle Manifold
-    ceres::Manifold *angleManifold = AngleManifold::Create();
-    problem.SetManifold(&aPose.orientation, angleManifold);
-
-    // Build the point to line problem for each keyframe, adding residual blocks
-    // for each associated point
-    for (size_t i = 0, sz = aKFBuffer.size(); i < sz; i++) {
-        const Keyframe &kf = aKFBuffer[i];
-
-        buildPoint2LineProblem(problem, regLossFn, aRImage, kf, positionArr,
-                               orientationArr);
-    }
-
-    // Solve after building problem
-    ceres::Solve(options, &problem, &summary);
-
-    bool success = summary.IsSolutionUsable();
-
-    if (success) {
-        std::cout << "Success!";
-        std::cout << "New frame pose: " << positionArr[0] << " "
-                  << positionArr[1] << " " << orientationArr[0] << std::endl;
-
-        // Save the parameters
-        aPose.position = Eigen::Vector2d(positionArr[0], positionArr[1]);
-        aPose.orientation = orientationArr[0];
-    }
-    else {
-        std::cout << "==================" << std::endl;
-        std::cout << "No solution found!" << std::endl;
-        std::cout << summary.FullReport() << std::endl;
-        std::cout << "==================" << std::endl;
-    }
-
-    return success;
 }
 
 #endif // __OPTIMISATION_HANDLER_TPP__
