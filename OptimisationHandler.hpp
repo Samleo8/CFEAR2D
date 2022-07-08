@@ -19,7 +19,6 @@
 #include "ORSP.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
-#include "RegistrationCostFunctor.hpp"
 #include "TransformDefines.hpp"
 
 #include <Eigen/Geometry>
@@ -62,6 +61,12 @@ const T angleBetweenVectors(const VectorDimT<T, Dimension> &aVec1,
                             const VectorDimT<T, Dimension> &aVec2);
 
 template <typename T> const T HuberLoss(const T &a, const T &delta);
+
+template <typename CastType>
+[[nodiscard]] const bool
+findClosestORSPInSet(const ORSP<CastType> &aORSPPoint,
+                     const ORSPVec<double> &aORSPFeaturePoints,
+                     ORSP<CastType> &aClosestORSPPoint);
 
 // Implementation file for optimisation handler functions
 #include "OptimisationHandler.tpp"

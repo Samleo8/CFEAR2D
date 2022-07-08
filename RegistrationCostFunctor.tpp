@@ -12,33 +12,7 @@
 #ifndef __REGISTRATION_COST_FUNCTOR_TPP__
 #define __REGISTRATION_COST_FUNCTOR_TPP__
 
-/**
- * @brief Constructor for RegistrationCostFunctor::RegistrationCostFunctor
- *
- * @param[in] aRImg Radar image to register against
- * @param[in] aKFBuffer Circular buffer of keyframes
- */
-
-RegistrationCostFunctor::RegistrationCostFunctor(
-    const ORSP<double> &aFeaturePoint, const Keyframe &aKeyframe)
-    : mFeaturePoint(aFeaturePoint), mKeyframe(aKeyframe){};
-
-/**
- * @brief Static creation of cost function with new cost functor.
- * Ceres should handle ownership.
- *
- * @param[in] aRImg Radar image to register against
- * @param[in] aKFBuffer Circular buffer of keyframes
- * @return ceres::CostFunction Ceres cost function
- */
-ceres::CostFunction *
-RegistrationCostFunctor::Create(const ORSP<double> &aFeaturePoint,
-                                const Keyframe &aKeyframe) {
-    return (new ceres::AutoDiffCostFunction<
-            RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
-            REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
-        new RegistrationCostFunctor(aFeaturePoint, aKeyframe)));
-}
+#include "OptimisationHandler.hpp"
 
 /**
  * @brief The key function of the cost functor. Will return the calculated
@@ -87,8 +61,8 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
 
     // Because of distance calculation, need to be templated also
     ORSP<T> closestORSPPoint;
-    const bool found =
-        mKeyframe.findClosestORSP<T>(worldORSPPoint, closestORSPPoint);
+    const bool found = findClosestORSPInSet<T>(
+        worldORSPPoint, mKeyframe.getORSPFeaturePoints(), closestORSPPoint);
 
     // Only parse if found a match
     if (found) {

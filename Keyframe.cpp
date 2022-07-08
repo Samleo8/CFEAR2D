@@ -17,7 +17,6 @@
  */
 
 #include "Keyframe.hpp"
-#include "OptimisationHandler.hpp"
 
 /**
  * @brief Constructor for Keyframe class. Handles transferring of relevant
