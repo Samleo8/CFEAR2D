@@ -12,6 +12,7 @@
 #ifndef __OPTIMISATION_HANDLER_HPP__
 #define __OPTIMISATION_HANDLER_HPP__
 
+#include "AngleManifold.hpp"
 #include "Keyframe.hpp"
 #include "ORSP.hpp"
 #include "PoseTransformHandler.hpp"

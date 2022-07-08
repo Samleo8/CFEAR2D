@@ -15,6 +15,7 @@
 #define __REGISTRATION_COST_FUNCTOR_HPP__
 
 #include "Keyframe.hpp"
+#include "ORSP.hpp"
 #include "RadarImage.hpp"
 #include "TransformDefines.hpp"
 #include <ceres/ceres.h>

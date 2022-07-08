@@ -20,7 +20,7 @@
  */
 
 RegistrationCostFunctor::RegistrationCostFunctor(
-    const ORSP<double> aFeaturePoint, const Keyframe &aKeyframe)
+    const ORSP<double> &aFeaturePoint, const Keyframe &aKeyframe)
     : mFeaturePoint(aFeaturePoint), mKeyframe(aKeyframe){};
 
 /**
