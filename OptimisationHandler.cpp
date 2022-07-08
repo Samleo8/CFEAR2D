@@ -31,7 +31,7 @@
  * @param[in] positionArr Pointers to position params for optimization
  * @param[in] orientationArr Pointers to orientation params for optimization
  */
-const void buildPoint2LineProblem(ceres::Problem &aProblem,
+const void buildPoint2LineProblem(ceres::Problem *aProblem,
                                   ceres::LossFunction *aLossFnPtr,
                                   const RadarImage &aRImage,
                                   const Keyframe &aKeyframe,
@@ -44,7 +44,7 @@ const void buildPoint2LineProblem(ceres::Problem &aProblem,
         ceres::CostFunction *regCostFn =
             RegistrationCostFunctor::Create(featurePt, aKeyframe);
 
-        aProblem.AddResidualBlock(regCostFn, aLossFnPtr, positionArr,
+        aProblem->AddResidualBlock(regCostFn, aLossFnPtr, positionArr,
                                   orientationArr);
     }
 }
@@ -85,7 +85,7 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     for (size_t i = 0, sz = aKFBuffer.size(); i < sz; i++) {
         const Keyframe &kf = aKFBuffer[i];
 
-        buildPoint2LineProblem(problem, regLossFn, aRImage, kf, positionArr,
+        buildPoint2LineProblem(&problem, regLossFn, aRImage, kf, positionArr,
                                orientationArr);
     }
 

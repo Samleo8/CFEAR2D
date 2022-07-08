@@ -64,11 +64,16 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     const bool found = findClosestORSPInSet<T>(
         worldORSPPoint, mKeyframe.getORSPFeaturePoints(), closestORSPPoint);
 
+    std::cout << "Found: " << found << "|"
+              << worldORSPPoint.center << std::endl << closestORSPPoint.center << std::endl;
+
     // Only parse if found a match
     if (found) {
         // Compute cost according to formula
         aResidualArray[0] = closestORSPPoint.normal.dot(
             worldORSPPoint.center - closestORSPPoint.center);
+
+        std::cout << "Cost: " << aResidualArray[0] << std::endl;
     }
 
     return found;
