@@ -45,7 +45,7 @@ template <typename T = double> class Pose2D {
      * @param[in] aPosition Position (x, y)
      * @param[in] aOrientation Orientation (theta)
      */
-    Pose2D(const T ax, const T ay, const T aOrientation)
+    Pose2D(const T &ax, const T &ay, const T &aOrientation)
         : orientation(aOrientation) {
         position << ax, ay;
     }

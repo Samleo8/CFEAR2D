@@ -11,6 +11,8 @@
  */
 
 #include "OptimisationHandler.hpp"
+#include "ORSP.hpp"
+#include <ceres/types.h>
 
 /**
  * @brief Given optimization parameters (pose in this case), add residual blocks
@@ -31,21 +33,21 @@
  * @param[in] positionArr Pointers to position params for optimization
  * @param[in] orientationArr Pointers to orientation params for optimization
  */
-const void buildPoint2LineProblem(ceres::Problem &aProblem,
-                                  ceres::LossFunction *aLossFnPtr,
-                                  const RadarImage &aRImage,
-                                  const Keyframe &aKeyframe,
-                                  double *positionArr, double *orientationArr) {
+void buildPoint2LineProblem(ceres::Problem *aProblem,
+                            ceres::LossFunction *aLossFnPtr,
+                            const RadarImage &aRImage,
+                            const ORSPVec<double> &aKeyframeFeaturePoints,
+                            double *positionArr, double *orientationArr) {
     // For each ORSP point in RImage, add a residual block related to the cost
     // of a single rImg feature point association with its closest keyframe
     // counterpart
     const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
     for (const ORSP<double> &featurePt : rImgFeaturePts) {
         ceres::CostFunction *regCostFn =
-            RegistrationCostFunctor::Create(featurePt, aKeyframe);
+            RegistrationCostFunctor::Create(featurePt, aKeyframeFeaturePoints);
 
-        aProblem.AddResidualBlock(regCostFn, aLossFnPtr, positionArr,
-                                  orientationArr);
+        aProblem->AddResidualBlock(regCostFn, aLossFnPtr, positionArr,
+                                   orientationArr);
     }
 }
 
@@ -66,7 +68,9 @@ const void buildPoint2LineProblem(ceres::Problem &aProblem,
 const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
                                             const KeyframeBuffer &aKFBuffer,
                                             Pose2D<double> &aPose) {
-    // Create array pointers from params to feed into problem residual solver
+    std::cout << "Init Pose: " << aPose << std::endl;
+
+    // Create array (pointers) from params to feed into problem residual solver
     double positionArr[2] = { aPose.position[0], aPose.position[1] };
     double orientationArr[1] = { aPose.orientation };
 
@@ -74,19 +78,22 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     ceres::Problem problem;
     ceres::Solver::Summary summary;
     ceres::Solver::Options options;
+
     // as specified by paper, can potentially use L-BFGS
+    options.minimizer_type = ceres::LINE_SEARCH;
     options.line_search_direction_type = ceres::BFGS;
-    // options.max_num_iterations = 100;
+    options.max_num_iterations = 100;
 
     ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
 
     // Build the point to line problem for each keyframe, adding residual blocks
     // for each associated point
     for (size_t i = 0, sz = aKFBuffer.size(); i < sz; i++) {
-        const Keyframe &kf = aKFBuffer[i];
+        const ORSPVec<double> &kfFeaturePoints =
+            aKFBuffer[i].getORSPFeaturePoints();
 
-        buildPoint2LineProblem(problem, regLossFn, aRImage, kf, positionArr,
-                               orientationArr);
+        buildPoint2LineProblem(&problem, regLossFn, aRImage, kfFeaturePoints,
+                               positionArr, orientationArr);
     }
 
     // NOTE: Manifold must be set after residual blocks are added
@@ -95,19 +102,47 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     ceres::Manifold *angleManifold = AngleManifold::Create();
     problem.SetManifold(orientationArr, angleManifold);
 
+    // For debugging of evaluation values
+#ifdef __DEBUG_OPTIMISATION__
+
+    double cost = 0.0;
+    std::vector<double> residuals;
+    std::vector<double> gradients;
+    ceres::CRSMatrix jacobian;
+
+    problem.Evaluate(ceres::Problem::EvaluateOptions(), &cost, &residuals,
+                     &gradients, &jacobian);
+
+    std::cout << "================Eval Debug================" << std::endl;
+    std::cout << "Evaluated Cost: " << cost << std::endl;
+
+    std::cout << "Residuals: ";
+    for (double residual : residuals)
+        std::cout << residual << " ";
+    std::cout << std::endl;
+
+    std::cout << "Gradients: ";
+    for (double gradient : gradients)
+        std::cout << gradient << " ";
+    std::cout << std::endl;
+
+// TODO: Print jacobian via Eigen map
+// std::cout << "Jacobian: " << std::endl;
+// Eigen::Map<Eigen::MatrixXd> jacobianEigen(jacobian, jacobian.num_rows,
+//                                           jacobian.num_cols);
+#endif
+
     // Solve after building problem
     ceres::Solve(options, &problem, &summary);
 
+    // Check if solution is usable
     bool success = summary.IsSolutionUsable();
-
     if (success) {
-        std::cout << "Success!";
-        std::cout << "New frame pose: " << positionArr[0] << " "
-                  << positionArr[1] << " " << orientationArr[0] << std::endl;
-
         // Save the parameters
         aPose.position = Eigen::Vector2d(positionArr[0], positionArr[1]);
         aPose.orientation = orientationArr[0];
+
+        std::cout << "New frame pose: " << aPose << std::endl;
     }
     else {
         std::cout << "==================" << std::endl;

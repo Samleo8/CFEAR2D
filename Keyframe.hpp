@@ -65,7 +65,7 @@ class Keyframe {
     ORSPVec<double> mORSPFeaturePoints;
 
   public:
-    static const size_t DIMENSION = 2;
+    static constexpr size_t DIMENSION = 2;
 
     Keyframe(const RadarImage &aRadarImage, const Pose2D<double> &aWorldPose);
     ~Keyframe();
