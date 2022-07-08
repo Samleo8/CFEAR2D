@@ -45,17 +45,18 @@ class RegistrationCostFunctor {
     // TODO: is it ok if this is a reference?
     // TODO: Save only the vector of feature points instead of keyframe
     // reference
-    const ORSP<double> mFeaturePoint;
-    const Keyframe &mKeyframe;
+    const ORSP<double> &mFeaturePoint;
+    const ORSPVec<double> &mKeyframeFeaturePoints;
 
   public:
     // Constructors
     RegistrationCostFunctor(const ORSP<double> &aFeaturePoint,
-                            const Keyframe &aKeyframe);
+                            const ORSPVec<double> &aKeyframeFeaturePoints);
 
     // Cost function
-    static ceres::CostFunction *Create(const ORSP<double> &aFeaturePoint,
-                                       const Keyframe &aKeyframe);
+    static ceres::CostFunction *
+    Create(const ORSP<double> &aFeaturePoint,
+           const ORSPVec<double> &aKeyframeFeaturePoints);
 
     // Actual cost functor
     template <typename T>

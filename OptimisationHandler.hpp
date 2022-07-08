@@ -42,10 +42,10 @@ const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
 const double HUBER_DELTA_DEFAULT = 0.1;
 
 // Problem builder functions. Implemented in OptimisationHandler.cpp
-const void buildPoint2LineProblem(ceres::Problem *aProblem,
+void buildPoint2LineProblem(ceres::Problem *aProblem,
                                   ceres::LossFunction *aLossFnPtr,
                                   const RadarImage &aRImage,
-                                  const Keyframe &aKeyframe,
+                                  const ORSPVec<double> &aKeyframeFeaturePoints,
                                   double *positionArr, double *orientationArr);
 
 [[nodiscard]] const bool

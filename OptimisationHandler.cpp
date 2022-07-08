@@ -11,6 +11,7 @@
  */
 
 #include "OptimisationHandler.hpp"
+#include "ORSP.hpp"
 
 /**
  * @brief Given optimization parameters (pose in this case), add residual blocks
@@ -31,21 +32,21 @@
  * @param[in] positionArr Pointers to position params for optimization
  * @param[in] orientationArr Pointers to orientation params for optimization
  */
-const void buildPoint2LineProblem(ceres::Problem *aProblem,
-                                  ceres::LossFunction *aLossFnPtr,
-                                  const RadarImage &aRImage,
-                                  const Keyframe &aKeyframe,
-                                  double *positionArr, double *orientationArr) {
+void buildPoint2LineProblem(ceres::Problem *aProblem,
+                            ceres::LossFunction *aLossFnPtr,
+                            const RadarImage &aRImage,
+                            const ORSPVec<double> &aKeyframeFeaturePoints,
+                            double *positionArr, double *orientationArr) {
     // For each ORSP point in RImage, add a residual block related to the cost
     // of a single rImg feature point association with its closest keyframe
     // counterpart
     const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
     for (const ORSP<double> &featurePt : rImgFeaturePts) {
         ceres::CostFunction *regCostFn =
-            RegistrationCostFunctor::Create(featurePt, aKeyframe);
+            RegistrationCostFunctor::Create(featurePt, aKeyframeFeaturePoints);
 
         aProblem->AddResidualBlock(regCostFn, aLossFnPtr, positionArr,
-                                  orientationArr);
+                                   orientationArr);
     }
 }
 
@@ -76,17 +77,18 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     ceres::Solver::Options options;
     // as specified by paper, can potentially use L-BFGS
     options.line_search_direction_type = ceres::BFGS;
-    // options.max_num_iterations = 100;
+    options.max_num_iterations = 100;
 
     ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
 
     // Build the point to line problem for each keyframe, adding residual blocks
     // for each associated point
     for (size_t i = 0, sz = aKFBuffer.size(); i < sz; i++) {
-        const Keyframe &kf = aKFBuffer[i];
+        const ORSPVec<double> &kfFeaturePoints =
+            aKFBuffer[i].getORSPFeaturePoints();
 
-        buildPoint2LineProblem(&problem, regLossFn, aRImage, kf, positionArr,
-                               orientationArr);
+        buildPoint2LineProblem(&problem, regLossFn, aRImage, kfFeaturePoints,
+                               positionArr, orientationArr);
     }
 
     // NOTE: Manifold must be set after residual blocks are added

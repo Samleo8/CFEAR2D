@@ -62,7 +62,7 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     // Because of distance calculation, need to be templated also
     ORSP<T> closestORSPPoint;
     const bool found = findClosestORSPInSet<T>(
-        worldORSPPoint, mKeyframe.getORSPFeaturePoints(), closestORSPPoint);
+        worldORSPPoint, mKeyframeFeaturePoints, closestORSPPoint);
 
     std::cout << "Found: " << found << "|"
               << worldORSPPoint.center << std::endl << closestORSPPoint.center << std::endl;
