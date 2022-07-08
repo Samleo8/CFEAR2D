@@ -20,9 +20,9 @@ def parsePoses(filePath: str) -> np.ndarray:
 
 
 if __name__ == '__main__':
-    dataset = 0 if len(sys.argv) <= 1 else sys.argv[1]
-    startInd = 0 if len(sys.argv) <= 2 else sys.argv[2]
-    endInd = 10 if len(sys.argv) <= 3 else sys.argv[3]
+    dataset = "0" if len(sys.argv) <= 1 else sys.argv[1]
+    startInd = 0 if len(sys.argv) <= 2 else int(sys.argv[2])
+    endInd = 10 if len(sys.argv) <= 3 else int(sys.argv[3])
 
     filePath = os.path.join('results', dataset,
                             f'poses_{startInd}_{endInd}.txt')
