@@ -24,6 +24,10 @@ template <typename T>
 const Pose2D<T> transformToPose(const PoseTransform2D<T> &aPoseTransform);
 
 template <typename T>
+const PoseTransform2D<T> paramsToTransform(const T *const aPositionArray,
+                  const T *const aOrientationArray);
+
+template <typename T>
 const Vector2T<T>
 convertCoordinate(const Vector2T<T> &aCoordinate,
                   const PoseTransform2D<T> &aConversionTransform,

@@ -20,9 +20,10 @@
  */
 
 RegistrationCostFunctor::RegistrationCostFunctor(
-    const ORSP<double> &aFeaturePoint, const ORSPVec<double> &aKeyframeFeaturePoints)
+    const ORSP<double> &aFeaturePoint,
+    const ORSP<double> &aKeyframeFeaturePoint)
     : mFeaturePoint(aFeaturePoint),
-      mKeyframeFeaturePoints(aKeyframeFeaturePoints){};
+      mKeyframeFeaturePoint(aKeyframeFeaturePoint){};
 
 /**
  * @brief Static creation of cost function with new cost functor.
@@ -34,9 +35,9 @@ RegistrationCostFunctor::RegistrationCostFunctor(
  */
 ceres::CostFunction *
 RegistrationCostFunctor::Create(const ORSP<double> &aFeaturePoint,
-                                const ORSPVec<double> &aKeyframeFeaturePoints) {
+                                const ORSP<double> &aKeyframeFeaturePoint) {
     return (new ceres::AutoDiffCostFunction<
             RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
             REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
-        new RegistrationCostFunctor(aFeaturePoint, aKeyframeFeaturePoints)));
+        new RegistrationCostFunctor(aFeaturePoint, aKeyframeFeaturePoint)));
 }

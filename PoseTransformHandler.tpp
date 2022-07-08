@@ -14,7 +14,7 @@
 /**
  * @brief Convert rotation and translation to transformation matrix
  *
- * @tparam[in] T Scalar type, used for Ceres
+ * @tparam[in] T Casting type, used for Ceres
  * @param[in] aRotMat Rotation matrix (N x N)
  * @param[in] aTrans Translation vector (N x 1)
  * @return Homogeneous transformation matrix (N+1 x N+1)
@@ -37,7 +37,7 @@ rotTransToTransform(const Eigen::Rotation2D<T> &aRotMat,
 /**
  * @brief Convert rotation and translation to transformation matrix
  *
- * @tparam T Scalar type, used for Ceres
+ * @tparam T Casting type, used for Ceres
  * @param[in] aAngleRad Angle of rotation in radians
  * @param[in] aTrans Translation vector (N x 1)
  * @return Homogeneous transformation matrix (N+1 x N+1)
@@ -52,7 +52,7 @@ const PoseTransform2D<T> rotTransToTransform(const T &aAngleRad,
 /**
  * @brief Convert pose to transform
  *
- * @tparam T Scalar type, used for Ceres
+ * @tparam T Casting type, used for Ceres
  * @param[in] aPose Pose object to convert
  * @return const PoseTransform2D<T> Transform constructred from pose
  */
@@ -64,7 +64,7 @@ const PoseTransform2D<T> poseToTransform(const Pose2D<T> &aPose) {
 /**
  * @brief Convert transform to pose
  *
- * @tparam T Scalar type, used for Ceres
+ * @tparam T Casting type, used for Ceres
  * @param[in] aPoseTransform Pose transform to convert into pose form
  * @return const Pose2D<T> Pose constructed from transform
  */
@@ -72,16 +72,40 @@ template <typename T>
 const Pose2D<T> transformToPose(const PoseTransform2D<T> &aPoseTransform) {
     Pose2D<T> pose;
     // Between [-pi, pi]
-    pose.orientation = static_cast<double>(aPoseTransform.rotation().smallestAngle());
-    pose.position = static_cast<double>(aPoseTransform.translation());
+    pose.orientation =
+        static_cast<T>(aPoseTransform.rotation().smallestAngle());
+    pose.position = static_cast<T>(aPoseTransform.translation());
     return pose;
+}
+
+/**
+ * @brief Convert optimization parameters to pose transform form
+ *
+ * @tparam T Casting type, used for Ceres
+ * @param[in] aPositionArray Pointer (as an array) to position parameters
+ * @param[in] aOrientationArray Pointer (as an array) to orientation parameters
+ *
+ * @return const PoseTransform2D<T> Pose transform constructed from optimization parameters
+ */
+template <typename T>
+const PoseTransform2D<T> paramsToTransform(const T *const aPositionArray,
+                                           const T *const aOrientationArray) {
+    const T &x = aPositionArray[0];
+    const T &y = aPositionArray[1];
+    const T &theta = aOrientationArray[0];
+
+    Pose2D<T> paramsAsPose(x, y, theta);
+
+    // Transform to be applied on ORSP points in RImage to convert to world
+    // coord. Cannot be cached cos casting necessary.
+    return poseToTransform<T>(paramsAsPose);
 }
 
 /**
  * @brief Convert one coordinate to another coordinate frame using homogeneous
  * transforms. 2D interface.
  *
- * @tparam T Scalar type, used for Ceres
+ * @tparam T Casting type, used for Ceres
  * @param[in] aCoordinate Coordinate (N x 1)
  * @param[in] aConversionTransform Homogeneous pose transform matrix from local
  * to world coordinates (N+1 x N+1)

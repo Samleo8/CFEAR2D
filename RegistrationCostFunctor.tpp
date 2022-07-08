@@ -15,11 +15,11 @@
 #include "OptimisationHandler.hpp" // for findClosestORSPInSet
 
 /**
- * @brief The key function of the cost functor. Will return the calculated
- * cost for optimization, given the inputs, as pointers of varying lengths,
- * and the end parameter as a pointer to the residuals/costs.
- * @note If a match is not found, the cost is simply set to a large value @see DEFAULT_FAIL_COST
- * @todo Not sure if i should be removing the entire ResidualBlock instead of having a large cost.
+ * @brief The key function of the cost functor. Inputs are in the form of
+ * templated pointers (thought of as doubles but are actually ceres::Jets) that,
+ * in this case, refer to poses/transform parameters. Will return the calculated
+ * cost between associated keyframe ORSP point and feature point after it is
+ * transformmed into world coordinates using the provided transform.
  *
  * @todo Extend to 3D
  * @note Size of the input parameters are variable and are determined when
@@ -40,18 +40,8 @@ template <typename T>
 bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
                                          const T *const aOrientationArray,
                                          T *aResidualArray) const {
-    // Build parameter object from input params
-    const T &x = aPositionArray[0];
-    const T &y = aPositionArray[1];
-    const T &theta = aOrientationArray[0];
-
-    Pose2D<T> paramsAsPose(x, y, theta);
-    // paramsAsPose.orientation = theta;
-    // paramsAsPose.position = Vector2T<T>(x, y);
-
-    // Transform to be applied on ORSP points in RImage to convert to world
-    // coord. Cannot be cached cos casting necessary.
-    const PoseTransform2D<T> rImgTransform = poseToTransform<T>(paramsAsPose);
+    // Get pose transform from input parameters
+    const PoseTransform2D<T> rImgTransform = paramsToTransform<T>(aPositionArray, aOrientationArray);
 
     // Get the ORSP point in world coordinates
     // NOTE: Need templated here, because Jacobian needed for transform
@@ -62,27 +52,12 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     convertORSPCoordinates<T>(featurePtCasted, worldORSPPoint, rImgTransform);
 
     // Because of distance calculation, need to be templated also
-    ORSP<T> closestORSPPoint;
-    const bool found = findClosestORSPInSet<T>(
-        worldORSPPoint, mKeyframeFeaturePoints, closestORSPPoint);
+    ORSP<T> keyframeFeaturePtCasted;
+    mKeyframeFeaturePoint.template cast<T>(keyframeFeaturePtCasted);
 
-    // std::cout << "Found: " << found << std::endl
-    //           << worldORSPPoint.center << std::endl
-    //           << closestORSPPoint.center << std::endl
-    //           << std::endl;
-
-    // Only parse if found a match
-    if (found) {
-        // Compute cost according to formula
-        aResidualArray[0] = closestORSPPoint.normal.dot(
-            worldORSPPoint.center - closestORSPPoint.center);
-
-        // std::cout << "Cost: " << aResidualArray[0] << std::endl;
-    }
-    else {
-        // std::cout << "Failed!" << std::endl;
-        aResidualArray[0] = static_cast<T>(DEFAULT_FAIL_COST);
-    }
+    // Compute cost according to formula
+    aResidualArray[0] = keyframeFeaturePtCasted.normal.dot(
+        worldORSPPoint.center - keyframeFeaturePtCasted.center);
 
     return true;
 }
