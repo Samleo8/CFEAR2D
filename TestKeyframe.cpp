@@ -301,8 +301,11 @@ int main(int argc, char **argv) {
         Pose2D<double> kfDeltaPose = transformToPose<double>(kf2FrameTransf);
         double kfDistSq = kfDeltaPose.position.squaredNorm();
         double kfRot = std::abs(kfDeltaPose.orientation);
-        
-        if (kfDistSq >= Keyframe::KF_DIST_THRESH_SQ || kfRot >= Keyframe::KF_ROT_THRESH) {
+
+        if (kfDistSq >= Keyframe::KF_DIST_THRESH_SQ ||
+            kfRot >= Keyframe::KF_ROT_THRESH) {
+            std::cout << "New keyframe added!" << std::endl;
+
             Keyframe keyframe2(currRImg, currWorldPose);
             keyframeList.push_back(keyframe2);
         }
