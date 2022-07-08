@@ -62,6 +62,13 @@ template <typename T = double> class Pose2D {
         orientation = aPose.orientation;
     }
 
+    Pose2D<T> &operator+=(const Pose2D<T> &aOtherPose) { 
+        position += aOtherPose.position;
+        orientation += aOtherPose.orientation;
+
+        return *this; // return the result by reference
+    }
+
     /**
      * @brief Printing of class information using cout
      *

@@ -30,17 +30,6 @@
 #include "RadarImage.hpp"
 #include "TransformDefines.hpp"
 
-/**
- * @brief Maximum number of grid squares, used in ORSP grid formation.
- * Needs to double because max range is radius of image.
- * @note Needs to be larger than the original ORSP grid size because in global
- * coordinates, so frame is allowed to turn.
- */
-const size_t ORSP_KF_GRID_N = static_cast<size_t>(
-    floor(2 * RADAR_MAX_RANGE_M_SQRT2 / ORSP_GRID_SQUARE_WIDTH));
-
-typedef std::vector<size_t> IndexList;
-
 class Keyframe {
   private:
     /** @brief World pose, probably mainly for plotting */
@@ -65,7 +54,25 @@ class Keyframe {
     ORSPVec<double> mORSPFeaturePoints;
 
   public:
+    /** @brief Dimension of internal poses, transforms etc */
     static constexpr size_t DIMENSION = 2;
+
+    /**
+     * @brief How much movement (distance in m) from previous keyframe to count
+     * as new keyframe
+     * @todo Move to the radar feed file?
+     */
+    static constexpr double KF_DIST_THRESH = 1.5;
+
+    /** @brief Square of @see Keyframe::KF_DIST_THRESH */
+    static constexpr double KF_DIST_THRESH_SQ = KF_DIST_THRESH * KF_DIST_THRESH;
+
+    /**
+     * @brief How much movement (distance in m) from previous keyframe to count
+     * as new keyframe
+     * @todo Move to the radar feed file?
+     */
+    static constexpr double KF_ROT_THRESH = 5 * ANGLE_DEG_TO_RAD;
 
     Keyframe(const RadarImage &aRadarImage, const Pose2D<double> &aWorldPose);
     ~Keyframe();

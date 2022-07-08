@@ -26,12 +26,6 @@
 
 #include <ceres/ceres.h>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-
-#define ANGLE_RAD_TO_DEG (180.0 / M_PI)
-#define ANGLE_DEG_TO_RAD (M_PI / 180.0)
-
 /** @brief Keyframe buffer size */
 const size_t KF_BUFF_SIZE = 3;
 

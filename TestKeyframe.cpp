@@ -297,16 +297,24 @@ int main(int argc, char **argv) {
         PoseTransform2D<double> kf2FrameTransf = getTransformsBetweenPoses(
             keyframeList.back().getPose(), currWorldPose);
 
-        // Get the delta pose via the general way
-        Pose2D deltaPose = transformToPose<double>(kf2FrameTransf);
-
         // TODO: Add keyframe if necessary
-        // Keyframe keyframe2(currRImg);
+        Pose2D<double> kfDeltaPose = transformToPose<double>(kf2FrameTransf);
+        double kfDistSq = kfDeltaPose.position.squaredNorm();
+        double kfRot = std::abs(kfDeltaPose.orientation);
+        
+        if (kfDistSq >= Keyframe::KF_DIST_THRESH_SQ || kfRot >= Keyframe::KF_ROT_THRESH) {
+            Keyframe keyframe2(currRImg, currWorldPose);
+            keyframeList.push_back(keyframe2);
+        }
 
         // Obtain transform from current world pose to previous pose for
         // velocity/seed pose propagation
         PoseTransform2D<double> frame2FrameTransf =
             getTransformsBetweenPoses(prevWorldPose, currWorldPose);
+
+        // Move the pose by a constant velocity based on the previous frame
+        Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
+        currWorldPose += deltaPose;
     }
 
     return 0;

@@ -14,6 +14,12 @@
 #include <Eigen/Geometry>
 #include <vector>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+#define ANGLE_RAD_TO_DEG (180.0 / M_PI)
+#define ANGLE_DEG_TO_RAD (M_PI / 180.0)
+
 /** @brief Typedef for list of 2-dimensional points */
 typedef std::vector<Eigen::Vector2d> Point2DList;
 
