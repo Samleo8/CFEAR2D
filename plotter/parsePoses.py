@@ -16,7 +16,7 @@ def parsePoses(filePath: str) -> np.ndarray:
 
         poseInfo.append(dataArr)
 
-    return poseInfo
+    return np.array(poseInfo)
 
 
 if __name__ == '__main__':

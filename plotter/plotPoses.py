@@ -10,8 +10,8 @@ def plotPoses(poses: np.ndarray, show: bool = False):
     x = poses[:, 0]
     y = poses[:, 1]
     theta = poses[:, 2]
-    kf = poses[:, 3]
-    kfMask = bool(kf)
+    kf = poses[:, 3].astype(bool)
+    kfMask = (kf == True)
 
     plt.plot(x, y, marker='o', color='blue', alpha=0.4)
     plt.scatter(x[kfMask], y[kfMask], color='red')
