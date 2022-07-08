@@ -1,7 +1,9 @@
 /**
  * @file OptimisationHandler.hpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
- * @brief
+ * @brief Handler for optimisation functions, including the building and solving
+ * of registration and motion distortion optimisation problems.
+ * Notably, @see buildAndSolveRegistrationProblem()
  * @version 0.1
  * @date 2022-06-28
  *
@@ -12,6 +14,9 @@
 #ifndef __OPTIMISATION_HANDLER_HPP__
 #define __OPTIMISATION_HANDLER_HPP__
 
+#include "AngleManifold.hpp"
+#include "Keyframe.hpp"
+#include "ORSP.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImage.hpp"
 #include "TransformDefines.hpp"
@@ -27,14 +32,6 @@
 #define ANGLE_RAD_TO_DEG (180.0 / M_PI)
 #define ANGLE_DEG_TO_RAD (M_PI / 180.0)
 
-// TODO: Integrate with ceres somehow
-// TOOD: 2D for now
-template <typename T> struct OptimParams {
-    // Eigen::Quaterniond q;     ///< rotation
-    Vector2T<T> translation; ///< translation
-    T theta;                 ///< rotation
-};
-
 /** @brief Keyframe buffer size */
 const size_t KF_BUFF_SIZE = 3;
 
@@ -44,20 +41,32 @@ const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
 /** @brief (Default) Delta threshold for Huber loss */
 const double HUBER_DELTA_DEFAULT = 0.1;
 
-// TODO: Create a cost functor for computing cost function. See
-// http://ceres-solver.org/nnls_modeling.html#_CPPv4N5ceres20AutoDiffCostFunctionE
+// Problem builder functions. Implemented in OptimisationHandler.cpp
+void buildPoint2LineProblem(ceres::Problem *aProblem,
+                                  ceres::LossFunction *aLossFnPtr,
+                                  const RadarImage &aRImage,
+                                  const ORSPVec<double> &aKeyframeFeaturePoints,
+                                  double *positionArr, double *orientationArr);
 
-// template <typename T> T constrainAngle(const T &aAngleRad);
+[[nodiscard]] const bool
+buildAndSolveRegistrationProblem(const RadarImage &aRImage,
+                                 const KeyframeBuffer &aKFBuffer,
+                                 Pose2D<double> &aPose);
 
-// template <typename T, int Dimension = 2>
-// const T angleBetweenVectors(const VectorDimT<T, Dimension> &aVec1,
-//                             const VectorDimT<T, Dimension> &aVec2);
+// Templated helper functions. Implemented in OptimisationHandler.tpp
+template <typename T> T constrainAngle(const T &aAngleRad);
 
-// template <typename T>
-// const PoseTransform2D<T>
-// transformFromOptimParams(const struct OptimParams<T> &aParams);
+template <typename T, int Dimension = 2>
+const T angleBetweenVectors(const VectorDimT<T, Dimension> &aVec1,
+                            const VectorDimT<T, Dimension> &aVec2);
 
-// template <typename T> const T HuberLoss(const T &a, const T &delta);
+template <typename T> const T HuberLoss(const T &a, const T &delta);
+
+template <typename CastType>
+[[nodiscard]] const bool
+findClosestORSPInSet(const ORSP<CastType> &aORSPPoint,
+                     const ORSPVec<double> &aORSPFeaturePoints,
+                     ORSP<CastType> &aClosestORSPPoint);
 
 // Implementation file for optimisation handler functions
 #include "OptimisationHandler.tpp"

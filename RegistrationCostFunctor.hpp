@@ -15,8 +15,10 @@
 #define __REGISTRATION_COST_FUNCTOR_HPP__
 
 #include "Keyframe.hpp"
-#include "OptimisationHandler.hpp"
+#include "ORSP.hpp"
 #include "RadarImage.hpp"
+#include "TransformDefines.hpp"
+#include <ceres/ceres.h>
 
 /** @brief number of residuals for registration cost optimization */
 const int REGOPT_NUM_RESIDUALS = 1;
@@ -40,39 +42,27 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
  */
 class RegistrationCostFunctor {
   private:
-    // TODO: is it ok if this is a reference?
-    const RadarImage &mRImg;
-    const KeyframeBuffer &mKFBuffer;
+    /** @brief Feature point from radar image to optimise */
+    const ORSP<double> mFeaturePoint;
+
+    /** @brief Associated feature point from keyframe */
+    const ORSP<double> mKeyframeFeaturePoint;
 
   public:
     // Constructors
-    RegistrationCostFunctor(const RadarImage &aRImg,
-                            const KeyframeBuffer &aKFBuffer);
-
-    // Getters
-    const RadarImage &getRImg() const;
-    const KeyframeBuffer &getKFBuffer() const;
-    const Keyframe &getKeyframe(const size_t aIdx) const;
+    RegistrationCostFunctor(const ORSP<double> &aFeaturePoint,
+                            const ORSP<double> &aKeyframeFeaturePoint);
 
     // Cost function
-    static ceres::CostFunction *Create(const RadarImage &aRImg,
-                                       const KeyframeBuffer &aKFBuffer);
-                                       
-    // Helper function for cost function
-    template <typename T>
-    [[nodiscard]] const bool
-    point2LineCost(const RadarImage &aRImage, const Keyframe &aKeyframe,
-                   const struct OptimParams<T> &aParams, T *aOutputCost) const;
-
-    template <typename T>
-    [[nodiscard]] const bool
-    point2LineCost(const Keyframe &aKeyframe,
-                   const struct OptimParams<T> &aParams, T *aOutputCost) const;
+    static ceres::CostFunction *
+    Create(const ORSP<double> &aFeaturePoint,
+           const ORSP<double> &aKeyframeFeaturePoint);
 
     // Actual cost functor
     template <typename T>
-    bool operator()(const T *const aPositionArray,
-                    const T *const aOrientationArray, T *aResidualArray) const;
+    [[nodiscard]] bool operator()(const T *const aPositionArray,
+                                  const T *const aOrientationArray,
+                                  T *aResidualArray) const;
 };
 
 #include "RegistrationCostFunctor.tpp"

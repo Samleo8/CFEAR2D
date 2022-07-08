@@ -43,10 +43,8 @@ typedef std::vector<size_t> IndexList;
 
 class Keyframe {
   private:
-    static const size_t DIMENSION = 2;
-
     /** @brief World pose, probably mainly for plotting */
-    Pose2D mWorldPose;
+    Pose2D<double> mWorldPose;
 
     /**
      * @brief World pose as homogeneous transformation matrix that converts
@@ -67,12 +65,14 @@ class Keyframe {
     ORSPVec<double> mORSPFeaturePoints;
 
   public:
-    Keyframe(const RadarImage &aRadarImage, const Pose2D &aWorldPose);
+    static constexpr size_t DIMENSION = 2;
+
+    Keyframe(const RadarImage &aRadarImage, const Pose2D<double> &aWorldPose);
     ~Keyframe();
 
     // Getters
-    const Pose2D &getPose() const;
-    const Pose2D &getWorldPose() const;
+    const Pose2D<double> &getPose() const;
+    const Pose2D<double> &getWorldPose() const;
     const ORSPVec<double> &getORSPFeaturePoints() const;
 
     const PoseTransform2D<double> &getLocalToWorldTransform() const;
@@ -83,17 +83,9 @@ class Keyframe {
                           ORSP<double> &aWorldORSPPoint) const;
     void worldToLocalORSP(const ORSP<double> &aWorldORSPPoint,
                           ORSP<double> &aLocalORSPPoint) const;
-
-    // Find the closest ORSP point to a given point
-    template <typename CastType>
-    [[nodiscard]] const bool
-    findClosestORSP(const ORSP<CastType> &aORSPPoint,
-                    ORSP<CastType> &aClosestORSPPoint) const;
 };
 
 /** @brief Keyframe buffer typedef */
 typedef boost::circular_buffer<Keyframe> KeyframeBuffer;
-
-#include "Keyframe.tpp"
 
 #endif // __KEYFRAME_HPP__

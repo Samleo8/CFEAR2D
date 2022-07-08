@@ -2,7 +2,7 @@
  * @file OptimisationHandler.tpp
  * @author Samuel Leong (scleong@andrew.cmu.edu)
  * @brief Implementation file for templated functions related to optimization
- * and cost functions for bundle adjustment
+ * and cost functions
  * @version 0.1
  * @date 2022-06-28
  *
@@ -12,6 +12,8 @@
 
 #ifndef __OPTIMISATION_HANDLER_TPP__
 #define __OPTIMISATION_HANDLER_TPP__
+
+#include "RegistrationCostFunctor.hpp"
 
 /**
  * @brief Constrain angle in radians between [-pi and pi)
@@ -46,20 +48,8 @@ const T angleBetweenVectors(const VectorDimT<T, Dimension> &aVec1,
 }
 
 /**
- * @brief Get pose transform from optimisation parameters, currently a pose
- *
- * @param[in] aParams Optimisation parameters, basically a pose. @see
- * OptimParams struct
- * @return Pose transform from optimisation parameters
- */
-template <typename T>
-const PoseTransform2D<T>
-transformFromOptimParams(const struct OptimParams<T> &aParams) {
-    return rotTransToTransform<T>(aParams.theta, aParams.translation);
-}
-
-/**
  * @brief Huber loss according to formula
+ * @deprecated Now using Ceres Huber loss function instead
  * @see https://en.wikipedia.org/wiki/Huber_loss
  *
  * @param[in] a Value
@@ -73,6 +63,73 @@ template <typename T> const T HuberLoss(const T &a, const T &delta) {
     else {
         return delta * (ceres::abs(a) - 0.5 * delta);
     }
+}
+
+/**
+ * @brief Find the closest feature point in a list of feature points to a
+ * given point
+ * @note User needs to check if a feature point was found; otherwise, the
+ * aClosestORSPPoint can give garbage values.
+ *
+ * @pre All feature points must be in the same coordinate system for outputs to
+ * make sense
+ *
+ * @tparam CastType Type to cast to
+ * @param[in] aORSPPoint ORSP Point (WTF point in set closest to this)
+ * @param[in] aORSPFeaturePoints Set of feature points to search in
+ * @param[out] aClosestORSPPoint Closest ORSP Point (from keyframe)
+ * @return Whether a closest feature point was found
+ */
+template <typename CastType>
+const bool findClosestORSPInSet(const ORSP<CastType> &aORSPPoint,
+                                const ORSPVec<double> &aORSPFeaturePoints,
+                                ORSP<CastType> &aClosestORSPPoint) {
+    // Init stuff
+    bool found = false;
+    const CastType ANGLE_TOLERANCE_RAD_CASTED =
+        static_cast<CastType>(ANGLE_TOLERANCE_RAD);
+
+    // NOTE: Closest distance set to radius because we only want points at a
+    // close enough distance
+    CastType closestDistance = static_cast<CastType>(ORSP_RADIUS);
+
+    // center and normal vector of reference ORSP to find closest point against
+    const Vector2T<CastType> centerPoint = aORSPPoint.center;
+    const Vector2T<CastType> normalVec = aORSPPoint.normal;
+
+    // Find the minimum distance, but we need to loop through to check if the
+    // point is even valid because of angle tolerances
+    for (size_t i = 0, sz = aORSPFeaturePoints.size(); i < sz; i++) {
+        // Get potential closest point
+        const ORSP<double> &potentialClosestPoint = aORSPFeaturePoints[i];
+
+        // Obtain casted version of center, normal of ORSP point
+        Vector2T<CastType> potentialCenter =
+            potentialClosestPoint.center.template cast<CastType>();
+        Vector2T<CastType> potentialNormal =
+            potentialClosestPoint.normal.template cast<CastType>();
+
+        // Check angle tolerance
+        const CastType angle =
+            angleBetweenVectors<CastType, Keyframe::DIMENSION>(potentialNormal,
+                                                               normalVec);
+
+        if (ceres::abs(angle) > ANGLE_TOLERANCE_RAD_CASTED) continue;
+
+        // Calculate distance between potential closest point, and
+        // check if it is indeed the closest point
+        CastType dist = getDistance<CastType>(potentialCenter, centerPoint);
+
+        if (dist < closestDistance) {
+            closestDistance = dist;
+            aClosestORSPPoint.center = potentialCenter;
+            aClosestORSPPoint.normal = potentialNormal;
+
+            found = true;
+        }
+    }
+
+    return found;
 }
 
 #endif // __OPTIMISATION_HANDLER_TPP__

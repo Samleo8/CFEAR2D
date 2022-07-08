@@ -18,10 +18,14 @@ const PoseTransform2D<T> rotTransToTransform(const T &aAngleRad,
                                              const Vector2T<T> &aTrans);
 
 template <typename T>
-const PoseTransform2D<T> poseToTransform(const Pose2D &aPose);
+const PoseTransform2D<T> poseToTransform(const Pose2D<T> &aPose);
 
 template <typename T>
-const Pose2D transformToPose(const PoseTransform2D<T> &aPoseTransform);
+const Pose2D<T> transformToPose(const PoseTransform2D<T> &aPoseTransform);
+
+template <typename T>
+const PoseTransform2D<T> paramsToTransform(const T *const aPositionArray,
+                  const T *const aOrientationArray);
 
 template <typename T>
 const Vector2T<T>
