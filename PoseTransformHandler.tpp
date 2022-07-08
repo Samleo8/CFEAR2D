@@ -82,15 +82,14 @@ const Pose2D<T> transformToPose(const PoseTransform2D<T> &aPoseTransform) {
  * @brief Convert optimization parameters to pose transform form
  *
  * @tparam T Casting type, used for Ceres
- * @param[in] aPositionArray
- * @param[in] aOrientationArray
+ * @param[in] aPositionArray Pointer (as an array) to position parameters
+ * @param[in] aOrientationArray Pointer (as an array) to orientation parameters
  *
- * @return const PoseTransform2D<T>
+ * @return const PoseTransform2D<T> Pose transform constructed from optimization parameters
  */
 template <typename T>
-const PoseTransform2D<T> paramsToTransform<T>
-paramsToTransform(const T *const aPositionArray,
-                  const T *const aOrientationArray) {
+const PoseTransform2D<T> paramsToTransform(const T *const aPositionArray,
+                                           const T *const aOrientationArray) {
     const T &x = aPositionArray[0];
     const T &y = aPositionArray[1];
     const T &theta = aOrientationArray[0];
