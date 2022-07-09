@@ -2,19 +2,19 @@ import numpy as np
 import os, sys
 from plotPoses import plotPoses, plt
 
+
 def parsePoses(filePath: str) -> np.ndarray:
     poseInfo = []
     poseInfo.append([0, 0, 0, 1])  # x, y, theta, kf
 
     with open(filePath, 'r') as f:
-        data = f.readline()
+        for data in f.readlines():
+            kf = data.startswith('kf')
+            data = data.replace('kf ', '').replace('Pose2D: ', '')
+            dataArr = list(map(float, data.split(' ')))
+            dataArr.append(kf)
 
-        kf = data.startswith('kf')
-        data = data.replace('kf ', '').replace('Pose2D: ', '')
-        dataArr = list(map(float, data.split(' ')))
-        dataArr.append(kf)
-
-        poseInfo.append(dataArr)
+            poseInfo.append(dataArr)
 
     return np.array(poseInfo)
 
