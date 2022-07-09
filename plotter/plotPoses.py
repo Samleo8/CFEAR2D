@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def plotPoses(poses: np.ndarray, show: bool = False):
     '''
     @brief Plot poses
@@ -15,7 +16,14 @@ def plotPoses(poses: np.ndarray, show: bool = False):
     plt.plot(x, y, marker='o', color='blue', alpha=0.4)
     plt.scatter(x[kfMask], y[kfMask], color='red')
 
-    plt.axis('off')
+    plt.xlabel('x [m]')
+    plt.ylabel('y [m]')
+
+    # Force a square 
+    mn = np.floor(min(x.min(), y.min()))
+    mx = np.ceil(max(x.max(), y.max()))
+    plt.xlim(mn, mx)
+    plt.ylim(mn, mx)
 
     if show:
         plt.show()
