@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def plotPoses(poses: np.ndarray, show: bool = False):
     '''
     @brief Plot poses
@@ -15,6 +14,8 @@ def plotPoses(poses: np.ndarray, show: bool = False):
 
     plt.plot(x, y, marker='o', color='blue', alpha=0.4)
     plt.scatter(x[kfMask], y[kfMask], color='red')
+
+    plt.axis('off')
 
     if show:
         plt.show()

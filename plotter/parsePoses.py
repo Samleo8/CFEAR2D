@@ -24,13 +24,15 @@ if __name__ == '__main__':
     startInd = 0 if len(sys.argv) <= 2 else int(sys.argv[2])
     endInd = 10 if len(sys.argv) <= 3 else int(sys.argv[3])
 
-    filePath = os.path.join('results', dataset,
-                            f'poses_{startInd}_{endInd}.txt')
+    baseResultsPath = os.path.join('results', dataset)
+    filePath = os.path.join(baseResultsPath, f'poses_{startInd}_{endInd}.txt')
 
     poseArr = parsePoses(filePath)
-    print(poseArr)
+    # print(poseArr)
 
     plotPoses(poseArr)
 
     plt.tight_layout()
+
+    plt.savefig(filePath.replace('.txt', '.jpg'))
     plt.show()
