@@ -13,7 +13,8 @@ fi
 echo "[Dataset $DATASET_ID]"
 
 if [[ $TARGET == "keyframe" ]]; then
-    ./build/TestKeyframe 0 $START_IND $END_IND
+    ./build/TestKeyframe $DATASET_ID $START_IND $END_IND
+    python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
 elif [[ $TARGET == "radar" ]]; then
     for (( IMG_IND=$START_IND; IMG_IND<=$END_IND; IMG_IND++ )); do
         echo " > Running on image $IMG_IND"
