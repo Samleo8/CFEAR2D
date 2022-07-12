@@ -301,6 +301,22 @@ int main(int argc, char **argv) {
     orspBaseOutputPath /= "orsp";
 
     fs::create_directories(orspBaseOutputPath);
+
+    // Output the ORSP points for the base keyframe too
+    std::ofstream orspOutputFile;
+
+    fs::path orspFileOutputPath2(orspBaseOutputPath);
+    orspFileOutputPath2 /= "orsp_" + std::to_string(startID) + ".txt";
+
+    orspOutputFile.open(orspFileOutputPath2,
+                        std::ofstream::out | std::ofstream::trunc);
+
+    const ORSPVec<double> &orspList2 = currRImg.getORSPFeaturePoints();
+    for (const ORSP<double> &orsp : orspList2) {
+        orspOutputFile << orsp.toString() << std::endl;
+    }
+
+    orspOutputFile.close();
 #endif
 
     // Keep finding frames
@@ -381,7 +397,6 @@ int main(int argc, char **argv) {
         }
 
 #ifdef DEBUG_ORSP
-        std::ofstream orspOutputFile;
         fs::path orspFileOutputPath(orspBaseOutputPath);
         orspFileOutputPath /= "orsp_" + std::to_string(currFrameId) + ".txt";
 
