@@ -15,7 +15,7 @@ echo "[Dataset $DATASET_ID]"
 if [[ $TARGET == "both" ]]; then
     ./run.sh $DATASET_ID keyframe $START_IND $END_IND
     ./run.sh $DATASET_ID radar $START_IND $END_IND
-if [[ $TARGET == "keyframe" ]]; then
+elif [[ $TARGET == "keyframe" ]]; then
     ./build/TestKeyframe $DATASET_ID $START_IND $END_IND
     python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
 elif [[ $TARGET == "radar" ]]; then
