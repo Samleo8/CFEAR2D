@@ -29,3 +29,12 @@ def plotPoses(poses: np.ndarray, show: bool = False):
         plt.show()
 
     return
+
+def plotPosesVideo(poses: np.ndarray, pauseInterval = 0.1):
+    N = poses.shape[0]
+    for i in range(N):
+        plt.clf()
+        plotPoses(poses[:i+1, :], show=False)
+        plt.pause(pauseInterval)
+
+    return
