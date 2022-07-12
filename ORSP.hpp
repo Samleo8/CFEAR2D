@@ -61,6 +61,30 @@ template <typename T> class ORSP {
         aORSP.center = center.template cast<CastType>();
         aORSP.normal = normal.template cast<CastType>();
     }
+
+    /**
+     * @brief Function to convert into printable string
+     *
+     * @return std::string 
+     */
+    std::string toString() const {
+        std::stringstream ss;
+        ss << "Center: " << center.transpose() << " | Normal: " << normal.transpose();
+        return ss.str();
+    }
+
+    /**
+     * @brief Printing of class information using cout
+     *
+     * @param[in] aOutputStream Cout output stream
+     * @param[in] aPose Pose class to output
+     * @return std::ostream& Output stream reference
+     */
+    friend std::ostream &operator<<(std::ostream &aOutputStream,
+                                    const ORSP<T> &aORSP) {
+        aOutputStream << aORSP.toString() << std::endl;
+        return aOutputStream;
+    }
 };
 
 /** @brief Typedef for OrientedSurfacePoint struct */
