@@ -9,8 +9,9 @@ fi
 
 DATASET_ID=${2:-0}
 START_NUM=${3:-0}
-FRAME_RATE=${4:-10}
-DO_SCALE=${5:-1} # scale by default
+END_NUM=${4:--1}
+FRAME_RATE=${5:-10}
+DO_SCALE=${6:-1} # scale by default
 
 OUTPUT_BASE_FOLDER=$OUTPUT_NAME/$DATASET_ID
 
@@ -20,4 +21,11 @@ else
     SCALE=""
 fi
 
-ffmpeg -y -start_number $START_NUM -framerate $FRAME_RATE -i $OUTPUT_BASE_FOLDER/%d.jpg $SCALE -c:v libx265 -loop -1 -crf 32 $OUTPUT_BASE_FOLDER/$OUTPUT_NAME.mp4
+if [[ $END_NUM -neq "-1" ]]; then
+    NUM_FRAMES=$(( $END_NUM - $START_NUM + 1 ))
+    NUM_FRAMES_FLAGS="-frames:v $NUM_FRAMES"
+else
+    NUM_FRAMES_FLAGS=''
+fi
+
+ffmpeg -y -start_number $START_NUM $NUM_FRAMES_FLAGS -framerate $FRAME_RATE -i $OUTPUT_BASE_FOLDER/%d.jpg $SCALE -c:v libx265 -loop -1 -crf 32 $OUTPUT_BASE_FOLDER/$OUTPUT_NAME_$START_NUM_$END_NUM.mp4

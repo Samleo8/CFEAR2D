@@ -12,17 +12,19 @@ fi
 
 echo "[Dataset $DATASET_ID]"
 
-if [[ $TARGET == "keyframe" ]]; then
+if [[ $TARGET == "keyframe" || $TARGET == "both" ]]; then
     ./build/TestKeyframe $DATASET_ID $START_IND $END_IND
     python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
-elif [[ $TARGET == "radar" ]]; then
+fi 
+
+if [[ $TARGET == "radar" || $TARGET == "both" ]]; then
     for (( IMG_IND=$START_IND; IMG_IND<=$END_IND; IMG_IND++ )); do
         echo " > Running on image $IMG_IND"
         ./build/TestRadar $DATASET_ID $IMG_IND 1 || exit 1
     done
 
     FPS=10
-    ./scripts/mp4-from-folder.sh results $DATASET_ID $START_IND $FPS
+    ./scripts/mp4-from-folder.sh results $DATASET_ID $START_IND $END_IND $FPS
 else
     echo "Unknown target $TARGET"
     exit 1
