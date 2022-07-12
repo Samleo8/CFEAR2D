@@ -36,6 +36,7 @@ if __name__ == "__main__":
     prev_centers, prev_normals = parseORSPData(dataset, startInd)
 
     for i in range(startInd + 1, endInd):
+        plt.title(f"Frame {i}")
         centers, normals = parseORSPData(dataset, i)
 
         plotORSPPoint(prev_centers, prev_normals, show_normals=True, alpha=0.1)
