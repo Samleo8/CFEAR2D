@@ -65,11 +65,12 @@ template <typename T> class ORSP {
     /**
      * @brief Function to convert into printable string
      *
-     * @return std::string 
+     * @return std::string
      */
     std::string toString() const {
         std::stringstream ss;
-        ss << "Center: " << center.transpose() << " | Normal: " << normal.transpose();
+        ss << "Center: " << center[0] << " " << center[1];
+        ss << " | Normal: " << normal[0] << " " << normal[1];
         return ss.str();
     }
 
