@@ -389,9 +389,11 @@ int main(int argc, char **argv) {
         for (const ORSP<double> &orsp : orspList) {
             ORSP<double> worldORSPPoint;
             convertORSPCoordinates(orsp, worldORSPPoint, worldPoseTransform);
-            
+
             orspOutputFile << worldORSPPoint.toString() << std::endl;
         }
+
+        orspOutputFile.close();
 #endif
 
         // Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
