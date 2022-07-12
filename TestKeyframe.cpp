@@ -328,8 +328,8 @@ int main(int argc, char **argv) {
             getTransformsBetweenPoses(prevWorldPose, currWorldPose);
 
         // Move the pose by a constant velocity based on the previous frame
-        Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
-        currWorldPose += deltaPose;
+        // Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
+        // currWorldPose += deltaPose;
     }
 
     // Remember to close file
