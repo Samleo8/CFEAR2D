@@ -45,4 +45,4 @@ if __name__ == "__main__":
         prev_centers = centers
         prev_normals = normals
 
-        plt.waitforbuttonpress()
+        plt.show()
