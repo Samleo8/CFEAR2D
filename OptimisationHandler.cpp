@@ -50,6 +50,7 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     // For each ORSP point in RImage, add a residual block related to the cost
     // of a single rImg feature point association with its closest keyframe
     // counterpart
+    bool successfulAssociation = false;
 
     // Create pose transform and get radar image feature points in local
     // coordinates
@@ -84,6 +85,8 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
 
                 problem.AddResidualBlock(regCostFn, regLossFn, positionArr,
                                          orientationArr);
+
+                successfulAssociation = true;
             }
         }
     }
@@ -91,8 +94,15 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     // NOTE: Manifold must be set after residual blocks are added
     // TODO: When 3D set to EigenQuaternion manifold
     // Angle Manifold
-    ceres::Manifold *angleManifold = AngleManifold::Create();
-    problem.SetManifold(orientationArr, angleManifold);
+    if (successfulAssociation) {
+        ceres::Manifold *angleManifold = AngleManifold::Create();
+        problem.SetManifold(orientationArr, angleManifold);
+    }
+    else {
+        // TODO: Should not happen?
+        std::cout << "ERROR! Failed to successfully associate frame with any keyframe points!" << std::endl;
+        return false;
+    }
 
     // For debugging of evaluation values
 #ifdef __DEBUG_OPTIMISATION__
