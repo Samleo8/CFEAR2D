@@ -38,4 +38,4 @@ if __name__ == '__main__':
         plt.tight_layout()
 
         plt.savefig(filePath.replace('.txt', '.jpg'))
-        plt.show()
+        # plt.show()
