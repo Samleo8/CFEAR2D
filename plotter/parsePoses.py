@@ -25,7 +25,7 @@ if __name__ == '__main__':
     endInd = 10 if len(sys.argv) <= 3 else int(sys.argv[3])
     videoMode = False if len(sys.argv) <= 4 else bool(int(sys.argv[4]))
 
-    baseResultsPath = os.path.join('results', dataset)
+    baseResultsPath = os.path.join('results', dataset, 'poses')
     filePath = os.path.join(baseResultsPath, f'poses_{startInd}_{endInd}.txt')
 
     poseArr = parsePoses(filePath)
