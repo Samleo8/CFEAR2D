@@ -284,6 +284,9 @@ int main(int argc, char **argv) {
     // Output the frames to a file
     fs::path poseOutputPath(saveImagesPath);
     poseOutputPath /= "poses";
+
+    fs::create_directories(poseOutputPath);
+
     poseOutputPath /= "poses_" + std::to_string(startID) + "_" +
                       std::to_string(endID) + ".txt";
 
@@ -296,6 +299,8 @@ int main(int argc, char **argv) {
 #ifdef DEBUG_ORSP
     fs::path orspBaseOutputPath(saveImagesPath);
     orspBaseOutputPath /= "orsp";
+
+    fs::create_directories(orspBaseOutputPath);
 #endif
 
     // Keep finding frames
