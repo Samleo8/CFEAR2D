@@ -8,12 +8,14 @@
 
 #include "CVColor.hpp"
 #include "Keyframe.hpp"
+#include "ORSP.hpp"
 #include "OptimisationHandler.hpp"
 #include "PoseTransformHandler.hpp"
 #include "PoseTransformHandler.tpp"
 #include "RadarFeed.hpp"
 #include "RadarImage.hpp"
 #include "RegistrationCostFunctor.hpp"
+#include "TransformDefines.hpp"
 
 /**
  * @brief Threshold for checking how far the vehicle has to move before counted
@@ -22,6 +24,9 @@
 constexpr double DIST_STATIONARY_THRESH = 0.05; // 5cm
 constexpr double DIST_STATIONARY_THRESH_SQ =
     DIST_STATIONARY_THRESH * DIST_STATIONARY_THRESH;
+
+// Flag for whether to output ORSP to file for plotting
+#define DEBUG_ORSP
 
 #ifndef OUT_BUFFER_SIZE
 #define OUT_BUFFER_SIZE 5000
@@ -278,6 +283,7 @@ int main(int argc, char **argv) {
 
     // Output the frames to a file
     fs::path poseOutputPath(saveImagesPath);
+    poseOutputPath /= "poses";
     poseOutputPath /= "poses_" + std::to_string(startID) + "_" +
                       std::to_string(endID) + ".txt";
 
@@ -285,9 +291,17 @@ int main(int argc, char **argv) {
     poseOutputFile.open(poseOutputPath,
                         std::ofstream::out | std::ofstream::trunc);
 
+    // Output ORSP to file for debugging, if flag specified
+
+#ifdef DEBUG_ORSP
+    fs::path orspBaseOutputPath(saveImagesPath);
+    orspBaseOutputPath /= "orsp";
+#endif
+
     // Keep finding frames
     while (feed.nextFrame()) {
-        if (feed.getCurrentFrame() == endID) break;
+        size_t currFrameId = feed.getCurrentFrame();
+        if (currFrameId == endID) break;
 
         feed.getCurrentRadarImage(currRImg);
 
@@ -348,18 +362,41 @@ int main(int argc, char **argv) {
             // TODO: Do we revert to previous pose or propagate by 0 velocity?
             currWorldPose = prevWorldPose;
 
-            std::cout << "Stationary. Reverting back to previous pose." << std::endl << std::endl;
+            std::cout << "Stationary. Reverting back to previous pose."
+                      << std::endl
+                      << std::endl;
         }
         else {
             Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
             currWorldPose += deltaPose;
 
             std::cout << "Movement with delta: " << deltaPose.toString()
-                      << std::endl << std::endl;
+                      << std::endl
+                      << std::endl;
         }
+
+#ifdef DEBUG_ORSP
+        std::ofstream orspOutputFile;
+        fs::path orspFileOutputPath(orspBaseOutputPath);
+        orspFileOutputPath /= "orsp_" + std::to_string(currFrameId) + ".txt";
+
+        orspOutputFile.open(orspFileOutputPath,
+                            std::ofstream::out | std::ofstream::trunc);
+
+        PoseTransform2D<double> worldPoseTransform = poseToTransform(currWorldPose);
+
+        const ORSPVec<double> &orspList = currRImg.getORSPFeaturePoints();
+        for (const ORSP<double> &orsp : orspList) {
+            ORSP<double> worldORSPPoint;
+            convertORSPCoordinates(orsp, worldORSPPoint, worldPoseTransform);
+            
+            orspOutputFile << worldORSPPoint.toString() << std::endl;
+        }
+#endif
 
         // Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
         // currWorldPose += deltaPose;
+        // Output ORSP coordinates to file
     }
 
     // Remember to close file
