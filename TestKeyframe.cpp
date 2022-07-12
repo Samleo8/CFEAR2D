@@ -15,7 +15,13 @@
 #include "RadarImage.hpp"
 #include "RegistrationCostFunctor.hpp"
 
-#define ORSP_ONLY
+/**
+ * @brief Threshold for checking how far the vehicle has to move before counted
+ * as non stationary
+ */
+constexpr double DIST_STATIONARY_THRESH = 0.05; // 5cm
+constexpr double DIST_STATIONARY_THRESH_SQ =
+    DIST_STATIONARY_THRESH * DIST_STATIONARY_THRESH;
 
 #ifndef OUT_BUFFER_SIZE
 #define OUT_BUFFER_SIZE 5000
@@ -327,7 +333,19 @@ int main(int argc, char **argv) {
         PoseTransform2D<double> frame2FrameTransf =
             getTransformsBetweenPoses(prevWorldPose, currWorldPose);
 
+        // NOTE: Stationary checking
         // Move the pose by a constant velocity based on the previous frame
+        // But only if movement exceeds a certain threshold
+        double deltaDistSq = frame2FrameTransf.translation().squaredNorm();
+        if (deltaDistSq <= DIST_STATIONARY_THRESH_SQ) {
+            // TODO: Do we revert to previous pose or propagate by 0 velocity?
+            currWorldPose = prevWorldPose;
+        }
+        else {
+            Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
+            currWorldPose += deltaPose;
+        }
+
         // Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
         // currWorldPose += deltaPose;
     }
