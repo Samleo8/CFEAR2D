@@ -171,7 +171,7 @@ void outputImgFromRImg(const RadarImage &aRImg, cv::Mat &outputImgORSP,
     // Prepare for drawing
     const cv::Mat outputImgGray = aRImg.getImage(aRImg.RIMG_CART);
     // TODO: Make the background lighter?
-    const float BACKGROUND_LIGHTNESS_FACTOR = 1;
+    const float BACKGROUND_LIGHTNESS_FACTOR = 3;
     if (BACKGROUND_LIGHTNESS_FACTOR > 1)
         outputImgGray /= BACKGROUND_LIGHTNESS_FACTOR;
 
@@ -347,10 +347,15 @@ int main(int argc, char **argv) {
         if (deltaDistSq <= DIST_STATIONARY_THRESH_SQ) {
             // TODO: Do we revert to previous pose or propagate by 0 velocity?
             currWorldPose = prevWorldPose;
+
+            std::cout << "Stationary. Reverting back to previous pose." << std::endl << std::endl;
         }
         else {
             Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
             currWorldPose += deltaPose;
+
+            std::cout << "Movement with delta: " << deltaPose.toString()
+                      << std::endl << std::endl;
         }
 
         // Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
