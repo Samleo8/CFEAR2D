@@ -29,4 +29,4 @@ else
     NUM_FRAMES_FLAGS="-frames:v $NUM_FRAMES"
 fi
 
-ffmpeg -y -start_number $START_NUM -framerate $FRAME_RATE -i $OUTPUT_BASE_FOLDER/%d.jpg $NUM_FRAMES_FLAGS $SCALE -c:v libx265 -loop -1 -crf 32 $OUTPUT_BASE_FOLDER/$OUTPUT_NAME_$START_NUM_$END_NUM.mp4
+ffmpeg -y -start_number $START_NUM -framerate $FRAME_RATE -i $OUTPUT_BASE_FOLDER/%d.jpg $NUM_FRAMES_FLAGS $SCALE -c:v libx265 -loop -1 -crf 32 "${OUTPUT_BASE_FOLDER}/${OUTPUT_NAME}_${START_NUM}_${END_NUM}.mp4"
