@@ -306,6 +306,13 @@ int main(int argc, char **argv) {
         const bool success = buildAndSolveRegistrationProblem(
             currRImg, keyframeList, currWorldPose);
 
+        // TODO: What to do when registration fails?
+        if (!success) {
+            std::cout << "Registration failed!" << std::endl;
+            currWorldPose = prevWorldPose;
+            continue;
+        }
+
         // Obtain transform from previous keyframe to current frame
         PoseTransform2D<double> kf2FrameTransf = getTransformsBetweenPoses(
             keyframeList.back().getPose(), currWorldPose);
