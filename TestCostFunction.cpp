@@ -77,13 +77,15 @@ void printORSPToFile(const ORSPVec<double> &orspList,
 
 void addNoiseToTransform(const PoseTransform2D<double> &aInputTransform,
                          PoseTransform2D<double> &aOutputTransform,
-                         const double aNoiseStdDev = 0.1) {
+                         const double aTransStdDev = 0.1,
+                         const double aRotDegStdDev = 5) {
     std::default_random_engine generator;
-    std::uniform_real_distribution<double> distribution(-2, 2);
+    std::uniform_real_distribution<double> distribution(-aRotDegStdDev,
+                                                        aRotDegStdDev);
     double rot = distribution(generator) * ANGLE_DEG_TO_RAD;
 
     // Generates random vector with values from -1 to 1
-    Vector2T<double> trans = Vector2T<double>::Random() * aNoiseStdDev;
+    Vector2T<double> trans = Vector2T<double>::Random() * aTransStdDev;
 
     PoseTransform2D<double> noiseTransform = rotTransToTransform(rot, trans);
 
@@ -175,13 +177,22 @@ int main(int argc, char **argv) {
     // means that the feature points are shifted backwards
     coordTransform = coordTransform.inverse();
 
+    // Noise constants
+    const double transStdDev =
+        (perturbMode == PerturbStyle::ROT_ONLY) ? 0 : 0.1;
+    const double rotDegStdDev =
+        (perturbMode == PerturbStyle::TRANS_ONLY) ? 0 : 5;
+
     // Perturb the points by the transform
     ORSPVec<double> orspListPerturb;
     orspListPerturb.reserve(orspList.size());
     for (const ORSP<double> &orsp : orspList) {
         ORSP<double> orspPerturb;
         PoseTransform2D<double> coordTransformNoisy;
-        addNoiseToTransform(coordTransform, coordTransformNoisy);
+
+        // Add noise to the transform
+        addNoiseToTransform(coordTransform, coordTransformNoisy, transStdDev,
+                            rotDegStdDev);
 
         convertORSPCoordinates(orsp, orspPerturb, coordTransformNoisy);
         orspListPerturb.push_back(orspPerturb);
@@ -190,9 +201,13 @@ int main(int argc, char **argv) {
         // std::cout << "Perturbed" << orspPerturb.toString() << std::endl;
     }
 
+    // Velocity Prop
+    currWorldPose += transformToPose(coordTransform.inverse());
+
     // Solve optimization problem
-    bool succ = buildAndSolveRegistrationProblem(orspListPerturb, keyframeList,
-                                                 currWorldPose);
+    // bool succ = buildAndSolveRegistrationProblem(orspListPerturb,
+    // keyframeList,
+    //                                              currWorldPose);
 
     // Output the ORSP points for the perturbed keyframe too
     PoseTransform2D<double> optimTransf = poseToTransform(currWorldPose);
