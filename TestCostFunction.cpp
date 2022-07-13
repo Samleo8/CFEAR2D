@@ -34,7 +34,7 @@ namespace fs = std::filesystem;
  */
 enum PerturbStyle { TRANS_ONLY, ROT_ONLY, BOTH };
 
-const PerturbStyle perturbMode = PerturbStyle::TRANS_ONLY;
+const PerturbStyle perturbMode = PerturbStyle::BOTH;
 
 /**
  * @brief Print ORSP points to file, potentially allowing for transform
@@ -149,7 +149,9 @@ int main(int argc, char **argv) {
         case TRANS_ONLY:
             coordTransform = rotTransToTransform<double>(0, perturbTrans);
             break;
-        case ROT_ONLY: coordTransform.rotate(perturbRot); break;
+        case ROT_ONLY:
+            coordTransform = rotTransToTransform<double>(perturbRot, Vector2T<double>::Zero());
+            break;
     }
 
     // NOTE: the transform thus needs to be inverted because moving forward
