@@ -43,7 +43,7 @@ enum PerturbStyle { TRANS_ONLY, ROT_ONLY, BOTH };
  * @param[in] coordTransform 
  * 
  */
-void printORSPToFile(const ORSPVec<double> orspList,
+void printORSPToFile(const ORSPVec<double> &orspList,
                      const fs::path &orspBaseOutputPath, const int frameID,
                      const bool doTransform = false, 
                      const PoseTransform2D<double> &coordTransform = PoseTransform2D<double>::Identity()) {
@@ -121,7 +121,8 @@ int main(int argc, char **argv) {
     keyframeList.push_back(keyframe);
 
     // Output ORSP to file for debugging, if flag specified
-    fs::path orspBaseOutputPath(saveImagesPath);
+    fs::path orspBaseOutputPath("results");
+    orspBaseOutputPath /= argv[1];
     orspBaseOutputPath /= "orsp_debug";
 
     fs::create_directories(orspBaseOutputPath);
@@ -129,7 +130,7 @@ int main(int argc, char **argv) {
     // Output the ORSP points for the base keyframe too
     const ORSPVec<double> &orspList = currRImg.getORSPFeaturePoints();
     printORSPToFile(orspList, orspBaseOutputPath, startID, false);
-    
+
 
     return 0;
 }
