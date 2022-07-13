@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
     printORSPToFile(orspList, orspBaseOutputPath, startID, false);
 
     // Perturb points
-    const Vector2T<double> perturbTrans(2, 0.5);
+    const Vector2T<double> perturbTrans(2, -0.5);
     const double perturbRot = 0.5;
 
     PoseTransform2D<double> coordTransform;
@@ -159,8 +159,17 @@ int main(int argc, char **argv) {
         orspListPerturb.push_back(orspPerturb);
     }
 
+    // Solve optimization problem
+    bool succ = buildAndSolveRegistrationProblem(orspListPerturb, keyframeList,
+                                                 currWorldPose);
+
+    std::cout << "Prev" << std::endl << prevWorldPose << std::endl;
+    std::cout << "New" << std::endl << currWorldPose << std::endl;
+
     // Output the ORSP points for the perturbed keyframe too
-    printORSPToFile(orspListPerturb, orspBaseOutputPath, startID + 1, false);
+    PoseTransform2D<double> optimTransf = poseToTransform(currWorldPose);
+    printORSPToFile(orspList, orspBaseOutputPath, startID + 1, true,
+                    optimTransf);
 
     return 0;
 }
