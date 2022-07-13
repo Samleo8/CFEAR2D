@@ -29,6 +29,28 @@
 const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
                                             const KeyframeBuffer &aKFBuffer,
                                             Pose2D<double> &aPose) {
+    return buildAndSolveRegistrationProblem(aRImage.getORSPFeaturePoints(),
+                                            aKFBuffer, aPose);
+}
+
+/**
+ * @brief Build and solve registration problem using Ceres. This function
+ * creates a Ceres problem where it aims to minimise the cost of registration
+ * between a radar image and a set of keyframes
+ * @see RegistrationCostFunctor
+ * @note Residuals are associated with EACH point association (i.e. one residual
+ * block is created for each valid point association)
+ *
+ * @param[in] aRImgFeaturePts Feature points from radar image to register against
+ * @param[in] aKFBuffer Circular buffer of keyframes
+ * @param[in, out] aPose Pose of radar image in world frame. Input is a seed
+ * pose based on some velocity model, and output is pose found from optimization
+ * @return success
+ */
+const bool
+buildAndSolveRegistrationProblem(const ORSPVec<double> &aRImgFeaturePts,
+                                 const KeyframeBuffer &aKFBuffer,
+                                 Pose2D<double> &aPose) {
     // Create array (pointers) from params to feed into problem residual solver
     double positionArr[2] = { aPose.position[0], aPose.position[1] };
     double orientationArr[1] = { aPose.orientation };
@@ -59,8 +81,7 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
 
     // For each feature point in RImage, associate it with feature point in
     // keyframes
-    const ORSPVec<double> rImgFeaturePts = aRImage.getORSPFeaturePoints();
-    for (const ORSP<double> &featurePt : rImgFeaturePts) {
+    for (const ORSP<double> &featurePt : aRImgFeaturePts) {
         // Transform radar image feature point into world coordinates
         ORSP<double> featurePtWorld;
         convertORSPCoordinates<double>(featurePt, featurePtWorld,
@@ -100,7 +121,9 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     }
     else {
         // TODO: Should not happen?
-        std::cout << "ERROR! Failed to successfully associate frame with any keyframe points!" << std::endl;
+        std::cout << "ERROR! Failed to successfully associate frame with any "
+                     "keyframe points!"
+                  << std::endl;
         return false;
     }
 
@@ -147,9 +170,9 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
 
         std::cout << "New frame pose: " << aPose << std::endl;
 
-        #ifdef __DEBUG_OPTIMISATION__
+#ifdef __DEBUG_OPTIMISATION__
         std::cout << summary.FullReport() << std::endl;
-        #endif
+#endif
     }
     else {
         std::cout << "==================" << std::endl;
