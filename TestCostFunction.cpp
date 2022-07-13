@@ -1,6 +1,7 @@
 #include <ceres/ceres.h>
 #include <filesystem>
 #include <fstream>
+#include <random>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,6 +73,21 @@ void printORSPToFile(const ORSPVec<double> &orspList,
     }
 
     orspOutputFile.close();
+}
+
+void addNoiseToTransform(const PoseTransform2D<double> &aInputTransform,
+                         PoseTransform2D<double> &aOutputTransform,
+                         const double aNoiseStdDev = 0.1) {
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution(-2, 2);
+    double rot = distribution(generator) * ANGLE_DEG_TO_RAD;
+
+    // Generates random vector with values from -1 to 1
+    Vector2T<double> trans = Vector2T<double>::Random() * aNoiseStdDev;
+
+    PoseTransform2D<double> noiseTransform = rotTransToTransform(rot, trans);
+
+    aOutputTransform = noiseTransform * aInputTransform;
 }
 
 /**
@@ -150,7 +166,8 @@ int main(int argc, char **argv) {
             coordTransform = rotTransToTransform<double>(0, perturbTrans);
             break;
         case ROT_ONLY:
-            coordTransform = rotTransToTransform<double>(perturbRot, Vector2T<double>::Zero());
+            coordTransform = rotTransToTransform<double>(
+                perturbRot, Vector2T<double>::Zero());
             break;
     }
 
@@ -163,7 +180,10 @@ int main(int argc, char **argv) {
     orspListPerturb.reserve(orspList.size());
     for (const ORSP<double> &orsp : orspList) {
         ORSP<double> orspPerturb;
-        convertORSPCoordinates(orsp, orspPerturb, coordTransform);
+        PoseTransform2D<double> coordTransformNoisy;
+        addNoiseToTransform(coordTransform, coordTransformNoisy);
+
+        convertORSPCoordinates(orsp, orspPerturb, coordTransformNoisy);
         orspListPerturb.push_back(orspPerturb);
 
         // std::cout << "ORSP" << orsp.toString() << std::endl;
