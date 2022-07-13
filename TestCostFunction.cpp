@@ -137,8 +137,8 @@ int main(int argc, char **argv) {
 
     // Perturb points
     // NOTE: The perturbation is how much the robot has moved
-    const Vector2T<double> perturbTrans(5, -0.5);
-    const double perturbRot = 0.5;
+    const Vector2T<double> perturbTrans(1, -0.5);
+    const double perturbRot = 10 * ANGLE_DEG_TO_RAD;
 
     PoseTransform2D<double> coordTransform;
     switch (perturbMode) {
