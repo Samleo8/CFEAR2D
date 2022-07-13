@@ -45,11 +45,11 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
 
     // Get the ORSP point in world coordinates
     // NOTE: Need templated here, because Jacobian needed for transform
-    ORSP<T> worldORSPPoint;
     ORSP<T> featurePtCasted;
     mFeaturePoint.template cast<T>(featurePtCasted);
 
-    convertORSPCoordinates<T>(featurePtCasted, worldORSPPoint, rImgTransform);
+    ORSP<T> rImgFeaturePtWorld;
+    convertORSPCoordinates<T>(featurePtCasted, rImgFeaturePtWorld, rImgTransform);
 
     // Because of distance calculation, need to be templated also
     ORSP<T> keyframeFeaturePtCasted;
@@ -57,7 +57,7 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
 
     // Compute cost according to formula
     aResidualArray[0] = keyframeFeaturePtCasted.normal.dot(
-        worldORSPPoint.center - keyframeFeaturePtCasted.center);
+        rImgFeaturePtWorld.center - keyframeFeaturePtCasted.center);
 
     return true;
 }
