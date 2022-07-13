@@ -179,9 +179,9 @@ int main(int argc, char **argv) {
 
     // Noise constants
     const double transStdDev =
-        (perturbMode == PerturbStyle::ROT_ONLY) ? 0 : 0.1;
+        (perturbMode == PerturbStyle::ROT_ONLY) ? 0 : 0.25;
     const double rotDegStdDev =
-        (perturbMode == PerturbStyle::TRANS_ONLY) ? 0 : 5;
+        (perturbMode == PerturbStyle::TRANS_ONLY) ? 0 : 2;
 
     // Perturb the points by the transform
     ORSPVec<double> orspListPerturb;
@@ -205,9 +205,8 @@ int main(int argc, char **argv) {
     currWorldPose += transformToPose(coordTransform.inverse());
 
     // Solve optimization problem
-    // bool succ = buildAndSolveRegistrationProblem(orspListPerturb,
-    // keyframeList,
-    //                                              currWorldPose);
+    bool succ = buildAndSolveRegistrationProblem(orspListPerturb, keyframeList,
+                                                 currWorldPose);
 
     // Output the ORSP points for the perturbed keyframe too
     PoseTransform2D<double> optimTransf = poseToTransform(currWorldPose);
