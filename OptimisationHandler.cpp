@@ -105,6 +105,7 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
     }
 
     // For debugging of evaluation values
+#define __DEBUG_OPTIMISATION__
 #ifdef __DEBUG_OPTIMISATION__
 
     double cost = 0.0;
@@ -145,6 +146,10 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
         aPose.orientation = orientationArr[0];
 
         std::cout << "New frame pose: " << aPose << std::endl;
+
+        #ifdef __DEBUG_OPTIMISATION__
+        std::cout << summary.FullReport() << std::endl;
+        #endif
     }
     else {
         std::cout << "==================" << std::endl;
