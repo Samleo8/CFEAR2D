@@ -7,7 +7,7 @@ def parseORSPData(dataset: str, frame: int) -> (np.ndarray, np.ndarray):
     '''
     @brief Extracts center and normal information out of file containing ORSP points
     '''
-    filePath = os.path.join('results', str(dataset), 'orsp',
+    filePath = os.path.join('results', str(dataset), 'orsp_debug',
                             'orsp_' + str(frame) + '.txt')
     with open(filePath, 'r') as f:
         lines = f.readlines()
@@ -45,4 +45,4 @@ if __name__ == "__main__":
         prev_centers = centers
         prev_normals = normals
 
-        plt.waitforbuttonpress()
+        plt.show()
