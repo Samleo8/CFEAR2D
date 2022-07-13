@@ -10,6 +10,7 @@
 #include "Keyframe.hpp"
 #include "ORSP.hpp"
 #include "OptimisationHandler.hpp"
+#include "Pose2D.hpp"
 #include "PoseTransformHandler.hpp"
 #include "PoseTransformHandler.tpp"
 #include "RadarFeed.hpp"
@@ -33,20 +34,23 @@ namespace fs = std::filesystem;
  */
 enum PerturbStyle { TRANS_ONLY, ROT_ONLY, BOTH };
 
+const PerturbStyle perturbMode = PerturbStyle::TRANS_ONLY;
+
 /**
  * @brief Print ORSP points to file, potentially allowing for transform
- * 
- * @param[in] orspList 
- * @param[in] orspBaseOutputPath 
- * @param[in] frameID 
- * @param[in] doTransform 
- * @param[in] coordTransform 
- * 
+ *
+ * @param[in] orspList
+ * @param[in] orspBaseOutputPath
+ * @param[in] frameID
+ * @param[in] doTransform
+ * @param[in] coordTransform
+ *
  */
 void printORSPToFile(const ORSPVec<double> &orspList,
                      const fs::path &orspBaseOutputPath, const int frameID,
-                     const bool doTransform = false, 
-                     const PoseTransform2D<double> &coordTransform = PoseTransform2D<double>::Identity()) {
+                     const bool doTransform = false,
+                     const PoseTransform2D<double> &coordTransform =
+                         PoseTransform2D<double>::Identity()) {
     std::ofstream orspOutputFile;
 
     fs::path orspFileOutputPath(orspBaseOutputPath);
@@ -131,6 +135,32 @@ int main(int argc, char **argv) {
     const ORSPVec<double> &orspList = currRImg.getORSPFeaturePoints();
     printORSPToFile(orspList, orspBaseOutputPath, startID, false);
 
+    // Perturb points
+    const Vector2T<double> perturbTrans(2, 0.5);
+    const double perturbRot = 0.5;
+
+    PoseTransform2D<double> coordTransform;
+    switch (perturbMode) {
+        case BOTH:
+            coordTransform =
+                rotTransToTransform<double>(perturbRot, perturbTrans);
+            break;
+        case TRANS_ONLY:
+            coordTransform = rotTransToTransform<double>(0, perturbTrans);
+            break;
+        case ROT_ONLY: coordTransform.rotate(perturbRot); break;
+    }
+
+    ORSPVec<double> orspListPerturb;
+    orspListPerturb.reserve(orspList.size());
+    for (const ORSP<double> &orsp : orspList) {
+        ORSP<double> orspPerturb;
+        convertORSPCoordinates(orsp, orspPerturb, coordTransform);
+        orspListPerturb.push_back(orspPerturb);
+    }
+
+    // Output the ORSP points for the perturbed keyframe too
+    printORSPToFile(orspListPerturb, orspBaseOutputPath, startID + 1, false);
 
     return 0;
 }
