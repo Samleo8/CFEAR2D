@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DATASET_ID=${1:-0}
-TARGET=${2:-"debug"}
+TARGET=${2:-"keyframe"}
 START_IND=${3:-0}
 END_IND=${4:-10}
 
