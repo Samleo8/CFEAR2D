@@ -348,7 +348,7 @@ int main(int argc, char **argv) {
 
     // Keep finding frames
     while (feed.nextFrame()) {
-        size_t currFrameId = feed.getCurrentFrame();
+        size_t currFrameId = feed.getCurrentFrameIndex();
         if (currFrameId == endID) break;
 
         feed.getCurrentRadarImage(currRImg);
