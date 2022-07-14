@@ -221,6 +221,46 @@ void outputImgFromRImg(const RadarImage &aRImg, cv::Mat &outputImgORSP,
 }
 
 /**
+ * @brief Print ORSP points to file, potentially allowing for transform
+ *
+ * @param[in] orspList
+ * @param[in] orspBaseOutputPath
+ * @param[in] frameID
+ * @param[in] doTransform
+ * @param[in] coordTransform
+ *
+ */
+void printORSPToFile(const ORSPVec<double> &orspList,
+                     const fs::path &orspBaseOutputPath, const int frameID,
+                     const bool doTransform = false,
+                     const PoseTransform2D<double> &coordTransform =
+                         PoseTransform2D<double>::Identity()) {
+    std::ofstream orspOutputFile;
+
+    fs::path orspFileOutputPath(orspBaseOutputPath);
+    orspFileOutputPath /= "orsp_" + std::to_string(frameID) + ".txt";
+
+    orspOutputFile.open(orspFileOutputPath,
+                        std::ofstream::out | std::ofstream::trunc);
+
+    for (const ORSP<double> &orsp : orspList) {
+        ORSP<double> worldORSPPoint;
+        if (doTransform) {
+            convertORSPCoordinates<double>(orsp, worldORSPPoint,
+                                           coordTransform);
+        }
+        else {
+            worldORSPPoint.center = orsp.center;
+            worldORSPPoint.normal = orsp.normal;
+        }
+
+        orspOutputFile << worldORSPPoint.toString() << std::endl;
+    }
+
+    orspOutputFile.close();
+}
+
+/**
  * @brief Main function. Handles input from command line.
  *
  * Computes kstrong filtering and outputs a fancy image for easy saving. Can
@@ -302,21 +342,8 @@ int main(int argc, char **argv) {
 
     fs::create_directories(orspBaseOutputPath);
 
-    // Output the ORSP points for the base keyframe too
-    std::ofstream orspOutputFile;
-
-    fs::path orspFileOutputPath2(orspBaseOutputPath);
-    orspFileOutputPath2 /= "orsp_" + std::to_string(startID) + ".txt";
-
-    orspOutputFile.open(orspFileOutputPath2,
-                        std::ofstream::out | std::ofstream::trunc);
-
-    const ORSPVec<double> &orspList2 = currRImg.getORSPFeaturePoints();
-    for (const ORSP<double> &orsp : orspList2) {
-        orspOutputFile << orsp.toString() << std::endl;
-    }
-
-    orspOutputFile.close();
+    printORSPToFile(currRImg.getORSPFeaturePoints(), orspBaseOutputPath,
+                    startID, false);
 #endif
 
     // Keep finding frames
@@ -397,28 +424,12 @@ int main(int argc, char **argv) {
         }
 
 #ifdef DEBUG_ORSP
-        fs::path orspFileOutputPath(orspBaseOutputPath);
-        orspFileOutputPath /= "orsp_" + std::to_string(currFrameId) + ".txt";
+        PoseTransform2D<double> worldPoseTransform =
+            poseToTransform(currWorldPose);
 
-        orspOutputFile.open(orspFileOutputPath,
-                            std::ofstream::out | std::ofstream::trunc);
-
-        PoseTransform2D<double> worldPoseTransform = poseToTransform(currWorldPose);
-
-        const ORSPVec<double> &orspList = currRImg.getORSPFeaturePoints();
-        for (const ORSP<double> &orsp : orspList) {
-            ORSP<double> worldORSPPoint;
-            convertORSPCoordinates(orsp, worldORSPPoint, worldPoseTransform);
-
-            orspOutputFile << worldORSPPoint.toString() << std::endl;
-        }
-
-        orspOutputFile.close();
+        printORSPToFile(currRImg.getORSPFeaturePoints(), orspBaseOutputPath,
+                        startID, true, worldPoseTransform);
 #endif
-
-        // Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
-        // currWorldPose += deltaPose;
-        // Output ORSP coordinates to file
     }
 
     // Remember to close file
