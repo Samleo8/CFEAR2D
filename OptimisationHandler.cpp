@@ -107,7 +107,7 @@ buildAndSolveRegistrationProblem(const ORSPVec<double> &aRImgFeaturePts,
             // Only add residual block if association succeeds
             if (found) {
                 ceres::CostFunction *regCostFn =
-                    RegistrationCostFunctor::Create(featurePtWorld,
+                    RegistrationCostFunctor::Create(featurePt,
                                                     closestORSPPoint);
 
                 problem.AddResidualBlock(regCostFn, regLossFn, positionArr,
