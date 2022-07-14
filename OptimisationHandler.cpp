@@ -65,8 +65,12 @@ buildAndSolveRegistrationProblem(const ORSPVec<double> &aRImgFeaturePts,
     options.minimizer_type = ceres::LINE_SEARCH;
     options.line_search_direction_type = ceres::BFGS;
     options.max_num_iterations = 100;
-    options.minimizer_progress_to_stdout = true;
 
+#define __DEBUG_OPTIMISATION__
+#ifdef __DEBUG_OPTIMISATION__
+    options.minimizer_progress_to_stdout = true;
+#undef __DEBUG_OPTIMISATION__
+#endif
     ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
 
     // For each feature point, and keyframe, associate said feature point with a
@@ -130,9 +134,7 @@ buildAndSolveRegistrationProblem(const ORSPVec<double> &aRImgFeaturePts,
     }
 
     // For debugging of evaluation values
-#define __DEBUG_OPTIMISATION__
 #ifdef __DEBUG_OPTIMISATION__
-
     double cost = 0.0;
     std::vector<double> residuals;
     std::vector<double> gradients;
