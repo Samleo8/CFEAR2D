@@ -26,7 +26,7 @@ constexpr double DIST_STATIONARY_THRESH_SQ =
     DIST_STATIONARY_THRESH * DIST_STATIONARY_THRESH;
 
 // Flag for whether to output ORSP to file for plotting
-#define DEBUG_ORSP
+#define __DEBUG_ORSP__
 
 #ifndef OUT_BUFFER_SIZE
 #define OUT_BUFFER_SIZE 5000
@@ -336,7 +336,7 @@ int main(int argc, char **argv) {
 
     // Output ORSP to file for debugging, if flag specified
 
-#ifdef DEBUG_ORSP
+#ifdef __DEBUG_ORSP__
     fs::path orspBaseOutputPath(saveImagesPath);
     orspBaseOutputPath /= "orsp";
 
@@ -423,7 +423,7 @@ int main(int argc, char **argv) {
                       << std::endl;
         }
 
-#ifdef DEBUG_ORSP
+#ifdef __DEBUG_ORSP__
         PoseTransform2D<double> worldPoseTransform =
             poseToTransform(currWorldPose);
 
