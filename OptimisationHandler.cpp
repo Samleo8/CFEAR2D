@@ -66,7 +66,7 @@ buildAndSolveRegistrationProblem(const ORSPVec<double> &aRImgFeaturePts,
     options.line_search_direction_type = ceres::BFGS;
     options.max_num_iterations = 100;
 
-#define __DEBUG_OPTIMISATION__
+// #define __DEBUG_OPTIMISATION__
 #ifdef __DEBUG_OPTIMISATION__
     options.minimizer_progress_to_stdout = true;
 #undef __DEBUG_OPTIMISATION__

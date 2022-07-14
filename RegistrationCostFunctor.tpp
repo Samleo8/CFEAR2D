@@ -13,6 +13,8 @@
 #define __REGISTRATION_COST_FUNCTOR_TPP__
 
 #include "OptimisationHandler.hpp" // for findClosestORSPInSet
+#include <ceres/jet.h>
+#include <ostream>
 
 /**
  * @brief The key function of the cost functor. Inputs are in the form of
@@ -41,7 +43,8 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
                                          const T *const aOrientationArray,
                                          T *aResidualArray) const {
     // Get pose transform from input parameters
-    const PoseTransform2D<T> rImgTransform = paramsToTransform<T>(aPositionArray, aOrientationArray);
+    const PoseTransform2D<T> rImgTransform =
+        paramsToTransform<T>(aPositionArray, aOrientationArray);
 
     // Get the ORSP point in world coordinates
     // NOTE: Need templated here, because Jacobian needed for transform
@@ -49,7 +52,8 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     mFeaturePoint.template cast<T>(featurePtCasted);
 
     ORSP<T> rImgFeaturePtWorld;
-    convertORSPCoordinates<T>(featurePtCasted, rImgFeaturePtWorld, rImgTransform);
+    convertORSPCoordinates<T>(featurePtCasted, rImgFeaturePtWorld,
+                              rImgTransform);
 
     // Because of distance calculation, need to be templated also
     ORSP<T> keyframeFeaturePtCasted;
@@ -58,6 +62,13 @@ bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
     // Compute cost according to formula
     aResidualArray[0] = keyframeFeaturePtCasted.normal.dot(
         rImgFeaturePtWorld.center - keyframeFeaturePtCasted.center);
+
+// For debugging, print out the residuals
+#ifdef __DEBUG_RESIDUALS__
+#include <type_traits>
+    if constexpr (std::is_same<T, ceres::Jet<double, 3>>::value)
+        std::cout << aResidualArray[0].a << " " << std::flush;
+#endif
 
     return true;
 }
