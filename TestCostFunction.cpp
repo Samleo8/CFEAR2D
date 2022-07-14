@@ -35,7 +35,7 @@ namespace fs = std::filesystem;
  */
 enum PerturbStyle { TRANS_ONLY, ROT_ONLY, BOTH };
 
-const PerturbStyle perturbMode = PerturbStyle::BOTH;
+const PerturbStyle perturbMode = PerturbStyle::TRANS_ONLY;
 
 /**
  * @brief Print ORSP points to file, potentially allowing for transform
