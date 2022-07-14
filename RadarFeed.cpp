@@ -9,9 +9,6 @@
  */
 
 #include "RadarFeed.hpp"
-#include "Pose2D.hpp"
-#include <chrono>
-#include <filesystem>
 
 namespace fs = std::filesystem;
 
@@ -220,9 +217,147 @@ bool RadarFeed::getGroundTruth(RotTransData &aGroundTruth) const {
  * @param[in] aOutputToFile If desire to output to a file, specify the
  * dataset. -1 otherwise. Defaults to raw_output directory. purposes
  */
-void RadarFeed::run(const int aStartFrame, const int aEndFrame,
-                    const fs::path &aPoseOutputFilePath, const Pose2D<double> &aInitPose) {
-                        // TODO: port from test keyframe
+void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
+                    const fs::path &aPoseOutputFilePath,
+                    const Pose2D<double> &aInitPose) {
+    // TODO: port from test keyframe
+    // Load the first frame, which is always a keyframe
+    loadFrame(aStartFrameID);
+
+    // Make a reference to the internal feed image
+    // so we dont have to keep calling getCurrentRadarImage()
+    RadarImage &currRImg = mCurrentRImage;
+
+    // NOTE: Remember to compute oriented surface points
+    currRImg.performKStrong(K, Z_MIN);
+    currRImg.computeOrientedSurfacePoints();
+
+    // Saving of previous and current world pose
+    // (initial pose for previous frame)
+    Pose2D<double> currWorldPose(aInitPose);
+    Pose2D<double> prevWorldPose(currWorldPose);
+
+    // First image is always a keyframe. Push it to the
+    // buffer. Update the previous keyframe world pose used
+    // to deduce if another keyframe needs to be added
+    KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
+
+    Keyframe keyframe(currRImg, currWorldPose);
+    keyframeList.push_back(keyframe);
+
+    // Output the frames to a file
+    fs::path poseOutputPath(aPoseOutputFilePath);
+    fs::create_directories(poseOutputPath);
+
+    poseOutputPath /= "poses_" + std::to_string(aStartFrameID) + "_" +
+                      std::to_string(aEndFrameID) + ".txt";
+
+    std::ofstream poseOutputFile;
+    poseOutputFile.open(poseOutputPath,
+                        std::ofstream::out | std::ofstream::trunc);
+
+    // Output ORSP to file for debugging, if flag specified
+#ifdef __DEBUG_ORSP__
+    fs::path orspBaseOutputPath(saveImagesPath);
+    orspBaseOutputPath /= "orsp";
+
+    fs::create_directories(orspBaseOutputPath);
+
+    printORSPToFile(currRImg.getORSPFeaturePoints(), orspBaseOutputPath,
+                    aStartFrame, false);
+#endif
+
+    // Keep finding frames
+    while (nextFrame()) {
+        if (mCurrentFrameIdx == aEndFrameID) break;
+
+        // K-filtering and ORSP
+        currRImg.performKStrong(K, Z_MIN);
+        currRImg.computeOrientedSurfacePoints();
+
+        // Output image
+        // cv::Mat outputImgORSP;
+        // outputImgFromRImg(currRImg, outputImgORSP);
+
+        // Save world pose for velocity propagation later
+        prevWorldPose.copyFrom(currWorldPose);
+
+        // Ceres build and solve problem
+        const bool success = buildAndSolveRegistrationProblem(
+            currRImg, keyframeList, currWorldPose);
+
+        // TODO: What to do when registration fails?
+        if (!success) {
+            std::cout << "Registration failed!" << std::endl;
+            currWorldPose = prevWorldPose;
+            continue;
+        }
+
+        // Obtain transform from previous keyframe to
+        // current frame
+        PoseTransform2D<double> kf2FrameTransf = getTransformsBetweenPoses(
+            keyframeList.back().getPose(), currWorldPose);
+
+        // TODO: Add keyframe if necessary
+        Pose2D<double> kfDeltaPose = transformToPose<double>(kf2FrameTransf);
+        double kfDistSq = kfDeltaPose.position.squaredNorm();
+        double kfRot = std::abs(kfDeltaPose.orientation);
+
+        if (kfDistSq >= Keyframe::KF_DIST_THRESH_SQ ||
+            kfRot >= Keyframe::KF_ROT_THRESH) {
+            std::cout << "New keyframe added!" << std::endl;
+
+            Keyframe keyframe2(currRImg, currWorldPose);
+            keyframeList.push_back(keyframe2);
+
+            poseOutputFile << "kf ";
+        }
+
+        // Save pose to file
+        poseOutputFile << currWorldPose.toString() << std::endl;
+
+        // Obtain transform from current world pose to
+        // previous pose for velocity/seed pose propagation
+        PoseTransform2D<double> frame2FrameTransf =
+            getTransformsBetweenPoses(prevWorldPose, currWorldPose);
+
+        // NOTE: Stationary checking
+        // Move the pose by a constant velocity based on the
+        // previous frame But only if movement exceeds a
+        // certain threshold
+        double deltaDistSq = frame2FrameTransf.translation().squaredNorm();
+        if (deltaDistSq <= DIST_STATIONARY_THRESH_SQ) {
+            // TODO: Do we revert to previous pose or
+            // propagate by 0 velocity?
+            currWorldPose = prevWorldPose;
+
+            std::cout << "Stationary. Reverting back to "
+                         "previous pose."
+                      << std::endl
+                      << std::endl;
+        }
+        else {
+            // TODO: For 3D probably need to make this a
+            // transformation matrix operation
+            Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
+            currWorldPose += deltaPose;
+
+            std::cout << "Movement with delta: " << deltaPose.toString()
+                      << std::endl
+                      << std::endl;
+        }
+
+#ifdef __DEBUG_ORSP__
+        PoseTransform2D<double> worldPoseTransform =
+            poseToTransform(currWorldPose);
+
+        printORSPToFile(currRImg.getORSPFeaturePoints(), orspBaseOutputPath,
+                        aStartFrame, true, worldPoseTransform);
+#endif
+    }
+
+    // Remember to close file
+    poseOutputFile.close();
 
     return;
 }

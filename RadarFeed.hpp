@@ -21,6 +21,7 @@
 #define __RADAR_FEED_H__
 
 #include <Eigen/Geometry>
+#include <filesystem>
 #include <opencv2/opencv.hpp>
 #include <stdbool.h>
 #include <stdio.h>
@@ -28,6 +29,8 @@
 #include <string>
 #include <vector>
 
+#include "Keyframe.hpp"
+#include "OptimisationHandler.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarFeedHandler.hpp" // needed to handle file path and data
 #include "RadarImage.hpp"
@@ -51,9 +54,30 @@ namespace fs = std::filesystem;
  */
 class RadarFeed {
   private:
+    // CONSTANTS FOR SEQUENTIAL PROCESSING
+
     /** @brief Expected number of images in feed path, used for reserving vector
      * space */
     static const size_t EXPECTED_NUM_IMAGES = 8000;
+
+    /** @brief Filtering: number of points */
+    static constexpr size_t K = 12;
+
+    /** @brief Filtering: power min threshold */
+    static constexpr double Z_MIN = 55;
+
+    /** @brief Keyframe buffer size */
+    static constexpr int KF_BUFF_SIZE = 3;
+
+    /**
+     * @brief Threshold for checking how far the vehicle has to move before
+     * being counted as non stationary
+     */
+    static constexpr double DIST_STATIONARY_THRESH = 0.05; // 5cm
+
+    /** @brief Square of @see DIST_STATIONARY_THRESH for speed */
+    static constexpr double DIST_STATIONARY_THRESH_SQ =
+        DIST_STATIONARY_THRESH * DIST_STATIONARY_THRESH;
 
     /** @brief Current RadarImage in feed */
     RadarImage mCurrentRImage;
