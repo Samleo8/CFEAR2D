@@ -63,10 +63,12 @@ void printORSPToFile(const ORSPVec<double> &orspList,
     for (const ORSP<double> &orsp : orspList) {
         ORSP<double> worldORSPPoint;
         if (doTransform) {
-            convertORSPCoordinates(orsp, worldORSPPoint, coordTransform);
+            convertORSPCoordinates<double>(orsp, worldORSPPoint,
+                                           coordTransform);
         }
         else {
-            worldORSPPoint = orsp;
+            worldORSPPoint.center = orsp.center;
+            worldORSPPoint.normal = orsp.normal;
         }
 
         orspOutputFile << worldORSPPoint.toString() << std::endl;
@@ -131,7 +133,7 @@ int main(int argc, char **argv) {
 
     // Saving of previous and current world pose (initial pose for previous
     // frame)
-    Pose2D<double> currWorldPose(0, 0, 0);
+    Pose2D<double> currWorldPose(20, 50, 0.5);
     Pose2D<double> prevWorldPose(currWorldPose);
 
     // First image is always a keyframe. Push it to the buffer
@@ -173,6 +175,9 @@ int main(int argc, char **argv) {
             break;
     }
 
+    std::cout << "True Perturbaton: " << transformToPose<double>(coordTransform)
+              << std::endl;
+
     // NOTE: the transform thus needs to be inverted because moving forward
     // means that the feature points are shifted backwards
     coordTransform = coordTransform.inverse();
@@ -194,7 +199,7 @@ int main(int argc, char **argv) {
         addNoiseToTransform(coordTransform, coordTransformNoisy, transStdDev,
                             rotDegStdDev);
 
-        convertORSPCoordinates(orsp, orspPerturb, coordTransformNoisy);
+        convertORSPCoordinates<double>(orsp, orspPerturb, coordTransformNoisy);
         orspListPerturb.push_back(orspPerturb);
 
         // std::cout << "ORSP" << orsp.toString() << std::endl;
@@ -202,15 +207,25 @@ int main(int argc, char **argv) {
     }
 
     // Velocity Prop
-    currWorldPose += transformToPose(coordTransform.inverse());
+    PoseTransform2D<double> noisyPropTransform = coordTransform.inverse();
+    addNoiseToTransform(noisyPropTransform, noisyPropTransform, transStdDev,
+                        rotDegStdDev);
+    currWorldPose += transformToPose(noisyPropTransform);
+
+    Pose2D<double> currWorldPoseProp(currWorldPose);
+
+    printORSPToFile(orspListPerturb, orspBaseOutputPath, startID + 1, true,
+                    poseToTransform(currWorldPose));
 
     // Solve optimization problem
     bool succ = buildAndSolveRegistrationProblem(orspListPerturb, keyframeList,
                                                  currWorldPose);
 
     // Output the ORSP points for the perturbed keyframe too
-    PoseTransform2D<double> optimTransf = poseToTransform(currWorldPose);
-    printORSPToFile(orspListPerturb, orspBaseOutputPath, startID + 1, true,
+    PoseTransform2D<double> optimTransf =
+        poseToTransform(currWorldPoseProp) * poseToTransform(currWorldPose);
+
+    printORSPToFile(orspListPerturb, orspBaseOutputPath, startID + 2, true,
                     optimTransf);
 
     return 0;

@@ -17,7 +17,7 @@ if [[ $TARGET == "both" ]]; then
     ./run.sh $DATASET_ID radar $START_IND $END_IND
 elif [[ $TARGET == "debug" ]]; then
     ./build/TestCostFunction $DATASET_ID $START_IND
-    python plotter/parseORSP.py $DATASET_ID $START_IND $(( $START_IND + 2 ))
+    python plotter/parseORSP.py $DATASET_ID $START_IND $(( $START_IND + 3 ))
 elif [[ $TARGET == "keyframe" ]]; then
     ./build/TestKeyframe $DATASET_ID $START_IND $END_IND
     python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND

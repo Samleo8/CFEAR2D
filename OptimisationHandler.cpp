@@ -41,7 +41,8 @@ const bool buildAndSolveRegistrationProblem(const RadarImage &aRImage,
  * @note Residuals are associated with EACH point association (i.e. one residual
  * block is created for each valid point association)
  *
- * @param[in] aRImgFeaturePts Feature points from radar image to register against
+ * @param[in] aRImgFeaturePts Feature points from radar image to register
+ * against
  * @param[in] aKFBuffer Circular buffer of keyframes
  * @param[in, out] aPose Pose of radar image in world frame. Input is a seed
  * pose based on some velocity model, and output is pose found from optimization
@@ -65,6 +66,11 @@ buildAndSolveRegistrationProblem(const ORSPVec<double> &aRImgFeaturePts,
     options.line_search_direction_type = ceres::BFGS;
     options.max_num_iterations = 100;
 
+// #define __DEBUG_OPTIMISATION__
+#ifdef __DEBUG_OPTIMISATION__
+    options.minimizer_progress_to_stdout = true;
+#undef __DEBUG_OPTIMISATION__
+#endif
     ceres::LossFunction *regLossFn = new ceres::HuberLoss(HUBER_DELTA_DEFAULT);
 
     // For each feature point, and keyframe, associate said feature point with a
@@ -128,9 +134,7 @@ buildAndSolveRegistrationProblem(const ORSPVec<double> &aRImgFeaturePts,
     }
 
     // For debugging of evaluation values
-#define __DEBUG_OPTIMISATION__
 #ifdef __DEBUG_OPTIMISATION__
-
     double cost = 0.0;
     std::vector<double> residuals;
     std::vector<double> gradients;
