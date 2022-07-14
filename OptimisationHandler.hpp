@@ -40,6 +40,11 @@ buildAndSolveRegistrationProblem(const RadarImage &aRImage,
                                  const KeyframeBuffer &aKFBuffer,
                                  Pose2D<double> &aPose);
 
+[[nodiscard]] const bool
+buildAndSolveRegistrationProblem(const ORSPVec<double> &aRImgFeaturePts,
+                                 const KeyframeBuffer &aKFBuffer,
+                                 Pose2D<double> &aPose);
+
 // Templated helper functions. Implemented in OptimisationHandler.tpp
 template <typename T> T constrainAngle(const T &aAngleRad);
 

@@ -54,6 +54,28 @@ set_property(TARGET TestKeyframe PROPERTY C_STANDARD 11)
 set_property(TARGET TestKeyframe PROPERTY CXX_STANDARD 17)
 target_link_libraries(TestKeyframe ${OpenCV_LIBS} ${CERES_LIBRARIES})
 
+# Debugging of Cost Function
+add_executable(
+  TestCostFunction
+  CVColor.cpp
+  ImageProcessing.cpp
+  PointPolar.cpp 
+  RadarImageHandler.cpp
+  Keyframe.cpp
+  RadarImage.cpp
+  RegistrationCostFunctor.cpp
+  OptimisationHandler.cpp
+  OrientedSurfacePointsHandler.cpp
+  OdometryVisualiser.cpp
+  RadarFeedHandler.cpp
+  RadarFeed.cpp
+  TestCostFunction.cpp
+)
+set_property(TARGET TestCostFunction PROPERTY C_STANDARD 11)
+set_property(TARGET TestCostFunction PROPERTY CXX_STANDARD 17)
+target_link_libraries(TestCostFunction ${OpenCV_LIBS} ${CERES_LIBRARIES})
+
+
 # Main Visualiser Testing module
 # add_executable(
 #   TestVisualiser

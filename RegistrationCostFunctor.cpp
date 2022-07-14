@@ -15,29 +15,29 @@
 /**
  * @brief Constructor for RegistrationCostFunctor::RegistrationCostFunctor
  *
- * @param[in] aRImg Radar image to register against
- * @param[in] aKFBuffer Circular buffer of keyframes
+ * @param[in] aFeaturePoint Feature point in LOCAL/IMAGE coordinates
+ * @param[in] aKeyframeFeaturePoint Keyframe feature point in WORLD coordinates
  */
 
 RegistrationCostFunctor::RegistrationCostFunctor(
-    const ORSP<double> &aFeaturePoint,
-    const ORSP<double> &aKeyframeFeaturePoint)
-    : mFeaturePoint(aFeaturePoint),
-      mKeyframeFeaturePoint(aKeyframeFeaturePoint){};
+    const ORSP<double> &aFeaturePointLocal,
+    const ORSP<double> &aKeyframeFeaturePointWorld)
+    : mFeaturePointLocal(aFeaturePointLocal),
+      mKeyframeFeaturePointWorld(aKeyframeFeaturePointWorld){};
 
 /**
  * @brief Static creation of cost function with new cost functor.
  * Ceres should handle ownership.
  *
- * @param[in] aRImg Radar image to register against
- * @param[in] aKFBuffer Circular buffer of keyframes
+ * @param[in] aFeaturePointLocal Feature point in LOCAL/IMAGE coordinates
+ * @param[in] aKeyframeFeaturePointWorld Keyframe feature point in WORLD coordinates
  * @return ceres::CostFunction Ceres cost function
  */
 ceres::CostFunction *
-RegistrationCostFunctor::Create(const ORSP<double> &aFeaturePoint,
-                                const ORSP<double> &aKeyframeFeaturePoint) {
+RegistrationCostFunctor::Create(const ORSP<double> &aFeaturePointLocal,
+                                const ORSP<double> &aKeyframeFeaturePointWorld) {
     return (new ceres::AutoDiffCostFunction<
             RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
             REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
-        new RegistrationCostFunctor(aFeaturePoint, aKeyframeFeaturePoint)));
+        new RegistrationCostFunctor(aFeaturePointLocal, aKeyframeFeaturePointWorld)));
 }

@@ -12,7 +12,8 @@
 #ifndef __REGISTRATION_COST_FUNCTOR_TPP__
 #define __REGISTRATION_COST_FUNCTOR_TPP__
 
-#include "OptimisationHandler.hpp" // for findClosestORSPInSet
+#include <ceres/jet.h>
+#include <ostream>
 
 /**
  * @brief The key function of the cost functor. Inputs are in the form of
@@ -40,24 +41,34 @@ template <typename T>
 bool RegistrationCostFunctor::operator()(const T *const aPositionArray,
                                          const T *const aOrientationArray,
                                          T *aResidualArray) const {
-    // Get pose transform from input parameters
-    const PoseTransform2D<T> rImgTransform = paramsToTransform<T>(aPositionArray, aOrientationArray);
+    // Get local to world transform from input parameters
+    const PoseTransform2D<T> rImgL2WTransform =
+        paramsToTransform<T>(aPositionArray, aOrientationArray);
 
-    // Get the ORSP point in world coordinates
-    // NOTE: Need templated here, because Jacobian needed for transform
-    ORSP<T> worldORSPPoint;
-    ORSP<T> featurePtCasted;
-    mFeaturePoint.template cast<T>(featurePtCasted);
+    // NOTE: Need casted/templated coordinate here, because Jacobian needed for
+    // transform
+    ORSP<T> featurePtLocalCasted;
+    mFeaturePointLocal.template cast<T>(featurePtLocalCasted);
 
-    convertORSPCoordinates<T>(featurePtCasted, worldORSPPoint, rImgTransform);
+    // Get the radar image ORSP point in world coordinates
+    ORSP<T> rImgFeaturePtWorld;
+    convertORSPCoordinates<T>(featurePtLocalCasted, rImgFeaturePtWorld,
+                              rImgL2WTransform);
 
-    // Because of distance calculation, need to be templated also
-    ORSP<T> keyframeFeaturePtCasted;
-    mKeyframeFeaturePoint.template cast<T>(keyframeFeaturePtCasted);
+    // Because of distance calculation, need to be casted/templated also
+    ORSP<T> keyframeFeaturePtWorldCasted;
+    mKeyframeFeaturePointWorld.template cast<T>(keyframeFeaturePtWorldCasted);
 
     // Compute cost according to formula
-    aResidualArray[0] = keyframeFeaturePtCasted.normal.dot(
-        worldORSPPoint.center - keyframeFeaturePtCasted.center);
+    aResidualArray[0] = keyframeFeaturePtWorldCasted.normal.dot(
+        rImgFeaturePtWorld.center - keyframeFeaturePtWorldCasted.center);
+
+// For debugging, print out the residuals
+#ifdef __DEBUG_RESIDUALS__
+#include <type_traits>
+    if constexpr (std::is_same<T, ceres::Jet<double, 3>>::value)
+        std::cout << aResidualArray[0].a << " " << std::flush;
+#endif
 
     return true;
 }

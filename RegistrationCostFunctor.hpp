@@ -42,11 +42,11 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
  */
 class RegistrationCostFunctor {
   private:
-    /** @brief Feature point from radar image to optimise */
-    const ORSP<double> mFeaturePoint;
+    /** @brief Feature point from radar image to optimise, in LOCAL/IMAGE coordinates */
+    const ORSP<double> mFeaturePointLocal;
 
-    /** @brief Associated feature point from keyframe */
-    const ORSP<double> mKeyframeFeaturePoint;
+    /** @brief Associated feature point from keyframe, in WORLD coordinates */
+    const ORSP<double> mKeyframeFeaturePointWorld;
 
   public:
     // Constructors
