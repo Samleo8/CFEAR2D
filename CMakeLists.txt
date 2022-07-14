@@ -75,27 +75,23 @@ set_property(TARGET TestCostFunction PROPERTY C_STANDARD 11)
 set_property(TARGET TestCostFunction PROPERTY CXX_STANDARD 17)
 target_link_libraries(TestCostFunction ${OpenCV_LIBS} ${CERES_LIBRARIES})
 
-
-# Main Visualiser Testing module
-# add_executable(
-#   TestVisualiser
-#   CVColor.cpp
-#   OdometryVisualiser.cpp
-#   ImageProcessing.cpp
-#   PointPolar.cpp 
-#   RadarImageHandler.cpp
-#   RadarImage.cpp
-#   PoseGraph.cpp
-#   RadarFeedHandler.cpp
-#   RadarFeed.cpp
-#   TestVisualiser.cpp)
-# set_property(TARGET TestVisualiser PROPERTY CXX_STANDARD 17)
-
-# OpenMP Linking
-# if(OpenMP_CXX_FOUND)
-#   target_link_libraries(
-#     TestVisualiser PUBLIC OpenMP::OpenMP_C OpenMP::OpenMP_CXX ${OpenCV_LIBS}
-#                           ${CERES_LIBRARIES})
-# else()
-#   target_link_libraries(TestVisualiser ${OpenCV_LIBS} ${CERES_LIBRARIES})
-# endif()
+# Main CFEAR Running Module
+add_executable(
+  RunCFEAR
+  CVColor.cpp
+  ImageProcessing.cpp
+  PointPolar.cpp 
+  RadarImageHandler.cpp
+  Keyframe.cpp
+  RadarImage.cpp
+  RegistrationCostFunctor.cpp
+  OptimisationHandler.cpp
+  OrientedSurfacePointsHandler.cpp
+  OdometryVisualiser.cpp
+  RadarFeedHandler.cpp
+  RadarFeed.cpp
+  RunCFEAR.cpp
+)
+set_property(TARGET RunCFEAR PROPERTY C_STANDARD 11)
+set_property(TARGET RunCFEAR PROPERTY CXX_STANDARD 17)
+target_link_libraries(RunCFEAR ${OpenCV_LIBS} ${CERES_LIBRARIES})

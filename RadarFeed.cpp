@@ -151,7 +151,7 @@ const bool RadarFeed::loadFrame(const size_t aFrameIndex) {
 
     // TODO: Possibly load a new image each time
     mCurrentRImage.loadImage(mImagePaths[aFrameIndex]);
-    mCurrentRImage.preprocessImage();
+    mCurrentRImage.preprocessImages();
 
     mCurrentFrameIdx = aFrameIndex;
 
@@ -214,13 +214,14 @@ bool RadarFeed::getGroundTruth(RotTransData &aGroundTruth) const {
  * @param[in] aStartFrame Frame to start from
  * @param[in] aEndFrame Frame to end at. Negative value for all the way at
  * the end
- * @param[in] aOutputToFile If desire to output to a file, specify the
- * dataset. -1 otherwise. Defaults to raw_output directory. purposes
+ * @param[in] aPoseOutputFilePath Path to file to write pose data to
+ * @param[in] aInitPose Initial pose to start at, world coordinates
  */
 void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
                     const fs::path &aPoseOutputFilePath,
                     const Pose2D<double> &aInitPose) {
-    // TODO: port from test keyframe
+    // TODO: Handle (and maybe compare) GT poses 
+
     // Load the first frame, which is always a keyframe
     loadFrame(aStartFrameID);
 
@@ -247,11 +248,11 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
 
     // Output the frames to a file
     fs::path poseOutputPath(aPoseOutputFilePath);
-    fs::create_directories(poseOutputPath);
 
     poseOutputPath /= "poses_" + std::to_string(aStartFrameID) + "_" +
                       std::to_string(aEndFrameID) + ".txt";
 
+    // Open file stream for writing
     std::ofstream poseOutputFile;
     poseOutputFile.open(poseOutputPath,
                         std::ofstream::out | std::ofstream::trunc);
@@ -356,7 +357,7 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
 #endif
     }
 
-    // Remember to close file
+    // Close file stream
     poseOutputFile.close();
 
     return;

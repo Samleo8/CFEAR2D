@@ -131,7 +131,7 @@ class RadarFeed {
     bool getGroundTruth(RotTransData &aGroundTruth, const size_t aIndex) const;
 
     // Sequential Processing or Feed
-    void run(const int aStartFrame, const int aEndFrame,
+    void run(const int aStartFrameID, const int aEndFrameID,
              const fs::path &aPoseOutputFilePath,
              const Pose2D<double> &aInitPose = Pose2D<double>(0, 0, 0));
 };
