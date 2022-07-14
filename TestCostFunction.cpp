@@ -203,6 +203,8 @@ int main(int argc, char **argv) {
 
     // Velocity Prop
     currWorldPose += transformToPose(coordTransform.inverse());
+    printORSPToFile(orspListPerturb, orspBaseOutputPath, startID + 1, true,
+                    poseToTransform(currWorldPose));
 
     // Solve optimization problem
     bool succ = buildAndSolveRegistrationProblem(orspListPerturb, keyframeList,
@@ -210,7 +212,7 @@ int main(int argc, char **argv) {
 
     // Output the ORSP points for the perturbed keyframe too
     PoseTransform2D<double> optimTransf = poseToTransform(currWorldPose);
-    printORSPToFile(orspListPerturb, orspBaseOutputPath, startID + 1, true,
+    printORSPToFile(orspListPerturb, orspBaseOutputPath, startID + 2, true,
                     optimTransf);
 
     return 0;
