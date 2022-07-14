@@ -375,6 +375,12 @@ int main(int argc, char **argv) {
             continue;
         }
 
+        // TODO: It seems that currWorldPose output is a relative pose when it
+        // should be absolute?
+        PoseTransform2D<double> frame2FrameTransf =
+            poseToTransform(currWorldPose);
+        currWorldPose = transformToPose(frame2FrameTransf * poseToTransform<double>(prevWorldPose));
+
         // Obtain transform from previous keyframe to current frame
         PoseTransform2D<double> kf2FrameTransf = getTransformsBetweenPoses(
             keyframeList.back().getPose(), currWorldPose);
@@ -399,8 +405,8 @@ int main(int argc, char **argv) {
 
         // Obtain transform from current world pose to previous pose for
         // velocity/seed pose propagation
-        PoseTransform2D<double> frame2FrameTransf =
-            getTransformsBetweenPoses(prevWorldPose, currWorldPose);
+        // PoseTransform2D<double> frame2FrameTransf =
+        //     getTransformsBetweenPoses(prevWorldPose, currWorldPose);
 
         // NOTE: Stationary checking
         // Move the pose by a constant velocity based on the previous frame
