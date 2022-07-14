@@ -13,8 +13,8 @@ fi
 echo "[Dataset $DATASET_ID]"
 
 if [[ $TARGET == "both" ]]; then
-    ./run.sh $DATASET_ID keyframe $START_IND $END_IND
-    ./run.sh $DATASET_ID radar $START_IND $END_IND
+    ./scripts/run.sh $DATASET_ID keyframe $START_IND $END_IND
+    ./scripts/run.sh $DATASET_ID radar $START_IND $END_IND
 elif [[ $TARGET == "debug" ]]; then
     ./build/TestCostFunction $DATASET_ID $START_IND
     python plotter/parseORSP.py $DATASET_ID $START_IND $(( $START_IND + 3 ))
