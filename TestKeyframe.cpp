@@ -415,6 +415,7 @@ int main(int argc, char **argv) {
                       << std::endl;
         }
         else {
+            // TODO: For 3D probably need to make this a transformation matrix operation
             Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
             currWorldPose += deltaPose;
 
