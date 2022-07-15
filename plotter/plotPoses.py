@@ -34,6 +34,7 @@ def plotPoses(poses: np.ndarray, show: bool = False):
 
 def plotPosesVideo(poses: np.ndarray,
                    imagePaths: np.ndarray = None,
+                   startInd: int = 0,
                    startFrame: int = 0,
                    pauseInterval: float = 0.05):
     N = poses.shape[0]
@@ -41,12 +42,12 @@ def plotPosesVideo(poses: np.ndarray,
     rows = 1
     cols = 1 if imagePaths is None else 2
 
-    for i in range(1, N):
+    for i in range(startFrame - startInd + 1, N):
         plt.clf()
-        plt.suptitle(f'Frame {startFrame + i}')
+        plt.suptitle(f'Frame {startInd + i}')
 
         plt.subplot(rows, cols, 1)
-        plt.title('Poses')
+        plt.title(f'Pose: {poses[i, :-1]}')
         plotPoses(poses[:i + 1, :], show=False)
 
         if imagePaths is not None:
