@@ -293,23 +293,24 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         // Move the pose by a constant velocity based on the
         // previous frame But only if movement exceeds a
         // certain threshold
-        Pose2D<double> deltaPose = transformToPose<double>(frame2FrameTransf);
-        double f2fDistSq = deltaPose.position.squaredNorm();
-        double f2fRotRad = std::abs(deltaPose.orientation);
+        Pose2D<double> f2fDeltaPose =
+            transformToPose<double>(frame2FrameTransf);
+        double f2fDistSq = f2fDeltaPose.position.squaredNorm();
+        double f2fRotRad = std::abs(f2fDeltaPose.orientation);
 
-        if (f2fDistSq > DIST_STATIONARY_THRESH_SQ ||
+        if (!PERFORM_STATIONARY_CHECK ||
+            f2fDistSq > DIST_STATIONARY_THRESH_SQ ||
             f2fRotRad > ROT_STATIONARY_THRESH_RAD) {
             // TODO: For 3D probably need to make this a
             // transformation matrix operation
-            currWorldPose += deltaPose;
+            currWorldPose += f2fDeltaPose;
 
-            std::cout << "Movement with delta: " << deltaPose.toString()
+            std::cout << "Movement with delta: " << f2fDeltaPose.toString()
                       << std::endl
                       << std::endl;
         }
         else {
-            // TODO: Do we revert to previous pose or
-            // propagate by 0 velocity?
+            // TODO: Do we revert to previous pose or propagate by 0 velocity?
             currWorldPose = prevWorldPose;
 
             std::cout << "Stationary. Reverting back to "

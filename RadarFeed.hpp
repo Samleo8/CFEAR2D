@@ -70,16 +70,17 @@ class RadarFeed {
     /** @brief Keyframe buffer size */
     static constexpr int KF_BUFF_SIZE = 3;
 
+    /** @brief Whether to perform stationary check on keyframes
+    */
+    static constexpr bool PERFORM_STATIONARY_CHECK = true;
+
     /**
-     * @brief Rotation threshold for checking how far the vehicle has to turn
-     * before being counted as non stationary
-     * @note In radians
+     * @brief Rotation threshold for statiionary checking, in radians
      */
     static constexpr double ROT_STATIONARY_THRESH_RAD = 1.5 * ANGLE_DEG_TO_RAD;
 
     /**
-     * @brief Distance threshold for checking how far the vehicle has to
-     * move before being counted as non stationary
+     * @brief Distance threshold for stationary checking, in metres
      */
     static constexpr double DIST_STATIONARY_THRESH = 0.05; // 5cm
 
