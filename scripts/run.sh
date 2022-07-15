@@ -15,7 +15,7 @@ echo "[Dataset $DATASET_ID]"
 if [[ $TARGET == "both" ]]; then
     ./scripts/run.sh $DATASET_ID keyframe $START_IND $END_IND
     ./scripts/run.sh $DATASET_ID radar $START_IND $END_IND
-elif [[ $TARGET == "main" || $TARGET == "cfear" ]]; then
+elif [[ $TARGET == "main" || $TARGET == "cfear" || $TARGET == "feed" ]]; then
     ./build/RunCFEAR $DATASET_ID $START_IND $END_IND
     python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
 elif [[ $TARGET == "debug" ]]; then
@@ -24,7 +24,7 @@ elif [[ $TARGET == "debug" ]]; then
 elif [[ $TARGET == "keyframe" ]]; then
     ./build/TestKeyframe $DATASET_ID $START_IND $END_IND
     python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
-elif [[ $TARGET == "radar" ]]; then
+elif [[ $TARGET == "radar" || $TARGET == "video" ]]; then
     for ((IMG_IND = $START_IND; IMG_IND <= $END_IND; IMG_IND++)); do
         echo " > Running on image $IMG_IND"
         ./build/TestRadar $DATASET_ID $IMG_IND 1 || exit 1
