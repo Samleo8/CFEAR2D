@@ -1,4 +1,3 @@
-from tracemalloc import start
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -32,6 +31,21 @@ def plotPoses(poses: np.ndarray, show: bool = False):
     return
 
 
+def percentCenterCrop(img: np.ndarray, percent=0.7) -> np.ndarray:
+    '''
+    @brief Zoom crop a percent of an image, from center
+    @param[in] img Image to crop
+    @param[in] percent Percent to crop. Larger = more zoom
+    
+    @return Cropped image
+    '''
+    h, w = img.shape[:2]
+    h_crop = int(h * percent / 2)
+    w_crop = int(w * percent / 2)
+
+    return img[h_crop:-h_crop, w_crop:-w_crop, :]
+
+
 def plotPosesVideo(poses: np.ndarray,
                    imagePaths: np.ndarray = None,
                    startInd: int = 0,
@@ -52,8 +66,9 @@ def plotPosesVideo(poses: np.ndarray,
 
         if imagePaths is not None:
             plt.subplot(rows, cols, 2)
-            plt.title('Radar Image')
-            plt.imshow(plt.imread(imagePaths[i]))
+            plt.title('Radar Image (Zoomed)')
+            img = plt.imread(imagePaths[i])
+            plt.imshow(percentCenterCrop(img), aspect='auto')
             plt.axis('off')
 
         plt.tight_layout()
