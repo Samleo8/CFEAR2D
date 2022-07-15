@@ -307,6 +307,31 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
 
             std::cout << "Movement with delta: " << f2fDeltaPose.toString()
                       << std::endl;
+
+            /*******************************************
+             * Keyframing check
+             *******************************************/
+
+            // Obtain transform from previous keyframe to
+            // current frame
+            PoseTransform2D<double> kf2FrameTransf = getTransformsBetweenPoses(
+                keyframeList.back().getPose(), currWorldPose);
+
+            // Add keyframe if exceeds translation or rotation requirements
+            Pose2D<double> kfDeltaPose =
+                transformToPose<double>(kf2FrameTransf);
+            double kfDistSq = kfDeltaPose.position.squaredNorm();
+            double kfRotRad = std::abs(kfDeltaPose.orientation);
+
+            if (kfDistSq >= Keyframe::KF_DIST_THRESH_SQ ||
+                kfRotRad >= Keyframe::KF_ROT_THRESH_RAD) {
+                std::cout << "New keyframe added!" << std::endl;
+
+                Keyframe keyframe2(mCurrentRImage, currWorldPose);
+                keyframeList.push_back(keyframe2);
+
+                poseOutputFile << " kf";
+            }
         }
         else {
             // TODO: Do we revert to previous pose or propagate by 0 velocity?
@@ -317,33 +342,9 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
                       << std::endl;
         }
 
-        /*******************************************
-         * Keyframing
-         *******************************************/
-
-        // Obtain transform from previous keyframe to
-        // current frame
-        PoseTransform2D<double> kf2FrameTransf = getTransformsBetweenPoses(
-            keyframeList.back().getPose(), currWorldPose);
-
-        // Add keyframe if exceeds translation or rotation requirements
-        Pose2D<double> kfDeltaPose = transformToPose<double>(kf2FrameTransf);
-        double kfDistSq = kfDeltaPose.position.squaredNorm();
-        double kfRotRad = std::abs(kfDeltaPose.orientation);
-
-        if (kfDistSq >= Keyframe::KF_DIST_THRESH_SQ ||
-            kfRotRad >= Keyframe::KF_ROT_THRESH_RAD) {
-            std::cout << "New keyframe added!" << std::endl;
-
-            Keyframe keyframe2(mCurrentRImage, currWorldPose);
-            keyframeList.push_back(keyframe2);
-
-            poseOutputFile << " kf";
-        }
-
         // Printing stuff
         std::cout << std::endl;
-        
+
         poseOutputFile << std::endl;
     }
 
