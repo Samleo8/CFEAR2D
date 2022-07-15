@@ -247,6 +247,10 @@ void RadarImage::clearORSPInfo() {
     mORSPFeaturePoints.clear();
 
     // Clear grid information
-    // mORSPGrid.clear();
-    // mORSPCentroidGrid
+    for (size_t i = 0; i < ORSP_GRID_N; i++) {
+        for (size_t j = 0; j < ORSP_GRID_N; j++) {
+            mORSPGrid[i][j].clear();
+            mORSPCentroidGrid[i][j].setZero();
+        }
+    }
 }
