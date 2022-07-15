@@ -34,6 +34,7 @@
 #include "PoseTransformHandler.hpp"
 #include "RadarFeedHandler.hpp" // needed to handle file path and data
 #include "RadarImage.hpp"
+#include "TransformDefines.hpp"
 
 namespace fs = std::filesystem;
 
@@ -70,8 +71,15 @@ class RadarFeed {
     static constexpr int KF_BUFF_SIZE = 3;
 
     /**
-     * @brief Threshold for checking how far the vehicle has to move before
-     * being counted as non stationary
+     * @brief Rotation threshold for checking how far the vehicle has to turn
+     * before being counted as non stationary
+     * @note In radians
+     */
+    static constexpr double ROT_STATIONARY_THRESH_RAD = 1.5 * ANGLE_DEG_TO_RAD;
+
+    /**
+     * @brief Distance threshold for checking how far the vehicle has to
+     * move before being counted as non stationary
      */
     static constexpr double DIST_STATIONARY_THRESH = 0.05; // 5cm
 

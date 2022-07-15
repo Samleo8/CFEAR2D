@@ -254,17 +254,6 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
     poseOutputFile.open(poseOutputPath,
                         std::ofstream::out | std::ofstream::trunc);
 
-    // Output ORSP to file for debugging, if flag specified
-#ifdef __DEBUG_ORSP__
-    fs::path orspBaseOutputPath(saveImagesPath);
-    orspBaseOutputPath /= "orsp";
-
-    fs::create_directories(orspBaseOutputPath);
-
-    printORSPToFile(currRImg.getORSPFeaturePoints(), orspBaseOutputPath,
-                    aStartFrame, false);
-#endif
-
     // Keep finding frames
     while (nextFrame()) {
         if (mCurrentFrameIdx == aEndFrameID) break;
@@ -292,13 +281,13 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         PoseTransform2D<double> kf2FrameTransf = getTransformsBetweenPoses(
             keyframeList.back().getPose(), currWorldPose);
 
-        // TODO: Add keyframe if necessary
+        // Add keyframe if exceeds translation or rotation requirements
         Pose2D<double> kfDeltaPose = transformToPose<double>(kf2FrameTransf);
         double kfDistSq = kfDeltaPose.position.squaredNorm();
-        double kfRot = std::abs(kfDeltaPose.orientation);
+        double kfRotRad = std::abs(kfDeltaPose.orientation);
 
         if (kfDistSq >= Keyframe::KF_DIST_THRESH_SQ ||
-            kfRot >= Keyframe::KF_ROT_THRESH) {
+            kfRotRad >= Keyframe::KF_ROT_THRESH_RAD) {
             std::cout << "New keyframe added!" << std::endl;
 
             Keyframe keyframe2(mCurrentRImage, currWorldPose);
@@ -319,8 +308,20 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         // Move the pose by a constant velocity based on the
         // previous frame But only if movement exceeds a
         // certain threshold
-        double deltaDistSq = frame2FrameTransf.translation().squaredNorm();
-        if (deltaDistSq <= DIST_STATIONARY_THRESH_SQ) {
+        Pose2D<double> deltaPose = transformToPose<double>(frame2FrameTransf);
+        double f2fDistSq = kfDeltaPose.position.squaredNorm();
+        double f2fRotRad = std::abs(kfDeltaPose.orientation);
+
+        if (f2fDistSq > DIST_STATIONARY_THRESH_SQ || f2fRotRad > ROT_STATIONARY_THRESH_RAD) {
+            // TODO: For 3D probably need to make this a
+            // transformation matrix operation
+            currWorldPose += deltaPose;
+
+            std::cout << "Movement with delta: " << deltaPose.toString()
+                      << std::endl
+                      << std::endl;
+        }
+        else {
             // TODO: Do we revert to previous pose or
             // propagate by 0 velocity?
             currWorldPose = prevWorldPose;
@@ -330,24 +331,6 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
                       << std::endl
                       << std::endl;
         }
-        else {
-            // TODO: For 3D probably need to make this a
-            // transformation matrix operation
-            Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
-            currWorldPose += deltaPose;
-
-            std::cout << "Movement with delta: " << deltaPose.toString()
-                      << std::endl
-                      << std::endl;
-        }
-
-#ifdef __DEBUG_ORSP__
-        PoseTransform2D<double> worldPoseTransform =
-            poseToTransform(currWorldPose);
-
-        printORSPToFile(currRImg.getORSPFeaturePoints(), orspBaseOutputPath,
-                        aStartFrame, true, worldPoseTransform);
-#endif
     }
 
     // Close file stream

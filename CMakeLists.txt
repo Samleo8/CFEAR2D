@@ -18,20 +18,20 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS)
 add_compile_definitions(EIGEN_DONT_PARALLELIZE)
 
 # Radar Testing Module
-# add_executable(
-#   TestRadar
-#   CVColor.cpp
-#   ImageProcessing.cpp
-#   PointPolar.cpp 
-#   RadarImageHandler.cpp
-#   RadarImage.cpp
-#   Keyframe.cpp
-#   OrientedSurfacePointsHandler.cpp
-#   TestRadar.cpp
-# )
-# set_property(TARGET TestRadar PROPERTY C_STANDARD 11)
-# set_property(TARGET TestRadar PROPERTY CXX_STANDARD 17)
-# target_link_libraries(TestRadar ${OpenCV_LIBS})
+add_executable(
+  TestRadar
+  CVColor.cpp
+  ImageProcessing.cpp
+  PointPolar.cpp 
+  RadarImageHandler.cpp
+  RadarImage.cpp
+  Keyframe.cpp
+  OrientedSurfacePointsHandler.cpp
+  TestRadar.cpp
+)
+set_property(TARGET TestRadar PROPERTY C_STANDARD 11)
+set_property(TARGET TestRadar PROPERTY CXX_STANDARD 17)
+target_link_libraries(TestRadar ${OpenCV_LIBS})
 
 # # Keyframe Testing Module
 # add_executable(

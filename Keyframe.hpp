@@ -72,7 +72,7 @@ class Keyframe {
      * as new keyframe
      * @todo Move to the radar feed file?
      */
-    static constexpr double KF_ROT_THRESH = 5 * ANGLE_DEG_TO_RAD;
+    static constexpr double KF_ROT_THRESH_RAD = 5 * ANGLE_DEG_TO_RAD;
 
     Keyframe(const RadarImage &aRadarImage, const Pose2D<double> &aWorldPose);
     ~Keyframe();
