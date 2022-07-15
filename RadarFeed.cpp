@@ -150,6 +150,7 @@ const bool RadarFeed::loadFrame(const size_t aFrameIndex) {
     }
 
     // TODO: Possibly load a new image each time
+    mCurrentRImage.clearORSPInfo();
     mCurrentRImage.loadImage(mImagePaths[aFrameIndex]);
     mCurrentRImage.preprocessImages();
 
@@ -225,12 +226,9 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
     // Load the first frame, which is always a keyframe
     loadFrame(aStartFrameID);
 
-    // TODO: Force a copy for some reason?
-    RadarImage currRImg = mCurrentRImage;
-
     // NOTE: Remember to compute oriented surface points
-    currRImg.performKStrong(K, Z_MIN);
-    currRImg.computeOrientedSurfacePoints();
+    mCurrentRImage.performKStrong(K, Z_MIN);
+    mCurrentRImage.computeOrientedSurfacePoints();
 
     // Saving of previous and current world pose
     // (initial pose for previous frame)
@@ -242,7 +240,7 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
     // to deduce if another keyframe needs to be added
     KeyframeBuffer keyframeList{ KF_BUFF_SIZE };
 
-    Keyframe keyframe(currRImg, currWorldPose);
+    Keyframe keyframe(mCurrentRImage, currWorldPose);
     keyframeList.push_back(keyframe);
 
     // Output the frames to a file
@@ -271,18 +269,16 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
     while (nextFrame()) {
         if (mCurrentFrameIdx == aEndFrameID) break;
 
-        currRImg = mCurrentRImage;
-
         // K-filtering and ORSP
-        currRImg.performKStrong(K, Z_MIN);
-        currRImg.computeOrientedSurfacePoints();
+        mCurrentRImage.performKStrong(K, Z_MIN);
+        mCurrentRImage.computeOrientedSurfacePoints();
 
         // Save world pose for velocity propagation later
         prevWorldPose.copyFrom(currWorldPose);
 
         // Ceres build and solve problem
         const bool success = buildAndSolveRegistrationProblem(
-            currRImg, keyframeList, currWorldPose);
+            mCurrentRImage, keyframeList, currWorldPose);
 
         // TODO: What to do when registration fails?
         if (!success) {
@@ -305,7 +301,7 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
             kfRot >= Keyframe::KF_ROT_THRESH) {
             std::cout << "New keyframe added!" << std::endl;
 
-            Keyframe keyframe2(currRImg, currWorldPose);
+            Keyframe keyframe2(mCurrentRImage, currWorldPose);
             keyframeList.push_back(keyframe2);
 
             poseOutputFile << "kf ";
