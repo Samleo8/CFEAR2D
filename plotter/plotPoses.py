@@ -55,6 +55,8 @@ def plotPosesVideo(poses: np.ndarray,
             plt.imshow(plt.imread(imagePaths[i]))
             plt.axis('off')
 
+        plt.tight_layout()
+
         if pauseInterval <= 0:
             plt.waitforbuttonpress()
         else:

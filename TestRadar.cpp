@@ -226,7 +226,7 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
 
     }
 
-    writeText(outputImgORSP, "Frame " + std::to_string(r1ID), 10, 10, CVColor::aliceblue, 5);
+    // writeText(outputImgORSP, "Frame " + std::to_string(r1ID), 10, 10, CVColor::aliceblue, 5);
 }
 
 /**
