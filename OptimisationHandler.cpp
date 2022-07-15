@@ -172,9 +172,8 @@ buildAndSolveRegistrationProblem(const ORSPVec<double> &aRImgFeaturePts,
         aPose.position = Eigen::Vector2d(positionArr[0], positionArr[1]);
         aPose.orientation = orientationArr[0];
 
-        std::cout << "New frame pose: " << aPose << std::endl;
-
 #ifdef __DEBUG_OPTIMISATION__
+        std::cout << "New frame pose: " << aPose << std::endl;
         std::cout << summary.FullReport() << std::endl;
 #endif
     }

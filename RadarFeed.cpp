@@ -258,6 +258,8 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
     while (nextFrame()) {
         if (mCurrentFrameIdx == aEndFrameID) break;
 
+        std::cout << "[Frame " << mCurrentFrameIdx << "]" << std::endl;
+
         // K-filtering and ORSP
         mCurrentRImage.performKStrong(K, Z_MIN);
         mCurrentRImage.computeOrientedSurfacePoints();
@@ -271,10 +273,54 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
 
         // TODO: What to do when registration fails?
         if (!success) {
-            std::cout << "Registration failed!" << std::endl;
+            std::cout << "[ERROR] Registration failed!" << std::endl;
             currWorldPose = prevWorldPose;
             continue;
         }
+
+        // Save pose to file
+        poseOutputFile << currWorldPose.toString() << std::endl;
+
+        // Obtain transform from current world pose to
+        // previous pose for velocity/seed pose propagation
+        PoseTransform2D<double> frame2FrameTransf =
+            getTransformsBetweenPoses(prevWorldPose, currWorldPose);
+
+        /*******************************************
+         * Stationary checking
+         *******************************************/
+
+        // Move the pose by a constant velocity based on the
+        // previous frame But only if movement exceeds a
+        // certain threshold
+        Pose2D<double> deltaPose = transformToPose<double>(frame2FrameTransf);
+        double f2fDistSq = kfDeltaPose.position.squaredNorm();
+        double f2fRotRad = std::abs(kfDeltaPose.orientation);
+
+        if (f2fDistSq > DIST_STATIONARY_THRESH_SQ ||
+            f2fRotRad > ROT_STATIONARY_THRESH_RAD) {
+            // TODO: For 3D probably need to make this a
+            // transformation matrix operation
+            currWorldPose += deltaPose;
+
+            std::cout << "Movement with delta: " << deltaPose.toString()
+                      << std::endl
+                      << std::endl;
+        }
+        else {
+            // TODO: Do we revert to previous pose or
+            // propagate by 0 velocity?
+            currWorldPose = prevWorldPose;
+
+            std::cout << "Stationary. Reverting back to "
+                         "previous pose."
+                      << std::endl
+                      << std::endl;
+        }
+
+        /*******************************************
+         * Keyframing
+         *******************************************/
 
         // Obtain transform from previous keyframe to
         // current frame
@@ -294,42 +340,6 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
             keyframeList.push_back(keyframe2);
 
             poseOutputFile << "kf ";
-        }
-
-        // Save pose to file
-        poseOutputFile << currWorldPose.toString() << std::endl;
-
-        // Obtain transform from current world pose to
-        // previous pose for velocity/seed pose propagation
-        PoseTransform2D<double> frame2FrameTransf =
-            getTransformsBetweenPoses(prevWorldPose, currWorldPose);
-
-        // NOTE: Stationary checking
-        // Move the pose by a constant velocity based on the
-        // previous frame But only if movement exceeds a
-        // certain threshold
-        Pose2D<double> deltaPose = transformToPose<double>(frame2FrameTransf);
-        double f2fDistSq = kfDeltaPose.position.squaredNorm();
-        double f2fRotRad = std::abs(kfDeltaPose.orientation);
-
-        if (f2fDistSq > DIST_STATIONARY_THRESH_SQ || f2fRotRad > ROT_STATIONARY_THRESH_RAD) {
-            // TODO: For 3D probably need to make this a
-            // transformation matrix operation
-            currWorldPose += deltaPose;
-
-            std::cout << "Movement with delta: " << deltaPose.toString()
-                      << std::endl
-                      << std::endl;
-        }
-        else {
-            // TODO: Do we revert to previous pose or
-            // propagate by 0 velocity?
-            currWorldPose = prevWorldPose;
-
-            std::cout << "Stationary. Reverting back to "
-                         "previous pose."
-                      << std::endl
-                      << std::endl;
         }
     }
 
