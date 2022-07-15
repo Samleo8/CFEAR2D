@@ -306,7 +306,6 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
             currWorldPose += f2fDeltaPose;
 
             std::cout << "Movement with delta: " << f2fDeltaPose.toString()
-                      << std::endl
                       << std::endl;
         }
         else {
@@ -315,7 +314,6 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
 
             std::cout << "Stationary. Reverting back to "
                          "previous pose."
-                      << std::endl
                       << std::endl;
         }
 
@@ -343,6 +341,9 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
             poseOutputFile << " kf";
         }
 
+        // Printing stuff
+        std::cout << std::endl;
+        
         poseOutputFile << std::endl;
     }
 
