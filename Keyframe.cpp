@@ -29,10 +29,11 @@
  * keyframe
  * @param[in] aWorldPose
  */
-Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D<double> &aWorldPose)
+Keyframe::Keyframe(const RadarImage &aRadarImage,
+                   const Pose2D<double> &aWorldPose)
     : mWorldPose(aWorldPose),
       mLocalToWorldTransform(poseToTransform<double>(aWorldPose)),
-      mWorldToLocalTransform(mLocalToWorldTransform.inverse()){
+      mWorldToLocalTransform(mLocalToWorldTransform.inverse()) {
     // Initialize feature points vector, which needs to be populated by
     // converted feature points from RadarImage to world coordinates
     // Also initialize matrix of centers of ORSP coordinates
@@ -47,8 +48,9 @@ Keyframe::Keyframe(const RadarImage &aRadarImage, const Pose2D<double> &aWorldPo
     // convert to world coordinate
     for (size_t i = 0; i < sz; i++) {
         // First convert existing point to world coordinate
+        ORSP<double> localORSPPoint = ORSPFeaturePointsRef[i];
         ORSP<double> worldORSPPoint;
-        localToWorldORSP(ORSPFeaturePointsRef[i], worldORSPPoint);
+        localToWorldORSP(localORSPPoint, worldORSPPoint);
 
         // Copy over ORSP point
         mORSPFeaturePoints.push_back(worldORSPPoint);
