@@ -279,7 +279,7 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         }
 
         // Save pose to file
-        poseOutputFile << currWorldPose.toString() << std::endl;
+        poseOutputFile << currWorldPose.toString();
 
         // Obtain transform from current world pose to
         // previous pose for velocity/seed pose propagation
@@ -340,8 +340,10 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
             Keyframe keyframe2(mCurrentRImage, currWorldPose);
             keyframeList.push_back(keyframe2);
 
-            poseOutputFile << "kf ";
+            poseOutputFile << " kf";
         }
+
+        poseOutputFile << std::endl;
     }
 
     // Close file stream
