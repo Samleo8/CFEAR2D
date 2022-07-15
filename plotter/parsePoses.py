@@ -31,7 +31,7 @@ if __name__ == '__main__':
     poseArr = parsePoses(filePath)
     # print(poseArr)
     if videoMode:
-        plotPosesVideo(poseArr)
+        plotPosesVideo(poseArr, startFrame=startInd)
     else:
         plotPoses(poseArr)
 

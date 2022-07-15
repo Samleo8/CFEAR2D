@@ -1,3 +1,4 @@
+from tracemalloc import start
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -19,7 +20,7 @@ def plotPoses(poses: np.ndarray, show: bool = False):
     plt.xlabel('x [m]')
     plt.ylabel('y [m]')
 
-    # Force a square 
+    # Force a square
     mn = np.floor(min(x.min(), y.min()))
     mx = np.ceil(max(x.max(), y.max()))
     plt.xlim(mn, mx)
@@ -30,11 +31,13 @@ def plotPoses(poses: np.ndarray, show: bool = False):
 
     return
 
-def plotPosesVideo(poses: np.ndarray, pauseInterval = 0.1):
+
+def plotPosesVideo(poses: np.ndarray, startFrame=0, pauseInterval=0.05):
     N = poses.shape[0]
-    for i in range(N):
+    for i in range(1, N):
         plt.clf()
-        plotPoses(poses[:i+1, :], show=False)
+        plt.title(f'Frame {startFrame + i}')
+        plotPoses(poses[:i + 1, :], show=False)
         plt.pause(pauseInterval)
 
     return
