@@ -19,6 +19,17 @@ def parsePoses(filePath: str) -> np.ndarray:
     return np.array(poseInfo).astype(np.float32)
 
 
+def getImagePaths(dataset, startInd, endInd):
+    imgBasePath = os.path.join('results', str(dataset))
+
+    imagePaths = []
+    for i in range(startInd, endInd):
+        imgPath = os.path.join(imgBasePath, f'{i}.jpg')
+        imagePaths.append(imgPath)
+
+    return imagePaths
+
+
 if __name__ == '__main__':
     dataset = "0" if len(sys.argv) <= 1 else sys.argv[1]
     startInd = 0 if len(sys.argv) <= 2 else int(sys.argv[2])
@@ -31,7 +42,8 @@ if __name__ == '__main__':
     poseArr = parsePoses(filePath)
     # print(poseArr)
     if videoMode:
-        plotPosesVideo(poseArr, startFrame=startInd)
+        imagePaths = getImagePaths(dataset, startInd, endInd)
+        plotPosesVideo(poseArr, imagePaths, startFrame=startInd, pauseInterval=-1)
     else:
         plotPoses(poseArr)
 

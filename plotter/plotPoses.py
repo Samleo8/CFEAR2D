@@ -32,12 +32,32 @@ def plotPoses(poses: np.ndarray, show: bool = False):
     return
 
 
-def plotPosesVideo(poses: np.ndarray, startFrame=0, pauseInterval=0.05):
+def plotPosesVideo(poses: np.ndarray,
+                   imagePaths: np.ndarray = None,
+                   startFrame: int = 0,
+                   pauseInterval: float = 0.05):
     N = poses.shape[0]
+
+    rows = 1
+    cols = 1 if imagePaths is None else 2
+
     for i in range(1, N):
         plt.clf()
-        plt.title(f'Frame {startFrame + i}')
+        plt.suptitle(f'Frame {startFrame + i}')
+
+        plt.subplot(rows, cols, 1)
+        plt.title('Poses')
         plotPoses(poses[:i + 1, :], show=False)
-        plt.pause(pauseInterval)
+
+        if imagePaths is not None:
+            plt.subplot(rows, cols, 2)
+            plt.title('Radar Image')
+            plt.imshow(plt.imread(imagePaths[i]))
+            plt.axis('off')
+
+        if pauseInterval <= 0:
+            plt.waitforbuttonpress()
+        else:
+            plt.pause(pauseInterval)
 
     return
