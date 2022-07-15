@@ -394,8 +394,8 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
     mFilteredPoints.reserve(sz + aK);
 
     // Get metadata information
-    const MetaDataList<double> azimuths = mMetaData.azimuths;
-    const MetaDataList<bool> isValid = mMetaData.isValid;
+    const MetaDataList<double> &azimuths = mMetaData.azimuths;
+    const MetaDataList<bool> &isValid = mMetaData.isValid;
 
     // Perform the k-strong filtering by looping over each row (azimuth)
     // of the image And getting the top k points that are above threshold

@@ -20,15 +20,6 @@
 #include "TransformDefines.hpp"
 #include <ceres/ceres.h>
 
-/** @brief number of residuals for registration cost optimization */
-const int REGOPT_NUM_RESIDUALS = 1;
-
-/** @brief number of values in position input vector */
-const int REGOPT_POS_PARAM_SIZE = 2;
-
-/** @brief number of values in orientation input vector */
-const int REGOPT_ORIENT_PARAM_SIZE = 1;
-
 /**
  * @brief Cost functor for point/line image to image registration, used by
  * Ceres for optimization
@@ -42,6 +33,15 @@ const int REGOPT_ORIENT_PARAM_SIZE = 1;
  */
 class RegistrationCostFunctor {
   private:
+    /** @brief number of residuals for registration cost optimization */
+    static constexpr int NUM_RESIDUALS = 1;
+
+    /** @brief number of values in position input vector */
+    static constexpr int POS_PARAM_SIZE = 2;
+
+    /** @brief number of values in orientation input vector */
+    static constexpr int ORIENT_PARAM_SIZE = 1;
+
     /** @brief Feature point from radar image to optimise, in LOCAL/IMAGE coordinates */
     const ORSP<double> mFeaturePointLocal;
 
