@@ -294,8 +294,8 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         // previous frame But only if movement exceeds a
         // certain threshold
         Pose2D<double> deltaPose = transformToPose<double>(frame2FrameTransf);
-        double f2fDistSq = kfDeltaPose.position.squaredNorm();
-        double f2fRotRad = std::abs(kfDeltaPose.orientation);
+        double f2fDistSq = deltaPose.position.squaredNorm();
+        double f2fRotRad = std::abs(deltaPose.orientation);
 
         if (f2fDistSq > DIST_STATIONARY_THRESH_SQ ||
             f2fRotRad > ROT_STATIONARY_THRESH_RAD) {
