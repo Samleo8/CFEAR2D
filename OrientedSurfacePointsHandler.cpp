@@ -13,7 +13,6 @@
 #include "RadarImage.hpp"
 #include <Eigen/Core>
 
-
 /**
  * @brief Associate filtered point coordinate to downsampled grid coordinate
  * @param[in] aPoint Filtered point to associate
@@ -34,9 +33,19 @@ void pointToGridCoordinate(const Eigen::Vector2d &aPoint,
     // Vectorized operations, TODO: also allowing for multidimensional cases?
     aGridCoordinate = (aPoint + aGridCenter) / ORSP_GRID_SQUARE_WIDTH;
 
-    // TODO: Floor the thing but Eigen 3.37 doesnt have floor() yet, now rely on int casting
+    // TODO: Floor the thing but Eigen 3.37 doesnt have floor() yet, now rely on
+    // int casting
 
     // TODO: Bound aGridCoordinate to be within grid
+}
+
+/**
+ * @brief Getter for vector of oriented surface feature points
+ *
+ * @return const ORSPVec<double>& Vector of internal ORSP points
+ */
+const ORSPVec<double> &RadarImage::getORSPFeaturePoints() const {
+    return mORSPFeaturePoints;
 }
 
 /**
@@ -101,8 +110,8 @@ void RadarImage::findValidNeighbours(Point2DList &aValidNeighbours,
     // Check around the grid square but only up to sampling factor
     const ssize_t gridX = static_cast<ssize_t>(aGridX);
     const ssize_t gridY = static_cast<ssize_t>(aGridY);
-    const ssize_t f = static_cast<ssize_t>(ORSP_RESAMPLE_FACTOR);
-    const ssize_t N = static_cast<ssize_t>(ORSP_GRID_N);
+    constexpr ssize_t f = static_cast<ssize_t>(ORSP_RESAMPLE_FACTOR);
+    constexpr ssize_t N = static_cast<ssize_t>(ORSP_GRID_N);
 
     for (ssize_t dx = -f; dx <= f; dx++) {
         // Bounds check: X
@@ -228,6 +237,20 @@ void RadarImage::computeOrientedSurfacePoints() {
     estimatePointDistribution();
 }
 
-const ORSPVec<double> &RadarImage::getORSPFeaturePoints() const {
-    return mORSPFeaturePoints;
+/**
+ * @brief Clear ORSP related information, including grid, feature points vector,
+ * etc. Needed for a clean slate for incremental radar image in radar feed
+ */
+void RadarImage::clearORSPInfo() {
+    // Clear saved points
+    mFilteredPoints.clear();
+    mORSPFeaturePoints.clear();
+
+    // Clear grid information
+    for (size_t i = 0; i < ORSP_GRID_N; i++) {
+        for (size_t j = 0; j < ORSP_GRID_N; j++) {
+            mORSPGrid[i][j].clear();
+            mORSPCentroidGrid[i][j].setZero();
+        }
+    }
 }

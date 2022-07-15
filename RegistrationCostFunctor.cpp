@@ -30,14 +30,16 @@ RegistrationCostFunctor::RegistrationCostFunctor(
  * Ceres should handle ownership.
  *
  * @param[in] aFeaturePointLocal Feature point in LOCAL/IMAGE coordinates
- * @param[in] aKeyframeFeaturePointWorld Keyframe feature point in WORLD coordinates
+ * @param[in] aKeyframeFeaturePointWorld Keyframe feature point in WORLD
+ * coordinates
  * @return ceres::CostFunction Ceres cost function
  */
-ceres::CostFunction *
-RegistrationCostFunctor::Create(const ORSP<double> &aFeaturePointLocal,
-                                const ORSP<double> &aKeyframeFeaturePointWorld) {
-    return (new ceres::AutoDiffCostFunction<
-            RegistrationCostFunctor, REGOPT_NUM_RESIDUALS,
-            REGOPT_POS_PARAM_SIZE, REGOPT_ORIENT_PARAM_SIZE>(
-        new RegistrationCostFunctor(aFeaturePointLocal, aKeyframeFeaturePointWorld)));
+ceres::CostFunction *RegistrationCostFunctor::Create(
+    const ORSP<double> &aFeaturePointLocal,
+    const ORSP<double> &aKeyframeFeaturePointWorld) {
+    return (
+        new ceres::AutoDiffCostFunction<RegistrationCostFunctor, NUM_RESIDUALS,
+                                        POS_PARAM_SIZE, ORIENT_PARAM_SIZE>(
+            new RegistrationCostFunctor(aFeaturePointLocal,
+                                        aKeyframeFeaturePointWorld)));
 }

@@ -36,29 +36,29 @@
 
 /** @brief Oriented surface point radius, used for both point cloud downsampling
  * and finding point distribution */
-const double ORSP_RADIUS = 3.5; // in meters
+constexpr double ORSP_RADIUS = 3.5; // in meters
 
 /** @brief Oriented surface point downsampling factor, used for point cloud
  * downsampling */
-const unsigned int ORSP_RESAMPLE_FACTOR = 1;
+constexpr unsigned int ORSP_RESAMPLE_FACTOR = 1;
 
 /** @brief Width of the grid square used in the ORSP grid formation */
-const double ORSP_GRID_SQUARE_WIDTH = ORSP_RADIUS / ORSP_RESAMPLE_FACTOR;
+constexpr double ORSP_GRID_SQUARE_WIDTH = ORSP_RADIUS / ORSP_RESAMPLE_FACTOR;
 
 /** @brief Maximum number of grid squares, used in ORSP grid formation. Needs to
  * double because max range is radius of image. */
-const size_t ORSP_GRID_N =
-    static_cast<size_t>(floor(2 * RADAR_MAX_RANGE_M / ORSP_GRID_SQUARE_WIDTH));
+constexpr size_t ORSP_GRID_N =
+    static_cast<size_t>(2 * RADAR_MAX_RANGE_M / ORSP_GRID_SQUARE_WIDTH);
 
 /**
  * @brief Minimum number of valid neighbours of a filtered centroid point
  * required for the point distribution to be valid
  */
-const size_t ORSP_VALID_NEIGHBOUR_MIN = 6;
+constexpr size_t ORSP_VALID_NEIGHBOUR_MIN = 6;
 
 /** @brief Eigenvalue ratio threshold above which distribution is considered ill
  * defined */
-const double ORSP_EIGENVAL_THRESHOLD = 10e5;
+constexpr double ORSP_EIGENVAL_THRESHOLD = 10e5;
 
 /// NOTE: All class related functions are declared in @see RadarImage.hpp.
 /// Helper functions are here.

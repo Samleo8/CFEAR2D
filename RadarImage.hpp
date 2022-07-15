@@ -28,22 +28,7 @@
 // const double RANGE_RESOLUTION = 0.49107142857142855; // m per px
 
 /** @brief Default high-pass filter size */
-const double DEFAULT_FILTER_SIZE = 150;
-
-/**
- * @brief Precalcuated multiplier for normalising angle in getRotationDiff
- * @note Image width = 672px in this case
- */
-static const unsigned int IMAGE_WIDTH_PIXELS = 672;
-static const double NORMALISE_ANGLE_MULTIPLIER = (M_TAU / IMAGE_WIDTH_PIXELS);
-
-/**
- * @brief Sub pixel systematic error
- * @note Centroid function of OpenCV phaseCorrelate() seems to cause a
- * systematic error
- * @todo To remove and replace with dynamic covariance
- */
-const double TRANSLATION_SYSTEMATIC_ERROR = 0.5;
+constexpr double DEFAULT_FILTER_SIZE = 150;
 
 /**
  * @brief RadarImage class that performs pre-processing on the images. Will
@@ -154,6 +139,7 @@ class RadarImage {
     const FilteredPointsVec &getFilteredPoints() const;
 
     // Generating Oriented Surface Points
+    void clearORSPInfo();
     void downsamplePointCloud();
     void findValidNeighbours(Point2DList &aValidNeighbours, const size_t aGridX,
                              const size_t aGridY);

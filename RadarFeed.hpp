@@ -21,6 +21,7 @@
 #define __RADAR_FEED_H__
 
 #include <Eigen/Geometry>
+#include <filesystem>
 #include <opencv2/opencv.hpp>
 #include <stdbool.h>
 #include <stdio.h>
@@ -28,9 +29,14 @@
 #include <string>
 #include <vector>
 
-#include "OdometryVisualiser.hpp" // needed for visualiser
-// #include "PoseGraph.hpp"          // needed for pose graph optimisation
-#include "RadarFeedHandler.hpp"   // needed to handle file path and data
+#include "Keyframe.hpp"
+#include "OptimisationHandler.hpp"
+#include "PoseTransformHandler.hpp"
+#include "RadarFeedHandler.hpp" // needed to handle file path and data
+#include "RadarImage.hpp"
+#include "TransformDefines.hpp"
+
+namespace fs = std::filesystem;
 
 /**
  * @brief RadarFeed class that holds a feed in the form of a vector of
@@ -49,8 +55,41 @@
  */
 class RadarFeed {
   private:
-    /** @brief Sequence of RadarImages */
-    std::vector<RadarImage> mSequence;
+    // CONSTANTS FOR SEQUENTIAL PROCESSING
+
+    /** @brief Expected number of images in feed path, used for reserving vector
+     * space */
+    static const size_t EXPECTED_NUM_IMAGES = 8000;
+
+    /** @brief Filtering: number of points */
+    static constexpr size_t K = 12;
+
+    /** @brief Filtering: power min threshold */
+    static constexpr double Z_MIN = 55;
+
+    /** @brief Keyframe buffer size */
+    static constexpr int KF_BUFF_SIZE = 3;
+
+    /** @brief Whether to perform stationary check on keyframes
+    */
+    static constexpr bool PERFORM_STATIONARY_CHECK = true;
+
+    /**
+     * @brief Rotation threshold for statiionary checking, in radians
+     */
+    static constexpr double ROT_STATIONARY_THRESH_RAD = 1.5 * ANGLE_DEG_TO_RAD;
+
+    /**
+     * @brief Distance threshold for stationary checking, in metres
+     */
+    static constexpr double DIST_STATIONARY_THRESH = 0.05; // 5cm
+
+    /** @brief Square of @see DIST_STATIONARY_THRESH for speed */
+    static constexpr double DIST_STATIONARY_THRESH_SQ =
+        DIST_STATIONARY_THRESH * DIST_STATIONARY_THRESH;
+
+    /** @brief Current RadarImage in feed */
+    RadarImage mCurrentRImage;
 
     /**
      * @brief Vector of paths to images.
@@ -68,38 +107,7 @@ class RadarFeed {
     std::vector<RotTransData> mGroundTruths;
 
     /** @brief Current frame */
-    size_t mCurrentFrame = 0;
-
-    /** @brief Max size */
-    size_t mMaxSize = 0;
-
-    /**
-     * @brief Filter size
-     * @note Default from RadarImage, but changable
-     */
-    int mFilterSize = DEFAULT_FILTER_SIZE;
-
-    /**
-     * @brief Output text file for error
-     */
-    FILE *mOutputTextFile = stdout;
-
-    // Visualiser stuff
-    /**
-     * @brief Visualiser
-     * @see OdometryVisualiser
-     */
-    OdometryVisualiser mVis;
-
-    /**
-     * @brief Flag of whether visualiser initialised
-     * @see initVisualiser()
-     */
-    bool mVisInitialised = false;
-
-    void printInstructions(const std::string &aSaveImagesPath,
-                           const bool aDisplay = true,
-                           const int aDisplayTime = 3000);
+    size_t mCurrentFrameIdx = 0;
 
   public:
     // Constructs & Inits
@@ -111,52 +119,30 @@ class RadarFeed {
     void loadData(const std::filesystem::path &aFolderPath);
     void loadData(const std::string &aFolderPath);
 
-    void
-    initVisualiser(const unsigned int aWidth = 500,
-                   const unsigned int aHeight = 500, bool aDisplay = false,
-                   const std::string &aDisplayTitle = "Odometry Visualiser");
-
     // Getters/Setters
-    bool isWithinBounds(const size_t aFrameIndex,
-                        const bool aPrintError = false) const;
     const std::vector<RadarImage> &getCurrentFeed() const;
     const std::vector<RotTransData> &getGroundTruthFeed() const;
-    bool getVisualiser(OdometryVisualiser &aVis) const;
+
+    const RadarImage &getCurrentRadarImage() const;
+    void getCurrentRadarImage(RadarImage &aOutputRadarImage) const;
 
     // Frames
-    size_t getCurrentFrame() const;
-    bool setCurrentFrame(const size_t aFrameIndex, const bool aLoad = false);
-    bool loadFrame(const size_t aFrameIndex,
-                   const bool aSetCurrentFrame = true);
-    bool gotoFrame(const size_t aFrameIndex,
-                   const bool aSetCurrentFrame = true);
-    bool nextFrame();
+    const bool isWithinBounds(const size_t aFrameIdx) const;
+    const size_t getCurrentFrameIndex() const;
+    const bool setCurrentFrameIndex(const size_t aFrameIndex,
+                                    const bool aLoad = false);
 
-    // Radar Images
-    bool getRadarImage(RadarImage &aRImage, const size_t aFrameIndex,
-                       bool aPrintErrors = false) const;
-    bool getCurrentRadarImage(RadarImage &aRImage) const;
-
-    void pushRadarImage(const RadarImage &aRImage,
-                        const bool aOverwrite = false);
-    void addRadarImage(const RadarImage &aRImage,
-                       const bool aOverwrite = false);
-    void addRadarImage(const RadarImage &aRImage, const size_t aFrameIndex,
-                       bool aOverwrite = false);
+    const bool loadFrame(const size_t aFrameIndex);
+    const bool nextFrame();
 
     // Ground truth and other data
     bool getGroundTruth(RotTransData &aGroundTruth) const;
     bool getGroundTruth(RotTransData &aGroundTruth, const size_t aIndex) const;
 
     // Sequential Processing or Feed
-    void updateRotMatTransVec(const RotTransData &aPredData,
-                              Eigen::Rotation2D<double> &aRotMat,
-                              Eigen::Vector2d &aTransVec) const;
-
-    void run(int aStartFrame = 0, int aEndFrame = -1,
-             const bool aVisualise = true,
-             std::string aVisualiserTitle = "Odometry Visualiser",
-             const int aOutputToFile = -1);
+    void run(const int aStartFrameID, const int aEndFrameID,
+             const fs::path &aPoseOutputFilePath,
+             const Pose2D<double> &aInitPose = Pose2D<double>(0, 0, 0));
 };
 
 #endif

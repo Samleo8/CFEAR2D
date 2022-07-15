@@ -27,13 +27,13 @@
 #include <ceres/ceres.h>
 
 /** @brief Keyframe buffer size */
-const size_t KF_BUFF_SIZE = 3;
+constexpr size_t KF_BUFF_SIZE = 3;
 
 /** @brief Angle tolerance threshold in radians */
-const double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
+constexpr double ANGLE_TOLERANCE_RAD = 30 * ANGLE_DEG_TO_RAD;
 
 /** @brief (Default) Delta threshold for Huber loss */
-const double HUBER_DELTA_DEFAULT = 0.1;
+constexpr double HUBER_DELTA_DEFAULT = 0.1;
 
 [[nodiscard]] const bool
 buildAndSolveRegistrationProblem(const RadarImage &aRImage,

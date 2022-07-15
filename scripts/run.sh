@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DATASET_ID=${1:-0}
-TARGET=${2:-"keyframe"}
+TARGET=${2:-"main"}
 START_IND=${3:-0}
 END_IND=${4:-10}
 
@@ -15,6 +15,9 @@ echo "[Dataset $DATASET_ID]"
 if [[ $TARGET == "both" ]]; then
     ./scripts/run.sh $DATASET_ID keyframe $START_IND $END_IND
     ./scripts/run.sh $DATASET_ID radar $START_IND $END_IND
+elif [[ $TARGET == "main" || $TARGET == "cfear" ]]; then
+    ./build/RunCFEAR $DATASET_ID $START_IND $END_IND
+    python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
 elif [[ $TARGET == "debug" ]]; then
     ./build/TestCostFunction $DATASET_ID $START_IND
     python plotter/parseORSP.py $DATASET_ID $START_IND $(( $START_IND + 3 ))

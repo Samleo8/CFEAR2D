@@ -348,7 +348,7 @@ int main(int argc, char **argv) {
 
     // Keep finding frames
     while (feed.nextFrame()) {
-        size_t currFrameId = feed.getCurrentFrame();
+        size_t currFrameId = feed.getCurrentFrameIndex();
         if (currFrameId == endID) break;
 
         feed.getCurrentRadarImage(currRImg);
@@ -385,7 +385,7 @@ int main(int argc, char **argv) {
         double kfRot = std::abs(kfDeltaPose.orientation);
 
         if (kfDistSq >= Keyframe::KF_DIST_THRESH_SQ ||
-            kfRot >= Keyframe::KF_ROT_THRESH) {
+            kfRot >= Keyframe::KF_ROT_THRESH_RAD) {
             std::cout << "New keyframe added!" << std::endl;
 
             Keyframe keyframe2(currRImg, currWorldPose);

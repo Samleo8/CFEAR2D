@@ -33,69 +33,65 @@ set_property(TARGET TestRadar PROPERTY C_STANDARD 11)
 set_property(TARGET TestRadar PROPERTY CXX_STANDARD 17)
 target_link_libraries(TestRadar ${OpenCV_LIBS})
 
-# Keyframe Testing Module
-add_executable(
-  TestKeyframe
-  CVColor.cpp
-  ImageProcessing.cpp
-  PointPolar.cpp 
-  RadarImageHandler.cpp
-  Keyframe.cpp
-  RadarImage.cpp
-  RegistrationCostFunctor.cpp
-  OptimisationHandler.cpp
-  OrientedSurfacePointsHandler.cpp
-  OdometryVisualiser.cpp
-  RadarFeedHandler.cpp
-  RadarFeed.cpp
-  TestKeyframe.cpp
-)
-set_property(TARGET TestKeyframe PROPERTY C_STANDARD 11)
-set_property(TARGET TestKeyframe PROPERTY CXX_STANDARD 17)
-target_link_libraries(TestKeyframe ${OpenCV_LIBS} ${CERES_LIBRARIES})
-
-# Debugging of Cost Function
-add_executable(
-  TestCostFunction
-  CVColor.cpp
-  ImageProcessing.cpp
-  PointPolar.cpp 
-  RadarImageHandler.cpp
-  Keyframe.cpp
-  RadarImage.cpp
-  RegistrationCostFunctor.cpp
-  OptimisationHandler.cpp
-  OrientedSurfacePointsHandler.cpp
-  OdometryVisualiser.cpp
-  RadarFeedHandler.cpp
-  RadarFeed.cpp
-  TestCostFunction.cpp
-)
-set_property(TARGET TestCostFunction PROPERTY C_STANDARD 11)
-set_property(TARGET TestCostFunction PROPERTY CXX_STANDARD 17)
-target_link_libraries(TestCostFunction ${OpenCV_LIBS} ${CERES_LIBRARIES})
-
-
-# Main Visualiser Testing module
+# # Keyframe Testing Module
 # add_executable(
-#   TestVisualiser
+#   TestKeyframe
 #   CVColor.cpp
-#   OdometryVisualiser.cpp
 #   ImageProcessing.cpp
 #   PointPolar.cpp 
 #   RadarImageHandler.cpp
+#   Keyframe.cpp
 #   RadarImage.cpp
-#   PoseGraph.cpp
+#   RegistrationCostFunctor.cpp
+#   OptimisationHandler.cpp
+#   OrientedSurfacePointsHandler.cpp
+#   OdometryVisualiser.cpp
 #   RadarFeedHandler.cpp
 #   RadarFeed.cpp
-#   TestVisualiser.cpp)
-# set_property(TARGET TestVisualiser PROPERTY CXX_STANDARD 17)
+#   TestKeyframe.cpp
+# )
+# set_property(TARGET TestKeyframe PROPERTY C_STANDARD 11)
+# set_property(TARGET TestKeyframe PROPERTY CXX_STANDARD 17)
+# target_link_libraries(TestKeyframe ${OpenCV_LIBS} ${CERES_LIBRARIES})
 
-# OpenMP Linking
-# if(OpenMP_CXX_FOUND)
-#   target_link_libraries(
-#     TestVisualiser PUBLIC OpenMP::OpenMP_C OpenMP::OpenMP_CXX ${OpenCV_LIBS}
-#                           ${CERES_LIBRARIES})
-# else()
-#   target_link_libraries(TestVisualiser ${OpenCV_LIBS} ${CERES_LIBRARIES})
-# endif()
+# # Debugging of Cost Function
+# add_executable(
+#   TestCostFunction
+#   CVColor.cpp
+#   ImageProcessing.cpp
+#   PointPolar.cpp 
+#   RadarImageHandler.cpp
+#   Keyframe.cpp
+#   RadarImage.cpp
+#   RegistrationCostFunctor.cpp
+#   OptimisationHandler.cpp
+#   OrientedSurfacePointsHandler.cpp
+#   OdometryVisualiser.cpp
+#   RadarFeedHandler.cpp
+#   RadarFeed.cpp
+#   TestCostFunction.cpp
+# )
+# set_property(TARGET TestCostFunction PROPERTY C_STANDARD 11)
+# set_property(TARGET TestCostFunction PROPERTY CXX_STANDARD 17)
+# target_link_libraries(TestCostFunction ${OpenCV_LIBS} ${CERES_LIBRARIES})
+
+# Main CFEAR Running Module
+add_executable(
+  RunCFEAR
+  CVColor.cpp
+  ImageProcessing.cpp
+  PointPolar.cpp 
+  RadarImageHandler.cpp
+  Keyframe.cpp
+  RadarImage.cpp
+  RegistrationCostFunctor.cpp
+  OptimisationHandler.cpp
+  OrientedSurfacePointsHandler.cpp
+  OdometryVisualiser.cpp
+  RadarFeedHandler.cpp
+  RadarFeed.cpp
+  RunCFEAR.cpp
+)
+set_property(TARGET RunCFEAR PROPERTY C_STANDARD 11)
+set_property(TARGET RunCFEAR PROPERTY CXX_STANDARD 17)
+target_link_libraries(RunCFEAR ${OpenCV_LIBS} ${CERES_LIBRARIES})
