@@ -95,7 +95,7 @@ buildAndSolveRegistrationProblem(const ORSPVec<double> &aRImgFeaturePts,
 
         // For each keyframe, associate feature point
         for (size_t i = 0, sz = aKFBuffer.size(); i < sz; i++) {
-            const ORSPVec<double> kfFeaturePoints =
+            const ORSPVec<double> &kfFeaturePoints =
                 aKFBuffer[i].getORSPFeaturePoints();
 
             // Find closest keyframe ORSP feature point to image feature point

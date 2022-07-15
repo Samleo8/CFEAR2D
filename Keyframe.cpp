@@ -43,14 +43,12 @@ Keyframe::Keyframe(const RadarImage &aRadarImage,
     size_t sz = ORSPFeaturePointsRef.size();
     mORSPFeaturePoints.reserve(sz);
 
-    // TODO: Check if this is correct.
     // Loop through all ORSP feature points, convert to world coordinates and
     // convert to world coordinate
     for (size_t i = 0; i < sz; i++) {
         // First convert existing point to world coordinate
-        ORSP<double> localORSPPoint = ORSPFeaturePointsRef[i];
         ORSP<double> worldORSPPoint;
-        localToWorldORSP(localORSPPoint, worldORSPPoint);
+        localToWorldORSP(ORSPFeaturePointsRef[i], worldORSPPoint);
 
         // Copy over ORSP point
         mORSPFeaturePoints.push_back(worldORSPPoint);

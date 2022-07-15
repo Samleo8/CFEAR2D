@@ -220,14 +220,13 @@ bool RadarFeed::getGroundTruth(RotTransData &aGroundTruth) const {
 void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
                     const fs::path &aPoseOutputFilePath,
                     const Pose2D<double> &aInitPose) {
-    // TODO: Handle (and maybe compare) GT poses 
+    // TODO: Handle (and maybe compare) GT poses
 
     // Load the first frame, which is always a keyframe
     loadFrame(aStartFrameID);
 
-    // Make a reference to the internal feed image
-    // so we dont have to keep calling getCurrentRadarImage()
-    RadarImage &currRImg = mCurrentRImage;
+    // TODO: Force a copy for some reason?
+    RadarImage currRImg = mCurrentRImage;
 
     // NOTE: Remember to compute oriented surface points
     currRImg.performKStrong(K, Z_MIN);
@@ -272,13 +271,11 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
     while (nextFrame()) {
         if (mCurrentFrameIdx == aEndFrameID) break;
 
+        currRImg = mCurrentRImage;
+
         // K-filtering and ORSP
         currRImg.performKStrong(K, Z_MIN);
         currRImg.computeOrientedSurfacePoints();
-
-        // Output image
-        // cv::Mat outputImgORSP;
-        // outputImgFromRImg(currRImg, outputImgORSP);
 
         // Save world pose for velocity propagation later
         prevWorldPose.copyFrom(currWorldPose);
