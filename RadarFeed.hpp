@@ -72,7 +72,7 @@ class RadarFeed {
 
     /** @brief Whether to perform stationary check on keyframes
     */
-    static constexpr bool PERFORM_STATIONARY_CHECK = true;
+    static constexpr bool PERFORM_STATIONARY_CHECK = false;
 
     /**
      * @brief Rotation threshold for statiionary checking, in radians
