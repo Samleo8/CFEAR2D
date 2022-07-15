@@ -13,7 +13,7 @@ fi
 echo "[Dataset $DATASET_ID]"
 
 if [[ $TARGET == "both" ]]; then
-    ./scripts/run.sh $DATASET_ID keyframe $START_IND $END_IND
+    ./scripts/run.sh $DATASET_ID main $START_IND $END_IND
     ./scripts/run.sh $DATASET_ID radar $START_IND $END_IND
 elif [[ $TARGET == "main" || $TARGET == "cfear" || $TARGET == "feed" ]]; then
     ./build/RunCFEAR $DATASET_ID $START_IND $END_IND
