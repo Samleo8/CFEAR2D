@@ -1,3 +1,15 @@
+/**
+ * @file ProcessGroundTruth.cpp
+ * @author Samuel Leong (scleong@andrew.cmu.edu)
+ * @brief Main function for processing ground truth data and outputting it to
+ * file in world pose format
+ * @version 0.1
+ * @date 2022-07-17
+ *
+ * @copyright Copyright (c) 2022
+ *
+ */
+
 #include <filesystem>
 #include <fstream>
 #include <vector>
