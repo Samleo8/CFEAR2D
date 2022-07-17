@@ -235,13 +235,11 @@ void printORSPToFile(const ORSPVec<double> &orspList,
                      const bool doTransform = false,
                      const PoseTransform2D<double> &coordTransform =
                          PoseTransform2D<double>::Identity()) {
-    std::ofstream orspOutputFile;
-
     fs::path orspFileOutputPath(orspBaseOutputPath);
     orspFileOutputPath /= "orsp_" + std::to_string(frameID) + ".txt";
 
-    orspOutputFile.open(orspFileOutputPath,
-                        std::ofstream::out | std::ofstream::trunc);
+    std::ofstream orspOutputFile(orspFileOutputPath,
+                                 std::ofstream::out | std::ofstream::trunc);
 
     for (const ORSP<double> &orsp : orspList) {
         ORSP<double> worldORSPPoint;
@@ -256,8 +254,6 @@ void printORSPToFile(const ORSPVec<double> &orspList,
 
         orspOutputFile << worldORSPPoint.toString() << std::endl;
     }
-
-    orspOutputFile.close();
 }
 
 /**
@@ -267,17 +263,14 @@ void printORSPToFile(const ORSPVec<double> &orspList,
  * also allow for auto saving.
  */
 int main(int argc, char **argv) {
-    if (argc < 4 || argc > 5) {
-        printf(
-            "Usage: %s <dataset> <startID> [endID] [0|1:saveDirectToFile]]\n",
-            argv[0]);
+    if (argc < 3 || argc > 4) {
+        printf("Usage: %s <dataset> <startID> [endID]\n", argv[0]);
         return EXIT_FAILURE;
     }
 
     const unsigned int dataset = atoi(argv[1]);
     const unsigned int startID = atoi(argv[2]);
     const int endID = (argc == 4) ? atoi(argv[3]) : -1;
-    const bool saveDirectly = (argc == 5 && atoi(argv[4]));
 
     // Create path to save images
     fs::path saveImagesPath(".");
@@ -330,9 +323,8 @@ int main(int argc, char **argv) {
     poseOutputPath /= "poses_" + std::to_string(startID) + "_" +
                       std::to_string(endID) + ".txt";
 
-    std::ofstream poseOutputFile;
-    poseOutputFile.open(poseOutputPath,
-                        std::ofstream::out | std::ofstream::trunc);
+    std::ofstream poseOutputFile(poseOutputPath,
+                                 std::ofstream::out | std::ofstream::trunc);
 
     // Output ORSP to file for debugging, if flag specified
 
@@ -415,7 +407,8 @@ int main(int argc, char **argv) {
                       << std::endl;
         }
         else {
-            // TODO: For 3D probably need to make this a transformation matrix operation
+            // TODO: For 3D probably need to make this a transformation matrix
+            // operation
             Pose2D deltaPose = transformToPose<double>(frame2FrameTransf);
             currWorldPose += deltaPose;
 

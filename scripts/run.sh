@@ -16,13 +16,17 @@ if [[ $TARGET == "both" ]]; then
     ./scripts/run.sh $DATASET_ID main $START_IND $END_IND
     ./scripts/run.sh $DATASET_ID radar $START_IND $END_IND
 elif [[ $TARGET == "main" || $TARGET == "cfear" || $TARGET == "feed" ]]; then
-    ./build/RunCFEAR $DATASET_ID $START_IND $END_IND
+    ./build/RunCFEAR $DATASET_ID $START_IND $END_IND || exit 1
     python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
+elif [[ $TARGET == "kitti" ]]; then
+    ./build/PosesToKITTI $DATASET_ID $START_IND $END_IND
+elif [[ $TARGET == "groundtruth" || $TARGET == "gt" || $TARGET == "procgt" ]]; then
+    ./build/ProcessGroundTruth $DATASET_ID || exit 1
 elif [[ $TARGET == "debug" ]]; then
-    ./build/TestCostFunction $DATASET_ID $START_IND
+    ./build/TestCostFunction $DATASET_ID $START_IND || exit 1
     python plotter/parseORSP.py $DATASET_ID $START_IND $(( $START_IND + 3 ))
 elif [[ $TARGET == "keyframe" ]]; then
-    ./build/TestKeyframe $DATASET_ID $START_IND $END_IND
+    ./build/TestKeyframe $DATASET_ID $START_IND $END_IND || exit 1
     python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
 elif [[ $TARGET == "radar" || $TARGET == "video" ]]; then
     for ((IMG_IND = $START_IND; IMG_IND <= $END_IND; IMG_IND++)); do

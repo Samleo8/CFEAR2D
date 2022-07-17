@@ -17,7 +17,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <opencv2/opencv.hpp>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

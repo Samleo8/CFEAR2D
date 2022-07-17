@@ -45,7 +45,6 @@ target_link_libraries(TestRadar ${OpenCV_LIBS})
 #   RegistrationCostFunctor.cpp
 #   OptimisationHandler.cpp
 #   OrientedSurfacePointsHandler.cpp
-#   OdometryVisualiser.cpp
 #   RadarFeedHandler.cpp
 #   RadarFeed.cpp
 #   TestKeyframe.cpp
@@ -66,7 +65,6 @@ target_link_libraries(TestRadar ${OpenCV_LIBS})
 #   RegistrationCostFunctor.cpp
 #   OptimisationHandler.cpp
 #   OrientedSurfacePointsHandler.cpp
-#   OdometryVisualiser.cpp
 #   RadarFeedHandler.cpp
 #   RadarFeed.cpp
 #   TestCostFunction.cpp
@@ -74,6 +72,28 @@ target_link_libraries(TestRadar ${OpenCV_LIBS})
 # set_property(TARGET TestCostFunction PROPERTY C_STANDARD 11)
 # set_property(TARGET TestCostFunction PROPERTY CXX_STANDARD 17)
 # target_link_libraries(TestCostFunction ${OpenCV_LIBS} ${CERES_LIBRARIES})
+
+# Ground Truth Processing Module
+add_executable(
+  ProcessGroundTruth
+  RadarFeedHandler.cpp
+  ProcessGroundTruth.cpp
+)
+set_property(TARGET ProcessGroundTruth PROPERTY C_STANDARD 11)
+set_property(TARGET ProcessGroundTruth PROPERTY CXX_STANDARD 17)
+target_link_libraries(ProcessGroundTruth ${OpenCV_LIBS})
+
+
+# Ground Truth Processing Module
+add_executable(
+  PosesToKITTI
+  BenchmarkHandler.cpp
+  PosesToKITTI.cpp
+)
+set_property(TARGET PosesToKITTI PROPERTY C_STANDARD 11)
+set_property(TARGET PosesToKITTI PROPERTY CXX_STANDARD 17)
+target_link_libraries(PosesToKITTI ${OpenCV_LIBS})
+
 
 # Main CFEAR Running Module
 add_executable(
@@ -87,7 +107,6 @@ add_executable(
   RegistrationCostFunctor.cpp
   OptimisationHandler.cpp
   OrientedSurfacePointsHandler.cpp
-  OdometryVisualiser.cpp
   RadarFeedHandler.cpp
   RadarFeed.cpp
   RunCFEAR.cpp

@@ -52,13 +52,11 @@ void printORSPToFile(const ORSPVec<double> &orspList,
                      const bool doTransform = false,
                      const PoseTransform2D<double> &coordTransform =
                          PoseTransform2D<double>::Identity()) {
-    std::ofstream orspOutputFile;
-
     fs::path orspFileOutputPath(orspBaseOutputPath);
     orspFileOutputPath /= "orsp_" + std::to_string(frameID) + ".txt";
 
-    orspOutputFile.open(orspFileOutputPath,
-                        std::ofstream::out | std::ofstream::trunc);
+    std::ofstream orspOutputFile(orspFileOutputPath,
+                                 std::ofstream::out | std::ofstream::trunc);
 
     for (const ORSP<double> &orsp : orspList) {
         ORSP<double> worldORSPPoint;
@@ -73,8 +71,6 @@ void printORSPToFile(const ORSPVec<double> &orspList,
 
         orspOutputFile << worldORSPPoint.toString() << std::endl;
     }
-
-    orspOutputFile.close();
 }
 
 void addNoiseToTransform(const PoseTransform2D<double> &aInputTransform,
