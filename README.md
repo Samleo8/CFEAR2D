@@ -35,6 +35,8 @@ If possible, you might be able to run the bash script via Powershell. Otherwise,
 
 ## Data Reformatting
 
+Data is taken from the [Oxford Radar RobotCar Dataset](https://oxford-robotics-institute.github.io/radar-robotcar-dataset/datasets).
+
 Data is being reformatted as:
 
 ```bash
@@ -81,8 +83,10 @@ Below is the full list of possible subprograms to run.
 
 | `TARGET` String     | Description                                                 |
 |--------------------:|:-----------:                                                |
-| `cfear`, `main`	    | Main program. Generates visualization of predicted and ground truth poses in `./results/<DATASET_ID>/poses/poses_<START_IND>_<END_IND>.jpg`. Raw pose information found in `./results/<DATASET_ID>/poses/poses_<START_IND>_<END_IND>.txt` |
+| `cfear`, `main`, `feed` | Main program. Generates visualization of predicted and ground truth poses in `./results/<DATASET_ID>/poses/poses_<START_IND>_<END_IND>.jpg`. Raw pose information found in `./results/<DATASET_ID>/poses/poses_<START_IND>_<END_IND>.txt` |
 | `radar`, `video`, `filter` | Visualization of filtering and oriented surface points, with video generation. Images generated in `./results/<DATASET_ID>` folder as `<FRAME_NUM>.jpg`. MP4 video generated as `results_<START_IND>_<END_IND>.mp4` (requires FFMPEG). |
+| `gt`, `groundtruth`, `procgt` | Converts ground truth information from relative to absolute pose information. Needs to be run for main program to visualize GT poses properly. Output at `./results/<DATASET_ID>/poses/gt.txt` |
+| `kitti` | Converts absolute poses into KITTI format for benchmarking. Output at `./results/<DATASET_ID>/poses/poses_kitti_<START_IND>_<END_IND>.txt` |
 
 ## Code Documentation
 
