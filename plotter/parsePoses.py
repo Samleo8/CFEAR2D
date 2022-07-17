@@ -39,6 +39,7 @@ if __name__ == '__main__':
     videoMode = False if len(sys.argv) <= 5 else bool(int(sys.argv[5]))
     startFrame = startInd if len(sys.argv) <= 6 else int(sys.argv[6])
 
+    print("====================PARSING POSES====================")
     print(
         "USAGE: python3 parsePoses.py [dataset=0 [startInd=0 [endInd=10 [forceSquare=1 [videoMode=0 [startFrame=startInd]]]]]]"
     )
@@ -72,5 +73,8 @@ if __name__ == '__main__':
 
         plt.tight_layout()
 
-        plt.savefig(filePath.replace('.txt', '.jpg'))
+        imgSavePath = filePath.replace('.txt', '.jpg')
+        plt.savefig(imgSavePath)
+
+        print("Figure saved to", imgSavePath)
         # plt.show()
