@@ -76,15 +76,12 @@ target_link_libraries(TestRadar ${OpenCV_LIBS})
 # Ground Truth Processing Module
 add_executable(
   ProcessGroundTruth
-  CVColor.cpp
-  ImageProcessing.cpp
-  PointPolar.cpp 
   RadarFeedHandler.cpp
   ProcessGroundTruth.cpp
 )
 set_property(TARGET ProcessGroundTruth PROPERTY C_STANDARD 11)
 set_property(TARGET ProcessGroundTruth PROPERTY CXX_STANDARD 17)
-target_link_libraries(ProcessGroundTruth)
+target_link_libraries(ProcessGroundTruth ${OpenCV_LIBS})
 
 # Main CFEAR Running Module
 add_executable(
