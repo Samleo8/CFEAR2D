@@ -267,9 +267,9 @@ void printORSPToFile(const ORSPVec<double> &orspList,
  * also allow for auto saving.
  */
 int main(int argc, char **argv) {
-    if (argc < 4 || argc > 5) {
+    if (argc < 3 || argc > 4) {
         printf(
-            "Usage: %s <dataset> <startID> [endID] [0|1:saveDirectToFile]]\n",
+            "Usage: %s <dataset> <startID> [endID]\n",
             argv[0]);
         return EXIT_FAILURE;
     }
@@ -277,7 +277,6 @@ int main(int argc, char **argv) {
     const unsigned int dataset = atoi(argv[1]);
     const unsigned int startID = atoi(argv[2]);
     const int endID = (argc == 4) ? atoi(argv[3]) : -1;
-    const bool saveDirectly = (argc == 5 && atoi(argv[4]));
 
     // Create path to save images
     fs::path saveImagesPath(".");
