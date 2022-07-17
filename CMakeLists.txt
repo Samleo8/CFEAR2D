@@ -83,6 +83,18 @@ set_property(TARGET ProcessGroundTruth PROPERTY C_STANDARD 11)
 set_property(TARGET ProcessGroundTruth PROPERTY CXX_STANDARD 17)
 target_link_libraries(ProcessGroundTruth ${OpenCV_LIBS})
 
+
+# Ground Truth Processing Module
+add_executable(
+  PosesToKITTI
+  BenchmarkHandler.cpp
+  PosesToKITTI.cpp
+)
+set_property(TARGET PosesToKITTI PROPERTY C_STANDARD 11)
+set_property(TARGET PosesToKITTI PROPERTY CXX_STANDARD 17)
+target_link_libraries(PosesToKITTI ${OpenCV_LIBS})
+
+
 # Main CFEAR Running Module
 add_executable(
   RunCFEAR
