@@ -18,6 +18,8 @@ if [[ $TARGET == "both" ]]; then
 elif [[ $TARGET == "main" || $TARGET == "cfear" || $TARGET == "feed" ]]; then
     ./build/RunCFEAR $DATASET_ID $START_IND $END_IND || exit 1
     python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
+elif [[ $TARGET == "kitti" ]]; then
+    ./build/PosesToKITTI $DATASET_ID $START_IND $END_IND
 elif [[ $TARGET == "groundtruth" || $TARGET == "gt" || $TARGET == "procgt" ]]; then
     ./build/ProcessGroundTruth $DATASET_ID || exit 1
 elif [[ $TARGET == "debug" ]]; then

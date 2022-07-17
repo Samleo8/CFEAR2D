@@ -64,18 +64,16 @@ int main(int argc, char **argv) {
                         std::ofstream::out | std::ofstream::trunc);
 
     // Start reading and converting, outputting to file accordingly
-    while (poseInputFile.good()) {
-        // Read in the pose
-        Pose2D<double> pose;
-
-        std::string line;
-        poseInputFile >> line;
+    std::string line;
+    while (std::getline(poseInputFile, line)) {
+        double x, y, theta;
+        std::string extra1;
 
         std::stringstream ss(line);
-        double x, y, theta;
-        // std::string extras;
-        ss >> x >> y >> theta;
-        std::cout << x << " " << y << " " << theta << std::endl;
+        ss >> extra1 >> x >> y >> theta;
+
+        // Read in the pose
+        Pose2D<double> pose(x, y, theta);
 
         // Convert to KITTI format
         // Vector3T<double> transl;
