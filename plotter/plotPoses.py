@@ -2,10 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plotPoses(poses: np.ndarray, show: bool = False):
+def plotPoses(poses: np.ndarray,
+              gt: bool = False,
+              forceSquare: bool = True,
+              show: bool = False):
     '''
     @brief Plot poses
     @param[in] poses Poses array [x | y | theta | kf]
+    @param[in] gt Whether poses represent ground truth (affects labelling etc)
+    @param[in] forceSquare Whether to force square aspect ratio
+    @param[in] show Whether to show the plot
     '''
     x = poses[:, 0]
     y = poses[:, 1]
@@ -13,17 +19,26 @@ def plotPoses(poses: np.ndarray, show: bool = False):
     kf = poses[:, 3].astype(bool)
     kfMask = (kf == True)
 
-    plt.plot(x, y, marker='o', color='blue', alpha=0.4)
-    plt.scatter(x[kfMask], y[kfMask], color='red')
+    label = 'GT' if gt else 'Pred'
+    color = 'green' if gt else 'blue'
+
+    plt.plot(x, y, marker='o', color=color, alpha=0.4, label=label)
+
+    if not gt:
+        plt.scatter(x[kfMask], y[kfMask], color='red')
 
     plt.xlabel('x [m]')
     plt.ylabel('y [m]')
 
     # Force a square
-    mn = np.floor(min(x.min(), y.min()))
-    mx = np.ceil(max(x.max(), y.max()))
-    plt.xlim(mn, mx)
-    plt.ylim(mn, mx)
+    if forceSquare:
+        xCurr = plt.xlim()
+        yCurr = plt.ylim()
+
+        mn = np.floor(min(x.min(), y.min(), xCurr[0], yCurr[0]))
+        mx = np.ceil(max(x.max(), y.max(), xCurr[1], yCurr[1]))
+        plt.xlim(mn, mx)
+        plt.ylim(mn, mx)
 
     if show:
         plt.show()

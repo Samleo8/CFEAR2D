@@ -10,7 +10,7 @@ def parsePoses(filePath: str) -> np.ndarray:
     with open(filePath, 'r') as f:
         for data in f.readlines():
             kf = int(data.strip().endswith('kf'))
-            
+
             data = data.replace('Pose2D: ', '').replace(' kf', '')
             dataArr = list(map(float, data.split(' ')))
             dataArr.append(kf)
@@ -35,16 +35,24 @@ if __name__ == '__main__':
     dataset = "0" if len(sys.argv) <= 1 else sys.argv[1]
     startInd = 0 if len(sys.argv) <= 2 else int(sys.argv[2])
     endInd = 10 if len(sys.argv) <= 3 else int(sys.argv[3])
-    videoMode = False if len(sys.argv) <= 4 else bool(int(sys.argv[4]))
-    startFrame = startInd if len(sys.argv) <= 5 else int(sys.argv[5])
+    forceSquare = True if len(sys.argv) <= 4 else int(sys.argv[4])
+    videoMode = False if len(sys.argv) <= 5 else bool(int(sys.argv[5]))
+    startFrame = startInd if len(sys.argv) <= 6 else int(sys.argv[6])
+
+    print(
+        "USAGE: python3 parsePoses.py [dataset=0 [startInd=0 [endInd=10 [forceSquare=1 [videoMode=0 [startFrame=startInd]]]]]]"
+    )
 
     baseResultsPath = os.path.join('results', dataset, 'poses')
+
+    # Get normal poses
     filePath = os.path.join(baseResultsPath, f'poses_{startInd}_{endInd}.txt')
-
     poseArr = parsePoses(filePath)
-    print(poseArr)
 
-    # print(poseArr)
+    # Get GT poses
+    filePathGT = os.path.join(baseResultsPath, 'gt.txt')
+    gtPoseArr = parsePoses(filePathGT)
+
     if videoMode:
         imagePaths = getImagePaths(dataset, startInd, endInd)
         plotPosesVideo(poseArr,
@@ -53,7 +61,14 @@ if __name__ == '__main__':
                        startFrame=startFrame,
                        pauseInterval=-1)
     else:
-        plotPoses(poseArr)
+        plotPoses(poseArr, forceSquare=forceSquare)
+
+        if endInd == -1:
+            gtPoseArrTrunc = gtPoseArr[startInd:]
+        else:
+            gtPoseArrTrunc = gtPoseArr[startInd:endInd]
+
+        plotPoses(gtPoseArrTrunc, gt=True, forceSquare=forceSquare)
 
         plt.tight_layout()
 
