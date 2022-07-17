@@ -51,17 +51,15 @@ int main(int argc, char **argv) {
     poseInputPath /= "poses_" + std::to_string(startID) + "_" +
                      std::to_string(endID) + ".txt";
 
-    std::ifstream poseInputFile;
-    poseInputFile.open(poseInputPath, std::ifstream::in);
+    std::ifstream poseInputFile(poseInputPath, std::ifstream::in);
 
     // Setup to output converted format to file
     fs::path poseOutputPath(poseBasePath);
     poseOutputPath /= "poses_kitti_" + std::to_string(startID) + "_" +
                       std::to_string(endID) + ".txt";
 
-    std::ofstream poseOutputFile;
-    poseOutputFile.open(poseOutputPath,
-                        std::ofstream::out | std::ofstream::trunc);
+    std::ofstream poseOutputFile(poseOutputPath,
+                                 std::ofstream::out | std::ofstream::trunc);
 
     // Start reading and converting, outputting to file accordingly
     std::string line;
@@ -86,10 +84,6 @@ int main(int argc, char **argv) {
         //                << " " << quat.x() << " " << quat.y() << " "
         //                << quat.z() << " " << quat.w() << "\n";
     }
-
-    // Remember to close files
-    poseOutputFile.close();
-    poseInputFile.close();
 
     return 0;
 }
