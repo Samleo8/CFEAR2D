@@ -9,7 +9,8 @@ def parsePoses(filePath: str) -> np.ndarray:
 
     with open(filePath, 'r') as f:
         for data in f.readlines():
-            kf = data.endswith('kf')
+            kf = int(data.strip().endswith('kf'))
+            
             data = data.replace('Pose2D: ', '').replace(' kf', '')
             dataArr = list(map(float, data.split(' ')))
             dataArr.append(kf)
@@ -41,6 +42,8 @@ if __name__ == '__main__':
     filePath = os.path.join(baseResultsPath, f'poses_{startInd}_{endInd}.txt')
 
     poseArr = parsePoses(filePath)
+    print(poseArr)
+
     # print(poseArr)
     if videoMode:
         imagePaths = getImagePaths(dataset, startInd, endInd)
