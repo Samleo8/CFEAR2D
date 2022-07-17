@@ -74,15 +74,14 @@ int main(int argc, char **argv) {
         Pose2D<double> pose(x, y, theta);
 
         // Convert to KITTI format
-        // Vector3T<double> transl;
-        // Eigen::Quaterniond quat;
-        // convertPoseToKITTIFormat(pose, transl, quat);
+        Vector3T<double> transl;
+        Eigen::Quaterniond quat;
+        convertPoseToKITTIFormat(pose, transl, quat);
 
         // Output to file
-        // poseOutputFile << transl.x() << " " << transl.y() << " " <<
-        // transl.z()
-        //                << " " << quat.x() << " " << quat.y() << " "
-        //                << quat.z() << " " << quat.w() << "\n";
+        std::string output;
+        transQuatToString(transl, quat, output);
+        poseOutputFile << output << "\n";
     }
 
     return 0;
