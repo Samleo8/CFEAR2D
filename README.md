@@ -5,50 +5,33 @@ C++ Implementation of [CFEAR paper](https://arxiv.org/pdf/2105.01457.pdf)
 - [CFEAR](#cfear)
   - [Requirements](#requirements)
   - [Build](#build)
-    - [Windows](#windows)
     - [Linux](#linux)
-  - [Documentation](#documentation)
+    - [Windows](#windows)
   - [Data Reformatting](#data-reformatting)
-  - [Radar Image Format](#radar-image-format)
-  - [Visualiser](#visualiser)
-    - [Usage](#usage)
-  - [Radar Keyframe Odometry Tester](#radar-keyframe-odometry-tester)
-    - [Usage](#usage-1)
+    - [Radar Image Format](#radar-image-format)
+  - [Universal Run Script](#universal-run-script)
+    - [Target Names](#target-names)
+  - [Code Documentation](#code-documentation)
   - [Other Resources](#other-resources)
     - [Robot Car SDK (Viewing Toolkit)](#robot-car-sdk-viewing-toolkit)
-    - [FMT](#fmt)
-      - [Papers](#papers)
-      - [Implementation](#implementation)
 
 ## Requirements
 
 OpenCV >= 3.4.11
+Eigen3 >= 3.3.7
+Ceres >= 2.2
 
 ## Build
 
-To begin, you should first create a `build` directory.
+### Linux
+
+To build, simply run the `./scripts/build.sh` bash script.
+
+If needed, set the `OpenCV_DIR` variable that points to your OpenCV directory in your `.bashrc` or `.bash_profile` file, and re-run the build script.
 
 ### Windows
 
-`cmd > cd build; cmake -D OPENCV_DIR=<path_to_opencv_dir> ..`
-
-**Example: `cd build; cmake -D OPENCV_DIR=C:\Users\Intern\Downloads\OpenCV\Build\opencv .`**
-
-Alternatively, set your OPENCV_DIR environment variable by using
-
-`setx OPENCV_DIR <path_to_opencv_dir>`
-
-_NOTE:_ It may be wise to open CMake-GUI to see the exact variables, in case your system overrides some variables.
-
-### Linux
-
-```bash
-$ cmake . && make
-```
-
-## Documentation
-
-Doxygen docs can be found at `./docs/doxygen/html/index.html`. You can regenerate them using the `./doxygen` command.
+If possible, you might be able to run the bash script via Powershell. Otherwise, manually create a `./build` folder, `cd` into it, and run `cmake ..` via the command line or GUI. Then, to compile all the related subprograms, run `cmake --build .`.
 
 ## Data Reformatting
 
@@ -72,39 +55,39 @@ data
     ...
 ```
 
-## Radar Image Format
+### Radar Image Format
 
-Each image is 3779 x 40 (range x angle). Angle resolution is 0.9 degrees. Range 0 to 163m, resolution of 4.38cm. More info [here](https://oxford-robotics-institute.github.io/radar-robotcar-dataset/documentation).
+Each image is 3779 x 40 (range x angle). Angle resolution is 0.9 degrees. Range 0 to 163m, resolution of 4.38cm.
+The raw radar image also contains 11 columns of metadata such as timestamps and azimuths, handled by the algorithm.
 
-## Visualiser
+More info [here](https://oxford-robotics-institute.github.io/radar-robotcar-dataset/documentation).
 
-The included `TestVisualiser` module gives full visualisation of the radar image, ground truth and prediction odometry. It can be run from the `./TestVisualiser` or `./build/Release/TestVisualiser.exe` executable. Follow the instructions on the screen (that show for 3 seconds), that tell you the keyboard shortcuts for pausing, stepping through, etc.
+## Universal Run Script
 
-### Usage
-
-```bash
-./TestVisualiser [dataset [startFrame [endFrame [0/1:outputToFile]]]]
-```
-
-- `dataset`: Which particular dataset to visualise
-- `startFrame`: Frame to start at
-- `endFrame`: Frame to end at (-1 to just go all the way to the end)
-- `outputToFile`: Flag of whether or not output should be piped to a file in the `./raw_output` for future processing. This is used for debugging. If python is available, the `TestVisualiser` executable will automatically run the debugger files `./raw_output/txt_to_json.py` and `./raw_output/error_check.py` to generate a CSV file for debugging purposes.
-
-## Radar Keyframe Odometry Tester
-
-The included `TestRadar` module also allows for the user to check the results of the algorithm for arbitrary keyframe to keyframe odometry. One can think of this module as a subset of the [Visualiser](#visualiser) module, except that we are only outputting the results of odometry between 2 specified keyframe images. Also, for debugging and visualisation purposes, the rotated image and numerical is shown side by side with the 2 images in a single image.
-
-### Usage
+There are many subprograms that are built and are available for use. To run them, there is a universal run script that can be used as follows:
 
 ```bash
-./TestRadar <dataset> <image1ID> <image2ID> [filter size [0|1:saveDirectlyToFile]]
+./scripts/run.sh [DATASET_ID=0 [TARGET="main" [START_IND=0 [END_IND=-1]]]]
 ```
 
-- `dataset`: Which particular dataset to visualise
-- `image1ID`, `image2ID`: Image IDs to compare against. Odometry will be calculated from `image1ID` against `image2ID`, rotating `image1ID` to fit the frame of `image2ID` as done in the actual algorithm.
-- `filterSize`: Size of high-pass filter to use. Default: 150
-- `saveDirectlyToFile`: Flag to specify that instead of displaying the radar images on the screen, directly save them to `./raw_output/error_images` folder. If set, the program also generates a series of concatenated predictions for frame to frame odometry in the range `[image1ID, image2ID]` in a single output image.
+- `DATASET_ID`: ID of dataset as integer, as formatted in [#data-formatting](Data Formatting) section above.
+- `TARGET`: Type of sub-program to run, as string (full list below)
+- `START_IND`: Index of starting frame (might not be used, depends on `TARGET`)
+- `END_IND`: Index of ending frame (might not be used, depends on `TARGET`). `-1` implies run to completion.
+
+### Target Names
+
+Below is the full list of possible subprograms to run.
+
+| `TARGET` String     | Description                                                 |
+|--------------------:|:-----------:                                                |
+| `cfear`, `main`	    | Main program. Generates visualization of predicted and ground truth poses in `./results/<DATASET_ID>/poses/poses_<START_IND>_<END_IND>.jpg`. Raw pose information found in `./results/<DATASET_ID>/poses/poses_<START_IND>_<END_IND>.txt` |
+| `radar`, `video`, `filter` | Visualization of filtering and oriented surface points, with video generation. Images generated in `./results/<DATASET_ID>` folder as `<FRAME_NUM>.jpg`. MP4 video generated as `results_<START_IND>_<END_IND>.mp4` (requires FFMPEG). |
+
+## Code Documentation
+
+Doxygen docs can be found at `./docs/doxygen/html/index.html`. You can regenerate them using the `./doxygen` command.
+
 
 ## Other Resources
 
@@ -115,24 +98,8 @@ I modified the [original robot car SDK toolkit](https://github.com/ori-mrg/robot
 To play the radar feed, clone my git repo then run the internal script.
 
 ```bash
-$ git clone git@github.com:Samleo8/robotcar-dataset-sdk.git
-$ ./robotcar-dataset-sdk/playRadar
+git clone git@github.com:Samleo8/robotcar-dataset-sdk.git
+./robotcar-dataset-sdk/playRadar
 ```
 
 Note that you will require Python >= 3.4 to run it.
-
-### FMT
-
-#### Papers
-
-![FMT Algorithm](./theory/fmt_algo.jpg)
-
-[1] P. Checchin, F. Gérossier, C. Blanc, R. Chapuis, and L. Trassoudaine, “Radar scan matching slam using the fourier-mellin transform,” in Field and Service Robotics. Springer, 2010, pp. 151–161. [(link)](./theory/Radar_Scan_Matching_SLAM_Using_the_Fourier-Mellin.pdf)
-
-#### Implementation
-
-[MatLab Implementation](https://www.mathworks.com/matlabcentral/fileexchange/19731-fourier-mellin-image-registration)
-
-[Python Implementation of FMT/Phase Co-relation](https://github.com/polakluk/fourier-mellin)
-
-[Possible C++ Implementation](https://github.com/Smorodov/LogPolarFFTTemplateMatcher)

@@ -3,7 +3,7 @@
 DATASET_ID=${1:-0}
 TARGET=${2:-"main"}
 START_IND=${3:-0}
-END_IND=${4:-10}
+END_IND=${4:--1}
 
 if [[ ! -d ./data/$DATASET_ID ]]; then
     echo "Dataset $DATASET_ID not found! Aborting!"
@@ -28,7 +28,7 @@ elif [[ $TARGET == "debug" ]]; then
 elif [[ $TARGET == "keyframe" ]]; then
     ./build/TestKeyframe $DATASET_ID $START_IND $END_IND || exit 1
     python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
-elif [[ $TARGET == "radar" || $TARGET == "video" ]]; then
+elif [[ $TARGET == "radar" || $TARGET == "video" || $TARGET == "filter" ]]; then
     for ((IMG_IND = $START_IND; IMG_IND <= $END_IND; IMG_IND++)); do
         echo " > Running on image $IMG_IND"
         ./build/TestRadar $DATASET_ID $IMG_IND 1 || exit 1
