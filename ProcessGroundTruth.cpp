@@ -1,4 +1,11 @@
-#include "RadarFeed.hpp"
+#include <filesystem>
+#include <fstream>
+#include <vector>
+
+#include "Pose2D.hpp"
+#include "RadarFeedHandler.hpp"
+
+namespace fs = std::filesystem;
 
 /**
  * @brief Main function. Handles input from command line.
@@ -7,24 +14,12 @@
  * also allow for auto saving.
  */
 int main(int argc, char **argv) {
-    if (argc < 4 || argc > 5) {
-        printf(
-            "Usage: %s <dataset> <startID> [endID] [0|1:saveDirectToFile]]\n",
-            argv[0]);
+    if (argc != 2) {
+        printf("Usage: %s <dataset>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
     const unsigned int dataset = atoi(argv[1]);
-    const unsigned int startID = atoi(argv[2]);
-    const int endID = (argc == 4) ? atoi(argv[3]) : -1;
-    const bool saveDirectly = (argc == 5 && atoi(argv[4]));
-
-    // Create path to save images
-    fs::path saveImagesPath(".");
-    saveImagesPath /= "results";
-    saveImagesPath /= argv[1];
-
-    fs::create_directories(saveImagesPath);
 
     /**********************************************************************
      * @section TestRadar-KeyframeToKeyframe Compute keyframe to keyframe
@@ -35,10 +30,15 @@ int main(int argc, char **argv) {
     dataPath /= "data";
     dataPath /= std::to_string(dataset);
 
-    RadarFeed feed(dataPath);
+    std::vector<RotTransData> gtFeedVec;
+    std::vector<std::string> aImagePathVector; // NOTE: Unused
+    getDataFromFolder(dataPath, aImagePathVector, gtFeedVec);
 
-    // Output the GT poses to a file
-    fs::path poseGTOutputPath(saveImagesPath);
+    // Output the GT poses to a file, creating intermediate folders if
+    // necessary
+    fs::path poseGTOutputPath(".");
+    poseGTOutputPath /= "results";
+    poseGTOutputPath /= argv[1];
     poseGTOutputPath /= "poses";
 
     fs::create_directories(poseGTOutputPath);
@@ -47,7 +47,21 @@ int main(int argc, char **argv) {
 
     std::ofstream poseGTOutputFile;
     poseGTOutputFile.open(poseGTOutputPath,
-                        std::ofstream::out | std::ofstream::trunc);
+                          std::ofstream::out | std::ofstream::trunc);
+
+    // Read in the GT poses, as delta pose data,
+    // then generate world poses to output to file
+    const Pose2D<double> initPose(0, 0, 0);
+    Pose2D<double> worldPose(initPose);
+
+    poseGTOutputFile << worldPose.toString() << std::endl;
+
+    for (const RotTransData gtOdom : gtFeedVec) {
+        Pose2D<double> deltaPose(gtOdom.dx, gtOdom.dy, gtOdom.dRotRad);
+        worldPose += deltaPose;
+
+        poseGTOutputFile << worldPose.toString() << std::endl;
+    }
 
     // Remember to close file
     poseGTOutputFile.close();

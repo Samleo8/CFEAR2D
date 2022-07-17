@@ -79,12 +79,7 @@ add_executable(
   CVColor.cpp
   ImageProcessing.cpp
   PointPolar.cpp 
-  RadarImageHandler.cpp
-  Keyframe.cpp
-  RadarImage.cpp
-  OrientedSurfacePointsHandler.cpp
   RadarFeedHandler.cpp
-  RadarFeed.cpp
   ProcessGroundTruth.cpp
 )
 set_property(TARGET ProcessGroundTruth PROPERTY C_STANDARD 11)
