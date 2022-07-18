@@ -76,5 +76,5 @@ if __name__ == '__main__':
         imgSavePath = filePath.replace('.txt', '.jpg')
         plt.savefig(imgSavePath)
 
-        print("Figure saved to", imgSavePath)
+        print("\nFigure saved to", imgSavePath)
         # plt.show()
