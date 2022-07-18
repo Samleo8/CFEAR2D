@@ -9,9 +9,9 @@ def parsePoses(filePath: str) -> np.ndarray:
 
     with open(filePath, 'r') as f:
         for data in f.readlines():
-            kf = int(data.strip().endswith('kf'))
+            kf = int(data.strip().endswith('kf') or data.startswith('kf'))
 
-            data = data.replace('Pose2D: ', '').replace(' kf', '')
+            data = data.replace('Pose2D: ', '').replace('kf', '').strip()
             dataArr = list(map(float, data.split(' ')))
             dataArr.append(kf)
 
