@@ -41,13 +41,14 @@ if __name__ == '__main__':
     dataset = "0" if len(sys.argv) <= 1 else sys.argv[1]
     startInd = 0 if len(sys.argv) <= 2 else int(sys.argv[2])
     endInd = 10 if len(sys.argv) <= 3 else int(sys.argv[3])
-    forceSquare = True if len(sys.argv) <= 4 else int(sys.argv[4])
-    videoMode = False if len(sys.argv) <= 5 else bool(int(sys.argv[5]))
-    startFrame = startInd if len(sys.argv) <= 6 else int(sys.argv[6])
+    plotGT = True if len(sys.argv) <= 4 else bool(int(sys.argv[4]))
+    forceSquare = True if len(sys.argv) <= 5 else bool(int(sys.argv[5]))
+    videoMode = False if len(sys.argv) <= 6 else int(sys.argv[6])
+    startFrame = startInd if len(sys.argv) <= 7 else int(sys.argv[7])
 
     print("====================PARSING POSES====================")
     print(
-        "USAGE: python3 parsePoses.py [dataset=0 [startInd=0 [endInd=10 [forceSquare=1 [videoMode=0 [startFrame=startInd]]]]]]"
+        "USAGE: python3 parsePoses.py [dataset=0 [startInd=0 [endInd=10 [plotGT=1 [forceSquare=1 [videoMode=0 [startFrame=startInd]]]]]]]"
     )
 
     baseResultsPath = os.path.join('results', dataset, 'poses')
@@ -57,8 +58,9 @@ if __name__ == '__main__':
     poseArr = parsePoses(filePath)
 
     # Get GT poses
-    filePathGT = os.path.join(baseResultsPath, 'gt.txt')
-    gtPoseArr = parsePoses(filePathGT)
+    if plotGT:
+        filePathGT = os.path.join(baseResultsPath, 'gt.txt')
+        gtPoseArr = parsePoses(filePathGT)
 
     if videoMode:
         imagePaths = getImagePaths(dataset, startInd, endInd)
@@ -70,25 +72,26 @@ if __name__ == '__main__':
     else:
         plotPoses(poseArr, forceSquare=forceSquare)
 
-        if endInd == -1:
-            gtPoseArrTrunc = gtPoseArr[startInd:]
-        else:
-            gtPoseArrTrunc = gtPoseArr[startInd:endInd]
+        if plotGT:
+            if endInd == -1:
+                gtPoseArrTrunc = gtPoseArr[startInd:]
+            else:
+                gtPoseArrTrunc = gtPoseArr[startInd:endInd]
 
-        # Need to force starting world pose as (0,0,0)
-        # While accounting for proper orientation
-        angle = gtPoseArrTrunc[0][2]
-        rotMatInv = getRotMat(angle).T
-        
-        # Translate
-        gtPoseArrTrunc -= gtPoseArrTrunc[0]
+            # Need to force starting world pose as (0,0,0)
+            # While accounting for proper orientation
+            angle = gtPoseArrTrunc[0][2]
+            rotMatInv = getRotMat(angle).T
 
-        # Rotate
-        gtPoseArrTrunc[:, :2] = (rotMatInv @ gtPoseArrTrunc[:, :2].T).T
+            # Translate
+            gtPoseArrTrunc -= gtPoseArrTrunc[0]
 
-        # Plot the correct ground truth poses
-        plotPoses(gtPoseArrTrunc, gt=True, forceSquare=forceSquare)
-        plt.tight_layout()
+            # Rotate
+            gtPoseArrTrunc[:, :2] = (rotMatInv @ gtPoseArrTrunc[:, :2].T).T
+
+            # Plot the correct ground truth poses
+            plotPoses(gtPoseArrTrunc, gt=True, forceSquare=forceSquare)
+            plt.tight_layout()
 
         imgSavePath = filePath.replace('.txt', '.jpg')
         plt.savefig(imgSavePath)
