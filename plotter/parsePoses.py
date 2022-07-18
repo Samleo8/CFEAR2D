@@ -3,6 +3,12 @@ import os, sys
 from plotPoses import plotPoses, plotPosesVideo, plt
 
 
+def getRotMat(angle: float) -> np.ndarray:
+    rotMat = np.array([[np.cos(angle), -np.sin(angle)],
+                       [np.sin(angle), np.cos(angle)]])
+    return rotMat
+
+
 def parsePoses(filePath: str) -> np.ndarray:
     poseInfo = []
     poseInfo.append([0, 0, 0, 1])  # x, y, theta, kf
@@ -70,11 +76,18 @@ if __name__ == '__main__':
             gtPoseArrTrunc = gtPoseArr[startInd:endInd]
 
         # Need to force starting world pose as (0,0,0)
+        # While accounting for proper orientation
+        angle = gtPoseArrTrunc[0][2]
+        rotMatInv = getRotMat(angle).T
+        
+        # Translate
         gtPoseArrTrunc -= gtPoseArrTrunc[0]
-        print(gtPoseArrTrunc[0])
 
+        # Rotate
+        gtPoseArrTrunc[:, :2] = (rotMatInv @ gtPoseArrTrunc[:, :2].T).T
+
+        # Plot the correct ground truth poses
         plotPoses(gtPoseArrTrunc, gt=True, forceSquare=forceSquare)
-
         plt.tight_layout()
 
         imgSavePath = filePath.replace('.txt', '.jpg')
