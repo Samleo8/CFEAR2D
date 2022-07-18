@@ -69,6 +69,10 @@ if __name__ == '__main__':
         else:
             gtPoseArrTrunc = gtPoseArr[startInd:endInd]
 
+        # Need to force starting world pose as (0,0,0)
+        gtPoseArrTrunc -= gtPoseArrTrunc[0]
+        print(gtPoseArrTrunc[0])
+
         plotPoses(gtPoseArrTrunc, gt=True, forceSquare=forceSquare)
 
         plt.tight_layout()
