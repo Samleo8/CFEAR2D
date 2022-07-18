@@ -1,12 +1,5 @@
 #!/bin/bash
 
-generateYAMLFile() {
-    YAML_FILE="${RESULTS_DIR}/eval_cfg.yaml"
-    
-    echo "align_type: se3" > $YAML_FILE
-    echo "align_num_frames: -1" >> $YAML_FILE
-}
-
 DATASET_ID=${1:-0}
 START_IND=${2:-0}
 END_IND=${3:--1}
@@ -28,9 +21,16 @@ elif [ ! -f ${RESULTS_DIR}/stamped_traj_estimate.txt ]; then
 fi
 
 # Generate YAML file
-generateYAMLFile()
+generateYAMLFile() {
+    YAML_FILE=${RESULTS_DIR}/eval_cfg.yaml
+    
+    echo "align_type: se3" > $YAML_FILE
+    echo "align_num_frames: -1" >> $YAML_FILE
+}
 
-echo "Benchmarking on dataset $DATASET_ID..."
+generateYAMLFile
+
+echo "Benchmarking on dataset ${DATASET_ID}..."
 python ${BENCHMARK_DIR}/scripts/analyze_trajectory_single.py $RESULTS_DIR
 echo "Done!"
 echo ""
