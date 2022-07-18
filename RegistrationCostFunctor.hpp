@@ -50,13 +50,13 @@ class RegistrationCostFunctor {
 
   public:
     // Constructors
-    RegistrationCostFunctor(const ORSP<double> &aFeaturePoint,
-                            const ORSP<double> &aKeyframeFeaturePoint);
+    RegistrationCostFunctor(const ORSP<double> &aFeaturePointLocal,
+                            const ORSP<double> &aKeyframeFeaturePointWorld);
 
     // Cost function
     static ceres::CostFunction *
-    Create(const ORSP<double> &aFeaturePoint,
-           const ORSP<double> &aKeyframeFeaturePoint);
+    Create(const ORSP<double> &aFeaturePointLocal,
+           const ORSP<double> &aKeyframeFeaturePointWorld);
 
     // Actual cost functor
     template <typename T>
