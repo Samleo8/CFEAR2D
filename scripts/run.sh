@@ -36,6 +36,8 @@ elif [[ $TARGET == "radar" || $TARGET == "video" || $TARGET == "filter" ]]; then
 
     FPS=10
     ./scripts/mp4-from-folder.sh results $DATASET_ID $START_IND $END_IND $FPS
+elif [[ $TARGET == "plotter" || $TARGET == "plot" ]]; then
+    python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
 else
     echo "Unknown target $TARGET"
     exit 1
