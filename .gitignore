@@ -5,10 +5,11 @@
 *.zip
 *.mp4
 data
-vis_saved_images
 # docs/doxygen
 docs/*.log
 results
+
+rpg_trajectory_evaluation/*/__pycache__
 
 # Build files
 build
