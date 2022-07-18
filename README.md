@@ -25,13 +25,13 @@ Ceres >= 2.2
 
 ### Linux
 
-To build, simply run the `./scripts/build.sh` bash script.
+To build, simply run the `./scripts/build.sh` bash script. Note that this will enforce a FRESH build. In other words, it will delete the existing build directory and rebuild the entire project from scratch. If you want to build only what has changed instead, use the `./compile.sh` file.
 
 If needed, set the `OpenCV_DIR` variable that points to your OpenCV directory in your `.bashrc` or `.bash_profile` file, and re-run the build script.
 
 ### Windows
 
-If possible, you might be able to run the bash script via Powershell. Otherwise, manually create a `./build` folder, `cd` into it, and run `cmake ..` via the command line or GUI. Then, to compile all the related subprograms, run `cmake --build .`.
+If possible, you might be able to run the bash script via Powershell. Otherwise, manually create a `./build` folder, `cd` into it, and run `cmake ..` via the command line or use the CMake GUI. Then, to compile all the [related subprograms](##universal-run-script), run `cmake --build .`.
 
 ## Data Reformatting
 
@@ -86,7 +86,7 @@ Below is the full list of possible subprograms to run.
 | `cfear`, `main`, `feed` | Main program. Generates visualization of predicted and ground truth poses in `./results/<DATASET_ID>/poses/poses_<START_IND>_<END_IND>.jpg`. Raw pose information found in `./results/<DATASET_ID>/poses/poses_<START_IND>_<END_IND>.txt` |
 | `radar`, `video`, `filter` | Visualization of filtering and oriented surface points, with video generation. Images generated in `./results/<DATASET_ID>` folder as `<FRAME_NUM>.jpg`. MP4 video generated as `results_<START_IND>_<END_IND>.mp4` (requires FFMPEG). |
 | `gt`, `groundtruth`, `procgt` | Converts ground truth information from relative to absolute pose information. Needs to be run for main program to visualize GT poses properly. Output at `./results/<DATASET_ID>/poses/gt.txt` |
-| `kitti` | Converts absolute poses into KITTI format for benchmarking. Output at `./results/<DATASET_ID>/poses/poses_kitti_<START_IND>_<END_IND>.txt` |
+| `kitti` | Converts absolute poses into KITTI format for benchmarking. Output at `./results/<DATASET_ID>/poses/poses_kitti_<START_IND>_<END_IND>.txt`. To force it to convert ground truth data, set `START_IND` as `-1`. |
 
 ## Code Documentation
 
