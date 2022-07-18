@@ -65,7 +65,10 @@ int main(int argc, char **argv) {
     fs::path poseOutputPath(poseBasePath);
 
     if (isGT) {
-        poseOutputPath /= "gt_kitti.txt";
+        poseOutputPath /= "stamped_groundtruth.txt";
+    }
+    else if (startID == 0 && endID == -1) {
+        poseOutputPath /= "stamped_traj_estimate.txt";
     }
     else {
         poseOutputPath /= "poses_kitti_" + std::to_string(startID) + "_" +
