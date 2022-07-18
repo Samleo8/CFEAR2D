@@ -37,7 +37,7 @@ If needed, set the `OpenCV_DIR` variable that points to your OpenCV directory in
 
 ### Windows
 
-If possible, you might be able to run the bash script via Powershell. Otherwise, manually create a `./build` folder, `cd` into it, and run `cmake ..` via the command line or use the CMake GUI. Then, to compile all the [related subprograms](##universal-run-script), run `cmake --build .`.
+If possible, you might be able to run the bash script via Powershell. Otherwise, manually create a `./build` folder, `cd` into it, and run `cmake ..` via the command line or use the CMake GUI. Then, to compile all the [related subprograms](#universal-run-script), run `cmake --build .`.
 
 ## Data Reformatting
 
@@ -78,8 +78,8 @@ There are many subprograms that are built and are available for use. To run them
 ./scripts/run.sh [DATASET_ID=0 [TARGET="main" [START_IND=0 [END_IND=-1]]]]
 ```
 
-- `DATASET_ID`: ID of dataset as integer, as formatted in [#data-formatting](Data Formatting) section above.
-- `TARGET`: Type of sub-program to run, as string (full list below)
+- `DATASET_ID`: ID of dataset as integer, as formatted in [Data Formatting](#data-formatting) section above.
+- `TARGET`: Type of sub-program to run, as string (see full list [below](#target-names))
 - `START_IND`: Index of starting frame (might not be used, depends on `TARGET`)
 - `END_IND`: Index of ending frame (might not be used, depends on `TARGET`). `-1` implies run to completion.
 
