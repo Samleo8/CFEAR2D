@@ -38,6 +38,10 @@ elif [[ $TARGET == "radar" || $TARGET == "video" || $TARGET == "filter" ]]; then
     ./scripts/mp4-from-folder.sh results $DATASET_ID $START_IND $END_IND $FPS
 elif [[ $TARGET == "plotter" || $TARGET == "plot" ]]; then
     python plotter/parsePoses.py $DATASET_ID $START_IND $END_IND
+elif [[ $TARGET == "benchmark" ]]; then
+    ./scripts/run.sh $DATASET_ID gt || exit 1
+    ./scripts/run.sh $DATASET_ID kitti -1 || exit 1
+    ./scripts/run.sh $DATASET_ID kitti $START_IND $END_IND || exit 1
 else
     echo "Unknown target $TARGET"
     exit 1
