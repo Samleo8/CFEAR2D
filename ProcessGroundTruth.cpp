@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "Pose2D.hpp"
+#include "PoseTransformHandler.hpp"
 #include "RadarFeedHandler.hpp"
 
 namespace fs = std::filesystem;
@@ -70,7 +71,12 @@ int main(int argc, char **argv) {
 
     for (const RotTransData gtOdom : gtFeedVec) {
         Pose2D<double> deltaPose(gtOdom.dx, gtOdom.dy, gtOdom.dRotRad);
-        worldPose += deltaPose;
+        
+        // TODO: Double check multiplication order
+        PoseTransform2D<double> worldPoseTransform =
+            poseToTransform(worldPose) * poseToTransform(deltaPose);
+
+        worldPose = transformToPose(worldPoseTransform);
 
         poseGTOutputFile << worldPose.toString() << std::endl;
     }
