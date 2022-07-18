@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
                                  std::ofstream::out | std::ofstream::trunc);
 
     // Start reading and converting, outputting to file accordingly
+    size_t lineCount = 0;
     std::string line;
     while (std::getline(poseInputFile, line)) {
         double x, y, theta;
@@ -94,8 +95,13 @@ int main(int argc, char **argv) {
         // Output to file
         std::string output;
         transQuatToString(transl, quat, output);
-        poseOutputFile << output << "\n";
+        poseOutputFile << lineCount << " " << output << "\n";
+        
+        // Increment line count
+        lineCount++;
     }
+
+    std::cout << "Poses converted to KITTI format in " << poseOutputPath << "\n";
 
     return 0;
 }
