@@ -301,9 +301,9 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         if (!PERFORM_STATIONARY_CHECK ||
             f2fDistSq > DIST_STATIONARY_THRESH_SQ ||
             f2fRotRad > ROT_STATIONARY_THRESH_RAD) {
-            // TODO: For 3D probably need to make this a
-            // transformation matrix operation
-            currWorldPose += f2fDeltaPose;
+            // NOTE: Pose addition does not work properly for rotated poses
+            currWorldPose = transformToPose(poseToTransform(currWorldPose) *
+                                            frame2FrameTransf);
 
             std::cout << "Movement with delta: " << f2fDeltaPose.toString()
                       << std::endl;
