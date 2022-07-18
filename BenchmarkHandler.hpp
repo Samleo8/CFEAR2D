@@ -1,3 +1,14 @@
+/**
+ * @file BenchmarkHandler.hpp
+ * @author Samuel Leong (scleong@andrew.cmu.edu)
+ * @brief Functions for handling of benchmakring process, including conversion
+ * to KITTI readable format.
+ * @version 0.1
+ * @date 2022-07-18
+ *
+ * @copyright Copyright (c) 2022
+ */
+
 #ifndef __BENCHMARK_HANDLER_HPP__
 #define __BENCHMARK_HANDLER_HPP__
 
