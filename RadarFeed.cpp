@@ -301,19 +301,11 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         if (!PERFORM_STATIONARY_CHECK ||
             f2fDistSq > DIST_STATIONARY_THRESH_SQ ||
             f2fRotRad > ROT_STATIONARY_THRESH_RAD) {
-            // NOTE: Pose addition does not work properly for rotated poses
-            currWorldPose = transformToPose(poseToTransform(currWorldPose) *
-                                            frame2FrameTransf);
-
-            std::cout << "Movement with delta: " << f2fDeltaPose.toString()
-                      << std::endl;
-
-            /*******************************************
-             * Keyframing check
-             *******************************************/
-
+            /************************************************************
+             * Keyframing check. Must occur BEFORE velocity propagation
+             ***********************************************************/
             // Obtain transform from previous keyframe to
-            // current frame
+            // current frame BEFORE we change the world pose
             PoseTransform2D<double> kf2FrameTransf = getTransformsBetweenPoses(
                 keyframeList.back().getPose(), currWorldPose);
 
@@ -332,6 +324,18 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
 
                 poseOutputFile << " kf";
             }
+
+            /************************************************************
+             * Velocity propagation
+             ***********************************************************/
+
+            // Now actually change the world pose, updating using transforms
+            // because additive might not account for rotation well
+            currWorldPose = transformToPose(poseToTransform(currWorldPose) *
+                                            frame2FrameTransf);
+
+            std::cout << "Movement with delta: " << f2fDeltaPose.toString()
+                      << std::endl;
         }
         else {
             // TODO: Do we revert to previous pose or propagate by 0 velocity?
