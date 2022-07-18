@@ -58,9 +58,8 @@ int main(int argc, char **argv) {
 
     poseGTOutputPath /= "gt.txt";
 
-    std::ofstream poseGTOutputFile;
-    poseGTOutputFile.open(poseGTOutputPath,
-                          std::ofstream::out | std::ofstream::trunc);
+    std::ofstream poseGTOutputFile(poseGTOutputPath,
+                                   std::ofstream::out | std::ofstream::trunc);
 
     // Read in the GT poses, as delta pose data,
     // then generate world poses to output to file
@@ -71,8 +70,7 @@ int main(int argc, char **argv) {
 
     for (const RotTransData gtOdom : gtFeedVec) {
         Pose2D<double> deltaPose(gtOdom.dx, gtOdom.dy, gtOdom.dRotRad);
-        
-        // TODO: Double check multiplication order
+
         PoseTransform2D<double> worldPoseTransform =
             poseToTransform(worldPose) * poseToTransform(deltaPose);
 
@@ -81,8 +79,9 @@ int main(int argc, char **argv) {
         poseGTOutputFile << worldPose.toString() << std::endl;
     }
 
-    // Remember to close file
-    poseGTOutputFile.close();
+    std::cout << "GT Processing for dataset " << argv[1] << " complete!"
+              << std::endl;
+    std::cout << "File saved to " << poseGTOutputPath << std::endl;
 
     return 0;
 }
