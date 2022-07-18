@@ -32,6 +32,10 @@ def getImagePaths(dataset, startInd, endInd):
     imagePaths = []
     for i in range(startInd, endInd):
         imgPath = os.path.join(imgBasePath, f'{i}.jpg')
+
+        if not os.path.exists(imgPath):
+            return None
+
         imagePaths.append(imgPath)
 
     return imagePaths
@@ -63,12 +67,13 @@ if __name__ == '__main__':
         gtPoseArr = parsePoses(filePathGT)
 
     if videoMode:
+        endInd = len(poseArr) + startInd
         imagePaths = getImagePaths(dataset, startInd, endInd)
         plotPosesVideo(poseArr,
                        imagePaths,
                        startInd=startInd,
                        startFrame=startFrame,
-                       pauseInterval=-1)
+                       pauseInterval=0.01)
     else:
         plotPoses(poseArr, forceSquare=forceSquare)
 

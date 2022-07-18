@@ -1,3 +1,4 @@
+from socket import TIPC_SUBSCR_TIMEOUT
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -60,19 +61,42 @@ def percentCenterCrop(img: np.ndarray, percent=0.7) -> np.ndarray:
 
     return img[h_crop:-h_crop, w_crop:-w_crop, :]
 
+video_params = {
+    'pause': False,
+    'quit': False,
+    'pauseInterval': 0.05
+}
+
+def keypress_handler(event):
+    if event.key == 'q':
+        video_params['quit'] = True
+    elif event.key == '0':
+        video_params['pauseInterval'] = -1
+    elif event.key == '1':
+        video_params['pauseInterval'] = 0.01
+    elif event.key == 'p' or event.key == ' ':
+        if video_params['pauseInterval'] != -1:
+            video_params['pause'] = not video_params['pause']
+            print("Video paused:", video_params['pause'])
 
 def plotPosesVideo(poses: np.ndarray,
                    imagePaths: np.ndarray = None,
                    startInd: int = 0,
                    startFrame: int = 0,
-                   pauseInterval: float = 0.05):
+                   pauseInterval: float = 0.01):
     N = poses.shape[0]
 
     rows = 1
     cols = 1 if imagePaths is None else 2
 
+    video_params['pauseInterval'] = pauseInterval
+
     for i in range(startFrame - startInd + 1, N):
         plt.clf()
+
+        plt.ion()
+        plt.gcf().canvas.mpl_connect('key_press_event', keypress_handler)
+
         plt.suptitle(f'Frame {startInd + i}')
 
         plt.subplot(rows, cols, 1)
@@ -88,9 +112,13 @@ def plotPosesVideo(poses: np.ndarray,
 
         plt.tight_layout()
 
-        if pauseInterval <= 0:
-            plt.waitforbuttonpress()
+        # plt.show()
+        plt.waitforbuttonpress(video_params['pauseInterval'])
+
+        if video_params['quit']:
+            break
         else:
-            plt.pause(pauseInterval)
+            if video_params['pause']:
+                plt.waitforbuttonpress(-1)
 
     return
