@@ -93,6 +93,38 @@ template <typename T = double> class Pose2D {
     }
 
     /**
+     * @brief Operator *= for Pose2D class. Scales all values by a scalar
+     *
+     * @param[in] aScalar Scalar to scale by
+     *
+     * @return Pose2D<T>&
+     */
+    Pose2D<T> &operator*=(const double &aScalar) {
+        position *= aScalar;
+        orientation *= aScalar;
+
+        return *this; // return the result by reference
+    }
+
+    /**
+     * @brief Operator /= for Pose2D class. Scales all values by a scalar
+     *
+     * @param[in] aScalar Scalar to scale by
+     *
+     * @return Pose2D<T>&
+     */
+    Pose2D<T> &operator/=(const double &aScalar) {
+        if (aScalar == 0.0) {
+            throw std::runtime_error("Division by zero");
+        }
+
+        position /= aScalar;
+        orientation /= aScalar;
+
+        return *this; // return the result by reference
+    }
+
+    /**
      * @brief Return pose 2D as string
      *
      * @return const std::string
