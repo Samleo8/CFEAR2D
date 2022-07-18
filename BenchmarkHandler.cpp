@@ -19,7 +19,7 @@ void transQuatToString(const Vector3T<double> &aTransl,
     std::stringstream ss;
 
     ss << aTransl(0) << " " << aTransl(1) << " " << aTransl(2) << " "
-       << aQuat.w() << " " << aQuat.x() << " " << aQuat.y() << " " << aQuat.z();
+       << aQuat.x() << " " << aQuat.y() << " " << aQuat.z() << " " << aQuat.w();
 
     aOutputString = ss.str();
 }
