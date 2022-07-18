@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
     const unsigned int startID = atoi(argv[2]);
     const int endID = (argc == 4) ? atoi(argv[3]) : -1;
 
+    const bool isGT = (startID == static_cast<unsigned int>(-1));
+
     // Output the GT poses to a file, creating intermediate folders if
     // necessary
     fs::path poseBasePath(".");
@@ -48,16 +50,27 @@ int main(int argc, char **argv) {
 
     // Setup to read from input
     fs::path poseInputPath(poseBasePath);
-    poseInputPath /= "poses_" + std::to_string(startID) + "_" +
-                     std::to_string(endID) + ".txt";
+
+    if (isGT) {
+        poseInputPath /= "gt.txt";
+    }
+    else {
+        poseInputPath /= "poses_" + std::to_string(startID) + "_" +
+                         std::to_string(endID) + ".txt";
+    }
 
     std::ifstream poseInputFile(poseInputPath, std::ifstream::in);
 
     // Setup to output converted format to file
     fs::path poseOutputPath(poseBasePath);
-    poseOutputPath /= "poses_kitti_" + std::to_string(startID) + "_" +
-                      std::to_string(endID) + ".txt";
 
+    if (isGT) {
+        poseOutputPath /= "gt_kitti.txt";
+    }
+    else {
+        poseOutputPath /= "poses_kitti_" + std::to_string(startID) + "_" +
+                          std::to_string(endID) + ".txt";
+    }
     std::ofstream poseOutputFile(poseOutputPath,
                                  std::ofstream::out | std::ofstream::trunc);
 
