@@ -63,6 +63,8 @@ class RadarFeed {
     /** @brief Radar scan period in seconds. Used for motion undistortion */
     static constexpr double RADAR_SCAN_PERIOD = 1.0 / RADAR_SCAN_FREQ;
 
+    
+
     /** @brief Expected number of images in feed path, used for reserving vector
      * space */
     static constexpr size_t EXPECTED_NUM_IMAGES = 8000;

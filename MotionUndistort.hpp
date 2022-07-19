@@ -14,3 +14,6 @@
 
 PoseTransform2D<double> getVelocityTransform(const Pose2D<double> &aVelocity,
                                              const double aTime);
+
+const VectorXT<double> generateTimeVector(const double aScanPeriod,
+                                          const double aNAzimuths);

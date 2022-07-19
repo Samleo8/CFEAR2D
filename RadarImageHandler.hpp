@@ -109,7 +109,11 @@ typedef std::pair<double, size_t> ValueIndexPair;
 /** @brief Radar's maximum range in meters */
 #define RADAR_MAX_RANGE_M 165
 
-/** @brief Pre-found value of the number of columns in the range-azimuth polar
+/** @brief Pre-found value of the number of rows (i.e. num of azimuth bins) in the
+ * range-azimuth polar image */
+#define RADAR_IMAGE_POLAR_N_AZIMUTHS_PX 3768
+
+/** @brief Pre-found value of the number of columns (i.e. num of range bins) in the range-azimuth polar
  * image */
 #define RADAR_IMAGE_POLAR_MAX_RANGE_PX 3768
 
