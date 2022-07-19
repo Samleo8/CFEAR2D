@@ -11,6 +11,7 @@
 #include "MotionUndistort.hpp"
 #include "ORSP.hpp"
 #include "Pose2D.hpp"
+#include <cstddef>
 
 template <typename T> extern T constrainAngle(const T &aAngleRad);
 
@@ -36,22 +37,6 @@ PoseTransform2D<double> getVelocityTransform(const Pose2D<double> &aVelocity,
 }
 
 /**
- * @brief Generates a time vector from [-T/2, T/2) with number of azimuths
- *
- * @param[in] aScanPeriod Period of a radar scan in seconds
- * @param[in] aNAzimuths  Number of azimuths in a radar scan
- *
- * @return Time vector of size number of azimuths from [-T/2, T/2)
- */
-const VectorXT<double> generateTimeVector(const double aScanPeriod,
-                                          const double aNAzimuths) {
-    const double interval = aScanPeriod / aNAzimuths;
-    const double halfT = aScanPeriod / 2;
-
-    return VectorXT<double>::LinSpaced(-halfT, halfT - interval, aNAzimuths);
-}
-
-/**
  * @brief Convert azimuth value to index
  * @note Assumes the azimuth is from [-fovAngle/2, fovAngle/2]
  *
@@ -63,7 +48,7 @@ const VectorXT<double> generateTimeVector(const double aScanPeriod,
  *
  * @return const size_t
  */
-const size_t azimuthToIndex(const double aAzimuthRad, const double aNAzimuths,
+const size_t azimuthToIndex(const double aAzimuthRad, const size_t aNAzimuths,
                             const double fovAngleRad) {
     const double azimRadConstrained = constrainAngle<double>(aAzimuthRad);
     const double halfFov = fovAngleRad / 2;

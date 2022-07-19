@@ -21,6 +21,7 @@
 #define __RADAR_FEED_H__
 
 #include <Eigen/Geometry>
+#include <cstddef>
 #include <filesystem>
 #include <opencv2/opencv.hpp>
 #include <stdbool.h>
@@ -70,8 +71,8 @@ class RadarFeed {
     static constexpr int RADAR_NAZIMUTHS = RADAR_IMAGE_POLAR_N_AZIMUTHS_PX;
 
     /** @brief Time vector used for motion distortion */
-    const VectorXT<double> mMotionTimeVector =
-        generateTimeVector(RADAR_SCAN_PERIOD, RADAR_NAZIMUTHS);
+    const VectorDimd<RADAR_NAZIMUTHS> mMotionTimeVector =
+        generateTimeVector<RADAR_NAZIMUTHS>(RADAR_SCAN_PERIOD);
 
     /** @brief Expected number of images in feed path, used for reserving
      * vector space */
