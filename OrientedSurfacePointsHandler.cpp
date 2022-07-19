@@ -11,7 +11,6 @@
 
 #include "OrientedSurfacePointsHandler.hpp"
 #include "RadarImage.hpp"
-#include <Eigen/Core>
 
 /**
  * @brief Associate filtered point coordinate to downsampled grid coordinate

@@ -11,7 +11,7 @@
 #include "ORSP.hpp"
 #include "Pose2D.hpp"
 #include "PoseTransformHandler.hpp"
-#include "RadarImageHandler.hpp"
+#include "RadarImage.hpp"
 #include "TransformDefines.hpp"
 
 PoseTransform2D<double> getVelocityTransform(const Pose2D<double> &aVelocity,

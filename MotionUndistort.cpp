@@ -9,6 +9,8 @@
  */
 
 #include "MotionUndistort.hpp"
+#include "ORSP.hpp"
+#include "Pose2D.hpp"
 
 template <typename T> extern T constrainAngle(const T &aAngleRad);
 
@@ -95,4 +97,14 @@ void undistortORSP(const ORSP<double> &aORSPLocal,
         getVelocityTransform(aVelocity, time);
 
     convertORSPCoordinates(aORSPLocal, aUndistortedORSPLocal, velTrans);
+}
+
+/**
+ * @brief Perform motion undistortion on internal vector of ORSP feature points
+ */
+void RadarImage::performMotionUndistortion(
+    const Pose2D<double> &aVelocity, const VectorXT<double> &aTimeVector) {
+    for (ORSP<double> &orsp : mORSPFeaturePoints) {
+        undistortORSP(orsp, aVelocity, aTimeVector, orsp);
+    }
 }

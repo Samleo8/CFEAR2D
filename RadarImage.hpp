@@ -16,6 +16,7 @@
 
 #include "ORSP.hpp"
 #include "OrientedSurfacePointsHandler.hpp" // some ORSP-related functions for the
+#include "Pose2D.hpp"
 #include "RadarImageHandler.hpp" // needed to handle file path and data
                                  // RadarImage class are defined here
 
@@ -131,6 +132,7 @@ class RadarImage {
     const FilteredPointsVec &getFilteredPoints() const;
 
     // Generating Oriented Surface Points
+    // NOTE: Implemented in OrientedSurfacePointsHandler.cpp
     void clearORSPInfo();
     void downsamplePointCloud();
     void findValidNeighbours(Point2DList &aValidNeighbours, const size_t aGridX,
@@ -139,6 +141,10 @@ class RadarImage {
     void computeOrientedSurfacePoints();
 
     const ORSPVec<double> &getORSPFeaturePoints() const;
+
+    // Motion Undistortion
+    void performMotionUndistortion(const Pose2D<double> &aVelocity,
+                                   const VectorXT<double> &aTimeVector);
 
     // NOTE: UNUSED
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);
