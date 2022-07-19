@@ -111,7 +111,7 @@ typedef std::pair<double, size_t> ValueIndexPair;
 
 /** @brief Pre-found value of the number of rows (i.e. num of azimuth bins) in the
  * range-azimuth polar image */
-#define RADAR_IMAGE_POLAR_N_AZIMUTHS_PX 3768
+#define RADAR_IMAGE_POLAR_N_AZIMUTHS_PX 40
 
 /** @brief Pre-found value of the number of columns (i.e. num of range bins) in the range-azimuth polar
  * image */

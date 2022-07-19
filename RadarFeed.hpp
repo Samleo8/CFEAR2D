@@ -30,10 +30,12 @@
 #include <vector>
 
 #include "Keyframe.hpp"
+#include "MotionUndistort.hpp"
 #include "OptimisationHandler.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarFeedHandler.hpp" // needed to handle file path and data
 #include "RadarImage.hpp"
+#include "RadarImageHandler.hpp"
 #include "TransformDefines.hpp"
 
 namespace fs = std::filesystem;
@@ -63,10 +65,16 @@ class RadarFeed {
     /** @brief Radar scan period in seconds. Used for motion undistortion */
     static constexpr double RADAR_SCAN_PERIOD = 1.0 / RADAR_SCAN_FREQ;
 
-    
+    /** @brief Number of azimuths in a radar scan. Used for motion
+     * undistortion */
+    static constexpr int RADAR_NAZIMUTHS = RADAR_IMAGE_POLAR_N_AZIMUTHS_PX;
 
-    /** @brief Expected number of images in feed path, used for reserving vector
-     * space */
+    /** @brief Time vector used for motion distortion */
+    const Eigen::Matrix<double, RADAR_NAZIMUTHS, 1> MOTION_TIME_VECTOR =
+        generateTimeVector(RADAR_SCAN_PERIOD, RADAR_NAZIMUTHS);
+
+    /** @brief Expected number of images in feed path, used for reserving
+     * vector space */
     static constexpr size_t EXPECTED_NUM_IMAGES = 8000;
 
     /** @brief Filtering: number of points */

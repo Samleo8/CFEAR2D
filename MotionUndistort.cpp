@@ -47,5 +47,5 @@ const VectorXT<double> generateTimeVector(const double aScanPeriod,
     const double interval = aScanPeriod / aNAzimuths;
     const double halfT = aScanPeriod / 2;
 
-    return VectorXT<double>::setLinSpaced(-halfT, halfT - interval, aNAzimuths);
+    return VectorXT<double>::LinSpaced(-halfT, halfT - interval, aNAzimuths);
 }
