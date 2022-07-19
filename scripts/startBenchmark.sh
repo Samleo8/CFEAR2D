@@ -31,7 +31,7 @@ generateYAMLFile() {
 generateYAMLFile
 
 echo "Benchmarking on dataset ${DATASET_ID}..."
-python ${BENCHMARK_DIR}/scripts/analyze_trajectory_single.py $RESULTS_DIR
+python ${BENCHMARK_DIR}/scripts/analyze_trajectory_single.py --png $RESULTS_DIR
 echo "Done!"
 echo ""
 echo "Results can be found in the ${RESULTS_DIR}/saved_results and .../plots folders"
