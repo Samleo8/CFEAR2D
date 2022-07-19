@@ -57,9 +57,15 @@ class RadarFeed {
   private:
     // CONSTANTS FOR SEQUENTIAL PROCESSING
 
+    /** @brief Radar scan frequency in Hz. Used for motion undistortion */
+    static constexpr double RADAR_SCAN_FREQ = 4;
+
+    /** @brief Radar scan period in seconds. Used for motion undistortion */
+    static constexpr double RADAR_SCAN_PERIOD = 1.0 / RADAR_SCAN_FREQ;
+
     /** @brief Expected number of images in feed path, used for reserving vector
      * space */
-    static const size_t EXPECTED_NUM_IMAGES = 8000;
+    static constexpr size_t EXPECTED_NUM_IMAGES = 8000;
 
     /** @brief Filtering: number of points */
     static constexpr size_t K = 12;
@@ -71,7 +77,7 @@ class RadarFeed {
     static constexpr int KF_BUFF_SIZE = 3;
 
     /** @brief Whether to perform stationary check on keyframes
-    */
+     */
     static constexpr bool PERFORM_STATIONARY_CHECK = true;
 
     /**
