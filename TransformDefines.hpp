@@ -30,20 +30,20 @@ typedef std::vector<Eigen::Vector2d> Point3DList;
 typedef std::vector<Eigen::VectorXd> PointXDList;
 
 /** @brief Typedef for Vector of templated type and dimension */
-template <typename T, size_t Dimension>
-using VectorDimT = Eigen::Matrix<T, Dimension, 1>;
+template <typename T, int _Dimension>
+using VectorDimT = Eigen::Matrix<T, _Dimension, 1>;
 
 /** @brief Typedef for Vector of templated dimension */
-template <size_t Dimension>
-using VectorDimd = Eigen::Matrix<double, Dimension, 1>;
+template <int _Dimension>
+using VectorDimd = Eigen::Matrix<double, _Dimension, 1>;
 
 /** @brief Typedef for NxN Matrix of templated dimension */
-template <size_t Dimension>
-using MatrixDimd = Eigen::Matrix<double, Dimension, Dimension>;
+template <int _Dimension>
+using MatrixDimd = Eigen::Matrix<double, _Dimension, _Dimension>;
 
 /** @brief Typedef for std::vector of Eigen::Vector of templated dimension */
-template <size_t Dimension>
-using VectorDimdList = std::vector<VectorDimd<Dimension>>;
+template <int _Dimension>
+using VectorDimdList = std::vector<VectorDimd<_Dimension>>;
 
 /** @brief Typedef for 3D pose transform as Eigen isometric transform. Slightly
  * more memory but more natural. */
