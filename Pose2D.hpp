@@ -137,6 +137,14 @@ template <typename T = double> class Pose2D {
     }
 
     /**
+     * @brief Set to zero pose
+     */
+    void setZero() {
+        position.setZero();
+        orientation = static_cast<T>(0.0);
+    }
+
+    /**
      * @brief Printing of class information using cout
      *
      * @param[in] aOutputStream Cout output stream
