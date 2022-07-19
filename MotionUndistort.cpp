@@ -9,8 +9,6 @@
  */
 
 #include "MotionUndistort.hpp"
-#include "Pose2D.hpp"
-#include "PoseTransformHandler.hpp"
 #include "TransformDefines.hpp"
 
 /**
@@ -48,4 +46,34 @@ const VectorXT<double> generateTimeVector(const double aScanPeriod,
     const double halfT = aScanPeriod / 2;
 
     return VectorXT<double>::LinSpaced(-halfT, halfT - interval, aNAzimuths);
+}
+
+/**
+ * @brief Convert azimuth value to index
+ *
+ * @param[in] aAzimuth
+ * @param[in] aNAzimuths
+ *
+ * @return const size_t
+ */
+const size_t azimuthToIndex(const double aAzimuth, const double startAzimuth,
+                            const double aNAzimuths) {}
+
+/**
+ * @brief Undistorts feature points given a velocity and time vector
+ *
+ * @param[in] aORSPLocal Local ORSP feature point to undistort
+ * @param[in] aVelocity Velocity of the vehicle
+ * @param[in] aTimeVector Time vector
+ * @param[in] aUndistortedORSPLocal Undistorted ORSP feature point, in local
+ * coordinates
+ */
+void undistortORSP(const ORSP<double> &aORSPLocal, const double aVelocity,
+                   const VectorXT<double> &aTimeVector,
+                   ORSP<double> &aUndistortedORSPLocal) {
+    // First get the associated azimuth of the ORSP point
+    const Vector2T<double> &center = aORSPLocal.center;
+    const double azimuth = std::atan2(center[1], center[0]);
+
+    azimuthToIndex(azimuth, aTimeVector.size());
 }
