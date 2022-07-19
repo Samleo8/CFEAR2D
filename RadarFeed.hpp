@@ -70,7 +70,7 @@ class RadarFeed {
     static constexpr int RADAR_NAZIMUTHS = RADAR_IMAGE_POLAR_N_AZIMUTHS_PX;
 
     /** @brief Time vector used for motion distortion */
-    const Eigen::Matrix<double, RADAR_NAZIMUTHS, 1> MOTION_TIME_VECTOR =
+    const VectorXT<double> MOTION_TIME_VECTOR =
         generateTimeVector(RADAR_SCAN_PERIOD, RADAR_NAZIMUTHS);
 
     /** @brief Expected number of images in feed path, used for reserving
