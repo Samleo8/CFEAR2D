@@ -20,7 +20,8 @@ PoseTransform2D<double> getVelocityTransform(const Pose2D<double> &aVelocity,
 const VectorXT<double> generateTimeVector(const double aScanPeriod,
                                           const double aNAzimuths);
 
-void undistortORSP(const ORSP<double> &aORSPLocal, const double aVelocity,
+void undistortORSP(const ORSP<double> &aORSPLocal,
+                   const Pose2D<double> &aVelocity,
                    const VectorXT<double> &aTimeVector,
                    ORSP<double> &aUndistortedORSPLocal);
 

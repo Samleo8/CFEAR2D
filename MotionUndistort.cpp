@@ -80,7 +80,7 @@ const size_t azimuthToIndex(const double aAzimuthRad, const double aNAzimuths,
  * coordinates
  */
 void undistortORSP(const ORSP<double> &aORSPLocal,
-                   const Pose2D<double> aVelocity,
+                   const Pose2D<double> &aVelocity,
                    const VectorXT<double> &aTimeVector,
                    ORSP<double> &aUndistortedORSPLocal) {
     // First get the associated azimuth of the ORSP point
