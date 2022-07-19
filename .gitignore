@@ -9,8 +9,6 @@ data
 docs/*.log
 results
 
-rpg_trajectory_evaluation/*/__pycache__
-
 # Build files
 build
 
