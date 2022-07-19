@@ -19,14 +19,6 @@
 #include "RadarImageHandler.hpp" // needed to handle file path and data
                                  // RadarImage class are defined here
 
-// Constants
-/** @brief Tau = 2 * Pi. Used for radian conversion and img proc */
-#ifndef M_TAU
-#define M_TAU 6.2831853071795864769
-#endif
-
-// const double RANGE_RESOLUTION = 0.49107142857142855; // m per px
-
 /** @brief Default high-pass filter size */
 constexpr double DEFAULT_FILTER_SIZE = 150;
 

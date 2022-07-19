@@ -16,6 +16,11 @@
 #include <math.h>
 #endif // !_USE_MATH_DEFINES
 
+/** @brief Tau = 2 * Pi. Used for radian conversion and img proc */
+#ifndef M_TAU
+#define M_TAU 6.2831853071795864769
+#endif
+
 #include <filesystem>
 #include <fstream>
 #include <opencv2/opencv.hpp>
@@ -98,50 +103,54 @@ typedef std::pair<double, size_t> ValueIndexPair;
 #endif
 
 /** @brief Defines how much we should downsample the image by */
-#define RADAR_IMAGE_DOWNSAMPLED_RANGE 336
+constexpr unsigned int RADAR_IMAGE_DOWNSAMPLED_RANGE = 336;
 
 /** @brief Defines how much we should cut the image by */
-#define RADAR_IMAGE_SUB_RANGE 500
+constexpr unsigned int RADAR_IMAGE_SUB_RANGE = 500;
 
 /** @brief Radar's true maximum range in meters */
-#define RADAR_MAX_RANGE_RAW_M 165
+constexpr unsigned int RADAR_MAX_RANGE_RAW_M = 165;
 
-/** @brief Radar's maximum range in meters */
-#define RADAR_MAX_RANGE_M 165
+/** @brief Radar's effective maximum range in meters */
+constexpr unsigned int RADAR_MAX_RANGE_M = 165;
 
-/** @brief Pre-found value of the number of rows (i.e. num of azimuth bins) in the
- * range-azimuth polar image */
-#define RADAR_IMAGE_POLAR_N_AZIMUTHS_PX 40
+/** @brief Pre-found value of the number of rows (i.e. num of azimuth bins) in
+ * the range-azimuth polar image */
+constexpr unsigned int RADAR_IMAGE_POLAR_N_AZIMUTHS_PX = 40;
 
-/** @brief Pre-found value of the number of columns (i.e. num of range bins) in the range-azimuth polar
- * image */
-#define RADAR_IMAGE_POLAR_MAX_RANGE_PX 3768
+/** @brief Pre-found value of the number of columns (i.e. num of range bins) in
+ * the range-azimuth polar image */
+constexpr unsigned int RADAR_IMAGE_POLAR_MAX_RANGE_PX = 3768;
 
 /** @brief SQRT2 **/
-#define SQRT2 1.41421356237
+constexpr double SQRT2 = 1.41421356237;
 
 /** @brief Maximum range for keyframe gridding, basically the radius of the
  * circle inscribing a square of width 2 * max range */
-#define RADAR_MAX_RANGE_M_SQRT2 (SQRT2 * RADAR_MAX_RANGE_M)
+constexpr double RADAR_MAX_RANGE_M_SQRT2 = SQRT2 * RADAR_MAX_RANGE_M;
 
 /** @brief Square of radar max range */
-#define RADAR_MAX_RANGE_M_SQUARED (RADAR_MAX_RANGE_M * RADAR_MAX_RANGE_M)
+constexpr double RADAR_MAX_RANGE_M_SQUARED =
+    RADAR_MAX_RANGE_M * RADAR_MAX_RANGE_M;
 
 /** @brief Encoder size */
-#define ENCODER_SIZE 5600
+constexpr size_t ENCODER_SIZE = 5600;
 
 /** @brief Converts sweep counter values into azimuth in radians */
-#define SWEEP_COUNTER_TO_AZIM (2 * M_PI / ENCODER_SIZE)
+constexpr double SWEEP_COUNTER_TO_AZIM = (2 * M_PI / ENCODER_SIZE);
 
 /** @brief Number of columns in metadata for timestamp information */
-#define TIMESTAMP_N_COLS 8
+constexpr unsigned int TIMESTAMP_N_COLS = 8;
 
 /** @brief Number of columns in metadata for sweep counter information */
-#define SWEEP_COUNTER_N_COLS 2
+constexpr unsigned int SWEEP_COUNTER_N_COLS = 2;
 
 /** @brief Range resolution in m per pixel */
-#define RANGE_RESOLUTION                                                       \
-    ((double)RADAR_MAX_RANGE_M / (double)RADAR_IMAGE_POLAR_MAX_RANGE_PX)
+constexpr double RANGE_RESOLUTION =
+    ((double)RADAR_MAX_RANGE_M / (double)RADAR_IMAGE_POLAR_MAX_RANGE_PX);
+
+/** @brief Radar field of view angle in radians */
+constexpr double RADAR_ANGLE_FOV = M_TAU;
 
 // Functions
 bool imagePathFromTimestamp(std::string &aImagePath, unsigned int aSetNumber,
