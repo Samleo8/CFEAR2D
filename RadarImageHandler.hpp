@@ -150,7 +150,7 @@ constexpr double RANGE_RESOLUTION =
     ((double)RADAR_MAX_RANGE_M / (double)RADAR_IMAGE_POLAR_MAX_RANGE_PX);
 
 /** @brief Radar field of view angle in radians */
-constexpr double RADAR_ANGLE_FOV = M_TAU;
+constexpr double RADAR_ANGLE_FOV_RAD = M_TAU;
 
 // Functions
 bool imagePathFromTimestamp(std::string &aImagePath, unsigned int aSetNumber,

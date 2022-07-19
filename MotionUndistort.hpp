@@ -11,6 +11,7 @@
 #include "ORSP.hpp"
 #include "Pose2D.hpp"
 #include "PoseTransformHandler.hpp"
+#include "RadarImageHandler.hpp"
 #include "TransformDefines.hpp"
 
 PoseTransform2D<double> getVelocityTransform(const Pose2D<double> &aVelocity,
@@ -22,3 +23,6 @@ const VectorXT<double> generateTimeVector(const double aScanPeriod,
 void undistortORSP(const ORSP<double> &aORSPLocal, const double aVelocity,
                    const VectorXT<double> &aTimeVector,
                    ORSP<double> &aUndistortedORSPLocal);
+
+const size_t azimuthToIndex(const double aAzimuth, const double aNAzimuths,
+                            const double fovAngleRad = RADAR_ANGLE_FOV_RAD);
