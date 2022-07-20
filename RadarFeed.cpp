@@ -12,6 +12,7 @@
 #include "Pose2D.hpp"
 #include "PoseTransformHandler.hpp"
 #include "RadarImageHandler.hpp"
+#include "TransformDefines.hpp"
 
 namespace fs = std::filesystem;
 
@@ -274,8 +275,7 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         /******************************************************
          * Motion Undistortion (on filtered points)
          *****************************************************/
-        // mCurrentRImage.performMotionUndistortion(velocity,
-        // mMotionTimeVector);
+        mCurrentRImage.performMotionUndistortion(velocity, mMotionTimeVector);
 
         /******************************************************
          * Compute oriented surface points (ORSP)
@@ -354,19 +354,11 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
              ***********************************************************/
             // Use ground truth values for rotational propagation
             // NOTE: This simulates accurate rotational data from an IMU
-            // const size_t nextFrameIdx = mCurrentFrameIdx + 1;
 
-            // const double groundTruthRot =
-            //     (isWithinBounds(nextFrameIdx))
-            //         ? mGroundTruths[nextFrameIdx].dRotRad
-            //         : 0;
-            // f2fDeltaPose.orientation = groundTruthRot;
-
-            const double groundTruthRot =
-                mGroundTruths[mCurrentFrameIdx].dRotRad;
-            // std::cout << "GT: " << groundTruthRot
-            //           << " Est: " << f2fDeltaPose.orientation << std::endl;
-            f2fDeltaPose.orientation = groundTruthRot;
+            // NOTE: This already gets the next frame's GT poses because
+            // mGroundTruths[i] is equivalent to getting odom from i-1 to i
+            const RotTransData gt = mGroundTruths[mCurrentFrameIdx];
+            f2fDeltaPose.orientation = gt.dRotRad;
 
             // Set velocity for motion undistortion
             velocity = f2fDeltaPose;
