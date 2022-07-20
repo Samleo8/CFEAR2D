@@ -5,7 +5,9 @@
 #include <string>
 
 #include "CVColor.hpp"
+#include "Pose2D.hpp"
 #include "RadarImage.hpp"
+#include "MotionUndistort.hpp"
 
 #define ORSP_ONLY
 
@@ -56,7 +58,9 @@ void writeText(cv::Mat aImg, const std::string &aText, const int ax,
  * @param[in] aPointSize Radius of point
  * @param[in] aColor Color of point
  */
-void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord, const int aPointSize = 5, const cv::Scalar aColor = CVColor::red) {
+void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord,
+               const int aPointSize = 5,
+               const cv::Scalar aColor = CVColor::red) {
     cv::circle(aImg, aCoord, aPointSize, aColor, cv::FILLED, cv::LINE_8);
 }
 
@@ -66,8 +70,11 @@ void drawPoint(cv::Mat &aImg, const cv::Point2d &aCoord, const int aPointSize = 
  * @param[in,out] aImg Input/Output image
  * @param[in] aCoord Coordinate of point
  */
-void drawLine(cv::Mat &aImg, const cv::Point2d &aCoordStart, const cv::Point2d &aCoordEnd, const int aLineThickness = 10, const cv::Scalar aColor = CVColor::green) {
-    cv::arrowedLine(aImg, aCoordStart, aCoordEnd, aColor, aLineThickness, cv::LINE_8);
+void drawLine(cv::Mat &aImg, const cv::Point2d &aCoordStart,
+              const cv::Point2d &aCoordEnd, const int aLineThickness = 10,
+              const cv::Scalar aColor = CVColor::green) {
+    cv::arrowedLine(aImg, aCoordStart, aCoordEnd, aColor, aLineThickness,
+                    cv::LINE_8);
 }
 
 /**
@@ -90,7 +97,10 @@ void concatImagesWithText(cv::Mat displayImages[],
     const int numberOfEndl = (outStyle == NORMAL) ? 7 : 0;
 
     const int padding_top = newlineSpaceDefault * defaultFontScale;
-    const int padding_bottom = (outStyle == NORMAL) ? (newlineSpaceDefault * defaultFontScale * (numberOfEndl + 1)) : 0;
+    const int padding_bottom =
+        (outStyle == NORMAL)
+            ? (newlineSpaceDefault * defaultFontScale * (numberOfEndl + 1))
+            : 0;
     const int padding_left = 5;
     const int padding_right = 5;
 
@@ -145,8 +155,7 @@ void genImagePath(fs::path &basePath, const unsigned int dataset,
  * @param[out] outputImgORSP Output image for ORSP visualization
  */
 void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
-                         cv::Mat &outputImgFiltered, 
-                         cv::Mat &outputImgORSP,
+                         cv::Mat &outputImgFiltered, cv::Mat &outputImgORSP,
                          enum OutputStyle outStyle = NORMAL) {
     // Obtain radar images
     RadarImage r1(dataset, r1ID, true);
@@ -165,7 +174,8 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     const cv::Mat outputImgGray = r1.getImage(r1.RIMG_CART);
     // TODO: Make the background lighter?
     const float BACKGROUND_LIGHTNESS_FACTOR = 1;
-    if (BACKGROUND_LIGHTNESS_FACTOR > 1) outputImgGray /= BACKGROUND_LIGHTNESS_FACTOR;
+    if (BACKGROUND_LIGHTNESS_FACTOR > 1)
+        outputImgGray /= BACKGROUND_LIGHTNESS_FACTOR;
 
     cv::cvtColor(outputImgGray, outputImgFiltered, cv::COLOR_GRAY2BGR);
     cv::cvtColor(outputImgGray, outputImgORSP, cv::COLOR_GRAY2BGR);
@@ -192,6 +202,15 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
 
     // Compute ORSP and draw those points with vectors
     r1.computeOrientedSurfacePoints();
+
+    // Try motion undistortion
+    Pose2D<double> velocity(0, 0, 0);
+    constexpr int RADAR_NAZIMUTHS = RADAR_IMAGE_POLAR_N_AZIMUTHS_PX;
+    const VectorDimd<RADAR_NAZIMUTHS> aTimeVector =
+        generateTimeVector<RADAR_NAZIMUTHS>(0.25);
+
+    r1.performMotionUndistortion(velocity, aTimeVector);
+
     const ORSPVec<double> &featurePoints = r1.getORSPFeaturePoints();
 
     // Draw ORSP points
@@ -220,13 +239,13 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
 
         // Draw Corresponding line
         drawLine(outputImgORSP, pointCVStart, pointCVEnd, 8);
-        
+
         // Draw Point
         drawPoint(outputImgORSP, pointCVStart, 8);
-
     }
 
-    // writeText(outputImgORSP, "Frame " + std::to_string(r1ID), 10, 10, CVColor::aliceblue, 5);
+    // writeText(outputImgORSP, "Frame " + std::to_string(r1ID), 10, 10,
+    // CVColor::aliceblue, 5);
 }
 
 /**
@@ -248,7 +267,7 @@ int main(int argc, char **argv) {
 
     // Create path to save images
     fs::path saveImagesPath(".");
-    saveImagesPath /= "results"; 
+    saveImagesPath /= "results";
     saveImagesPath /= argv[1];
 
     fs::create_directories(saveImagesPath);
@@ -257,23 +276,26 @@ int main(int argc, char **argv) {
      * @section TestRadar-KeyframeToKeyframe Compute keyframe to keyframe
      **********************************************************************/
     cv::Mat outputImgFiltered, outputImgORSP;
-    outputImgFromFrames(dataset, r1ID, outputImgFiltered, outputImgORSP, NORMAL);
+    outputImgFromFrames(dataset, r1ID, outputImgFiltered, outputImgORSP,
+                        NORMAL);
 
     const float imgdownscale = (saveDirectly) ? 0.5 : 0.05;
     const size_t N_IMGS = 2;
 
- #ifndef ORSP_ONLY
+#ifndef ORSP_ONLY
     cv::Mat outputImg;
-    cv::Mat displayImages[N_IMGS] = {outputImgFiltered, outputImgORSP};
-    const std::string headerTexts[N_IMGS] = {"Filtered Points", "ORSP"};
-    const std::string footerTexts[N_IMGS] = {"",""};
+    cv::Mat displayImages[N_IMGS] = { outputImgFiltered, outputImgORSP };
+    const std::string headerTexts[N_IMGS] = { "Filtered Points", "ORSP" };
+    const std::string footerTexts[N_IMGS] = { "", "" };
 
-    concatImagesWithText(displayImages, headerTexts, footerTexts, N_IMGS, outputImg, NO_FOOTER);
-#else   
+    concatImagesWithText(displayImages, headerTexts, footerTexts, N_IMGS,
+                         outputImg, NO_FOOTER);
+#else
     cv::Mat outputImg = outputImgORSP;
 #endif
 
-    const cv::Size imgDownSize = cv::Size(outputImg.cols * imgdownscale, outputImg.rows * imgdownscale);
+    const cv::Size imgDownSize =
+        cv::Size(outputImg.cols * imgdownscale, outputImg.rows * imgdownscale);
 
     // Display or save image
     if (saveDirectly) {
@@ -287,8 +309,9 @@ int main(int argc, char **argv) {
         }
         cv::imwrite(outputImgPathStr, outputImg);
 
-        // genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStrFiltered);
-        // genImagePath(saveImagesPath, dataset, r1ID, outputImgPathStrORSP, "_ORSP");
+        // genImagePath(saveImagesPath, dataset, r1ID,
+        // outputImgPathStrFiltered); genImagePath(saveImagesPath, dataset,
+        // r1ID, outputImgPathStrORSP, "_ORSP");
 
         // cv::imwrite(outputImgPathStrFiltered, outputImgFiltered);
         // cv::imwrite(outputImgPathStrORSP, outputImgORSP);

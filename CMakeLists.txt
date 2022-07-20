@@ -22,6 +22,7 @@ add_executable(
   TestRadar
   CVColor.cpp
   ImageProcessing.cpp
+  MotionUndistort.cpp
   PointPolar.cpp 
   RadarImageHandler.cpp
   RadarImage.cpp
@@ -108,7 +109,7 @@ add_executable(
   RegistrationCostFunctor.cpp
   OptimisationHandler.cpp
   OrientedSurfacePointsHandler.cpp
-    MotionUndistort.cpp
+  MotionUndistort.cpp
   RadarFeedHandler.cpp
   RadarFeed.cpp
   RunCFEAR.cpp
