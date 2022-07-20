@@ -97,7 +97,7 @@ void RadarImage::performMotionUndistortion(
     const Pose2D<double> &aVelocity, const VectorXT<double> &aTimeVector) {
 
     // Replace current ORSP feature points with undistorted ones
-    for (FilteredPoint filteredPt : mFilteredPoints) {
+    for (FilteredPoint &filteredPt : mFilteredPoints) {
         undistortPoint(filteredPt, aVelocity, aTimeVector, filteredPt);
     }
 }
