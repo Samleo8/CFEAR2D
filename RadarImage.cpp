@@ -422,16 +422,12 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
 
             // Only accept values which are also above Zmin
             if (val > aZmin) {
-                Eigen::Vector2d pointCart;
-                PointPolar pointPolar;
+                FilteredPoint pointCart;
 
                 const double range =
                     (static_cast<double>(idx) + 1.0) * RANGE_RESOLUTION;
 
-                // std::cout << "Range: " << range << std::endl;
-
-                pointPolar.R = range;
-                pointPolar.theta = azimuth;
+                PointPolar pointPolar(range, azimuth);
 
                 pointPolar.toCartesian(pointCart);
 
