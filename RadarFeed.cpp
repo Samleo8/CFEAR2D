@@ -354,12 +354,18 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
              ***********************************************************/
             // Use ground truth values for rotational propagation
             // NOTE: This simulates accurate rotational data from an IMU
-            const size_t nextFrameIdx = mCurrentFrameIdx + 1;
+            // const size_t nextFrameIdx = mCurrentFrameIdx + 1;
+
+            // const double groundTruthRot =
+            //     (isWithinBounds(nextFrameIdx))
+            //         ? mGroundTruths[nextFrameIdx].dRotRad
+            //         : 0;
+            // f2fDeltaPose.orientation = groundTruthRot;
 
             const double groundTruthRot =
-                (isWithinBounds(nextFrameIdx))
-                    ? mGroundTruths[nextFrameIdx].dRotRad
-                    : 0;
+                mGroundTruths[mCurrentFrameIdx].dRotRad;
+            // std::cout << "GT: " << groundTruthRot
+            //           << " Est: " << f2fDeltaPose.orientation << std::endl;
             f2fDeltaPose.orientation = groundTruthRot;
 
             // Set velocity for motion undistortion
