@@ -78,7 +78,8 @@ void undistortPoint(const FilteredPoint &aFilteredPtLocal,
     const size_t velInd = azimuthToIndex(azimuth, aTimeVector.size());
     const double time = aTimeVector[velInd];
 
-    const PoseTransform2D<double> velTrans = getVelocityTransform(aVelocity, time);
+    const PoseTransform2D<double> velTrans =
+        getVelocityTransform(aVelocity, time).inverse();
 
     aUndistortedFilteredPtLocal =
         convertCoordinate<double>(aFilteredPtLocal, velTrans, false);
