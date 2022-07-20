@@ -265,21 +265,27 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
 
         std::cout << "[Frame " << mCurrentFrameIdx << "]" << std::endl;
 
-        // K-filtering and ORSP
+        /******************************************************
+         * Filtering using K-strongest
+         *****************************************************/
         mCurrentRImage.performKStrong(K, Z_MIN);
-        mCurrentRImage.computeOrientedSurfacePoints();
-
-        // Save world pose for velocity propagation later
-        prevWorldPose.copyFrom(currWorldPose);
 
         /******************************************************
-         * Motion Undistortion
+         * Motion Undistortion (on filtered points)
          *****************************************************/
         mCurrentRImage.performMotionUndistortion(velocity, mMotionTimeVector);
 
         /******************************************************
+         * Compute oriented surface points (ORSP)
+         *****************************************************/
+        mCurrentRImage.computeOrientedSurfacePoints();
+
+        /******************************************************
          * Image registration and pose estimation
          *****************************************************/
+        // Save world pose for velocity propagation later
+        prevWorldPose.copyFrom(currWorldPose);
+
         // Ceres build and solve problem
         const bool success = buildAndSolveRegistrationProblem(
             mCurrentRImage, keyframeList, currWorldPose);
@@ -293,6 +299,10 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
 
         // Save pose to file
         poseOutputFile << currWorldPose.toString();
+
+        /*******************************************
+         * Velocity and Frame to Frame propagation
+         *******************************************/
 
         // Obtain transform from current world pose to
         // previous pose for velocity/seed pose propagation

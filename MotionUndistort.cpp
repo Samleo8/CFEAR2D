@@ -13,6 +13,8 @@
 #include "Pose2D.hpp"
 
 #include "OptimisationHandler.hpp"
+#include "PoseTransformHandler.hpp"
+#include "RadarImageHandler.hpp"
 
 /**
  * @brief Get transform matrix for undistorting motion given time and velocity
@@ -59,40 +61,43 @@ const size_t azimuthToIndex(const double aAzimuthRad, const size_t aNAzimuths,
 /**
  * @brief Undistorts feature points given a velocity and time vector
  *
- * @param[in] aORSPLocal Local ORSP feature point to undistort
+ * @param[in] aFilteredPtLocal Local ORSP feature point to undistort
  * @param[in] aVelocity Velocity of the vehicle
  * @param[in] aTimeVector Time vector
- * @param[in] aUndistortedORSPLocal Undistorted ORSP feature point, in local
- * coordinates
+ * @param[in] aUndistortedFilteredPtLocal Undistorted ORSP feature point, in
+ * local coordinates
  */
-void undistortORSP(const ORSP<double> &aORSPLocal,
-                   const Pose2D<double> &aVelocity,
-                   const VectorXT<double> &aTimeVector,
-                   ORSP<double> &aUndistortedORSPLocal) {
-    // First get the associated azimuth of the ORSP point
-    const Vector2T<double> &center = aORSPLocal.center;
-    const double azimuth = std::atan2(center[1], center[0]);
+void undistortPoint(const FilteredPoint &aFilteredPtLocal,
+                    const Pose2D<double> &aVelocity,
+                    const VectorXT<double> &aTimeVector,
+                    FilteredPoint &aUndistortedFilteredPtLocal) {
+    // First get the associated azimuth of the filtered point
+    const double azimuth = std::atan2(aFilteredPtLocal[1], aFilteredPtLocal[0]);
 
     // Get the associated time and thus vel transformation matrix
     const size_t velInd = azimuthToIndex(azimuth, aTimeVector.size());
     const double time = aTimeVector[velInd];
 
-    // TODO: Inversion might be necessary because vehicle "forward" movement
-    // results in point being more "backwards"
-    const PoseTransform2D<double> velTrans =
-        getVelocityTransform(aVelocity, time).inverse();
+    const PoseTransform2D<double> velTrans = getVelocityTransform(aVelocity, time);
 
-    convertORSPCoordinates(aORSPLocal, aUndistortedORSPLocal, velTrans);
+    aUndistortedFilteredPtLocal =
+        convertCoordinate<double>(aFilteredPtLocal, velTrans, false);
 }
 
 /**
- * @brief Perform motion undistortion on internal vector of ORSP feature points
+ * @brief Perform motion undistortion on internal vector of filtered points in
+ * local frame
+ *
+ * @param[in] aVelocity Velocity vector in the form of a 2D pose (vx, vy, omega)
+ * @param[in] aTimeVector Cached vector of time values for computing
+ * intermediate azimuths
+ *
  */
 void RadarImage::performMotionUndistortion(
     const Pose2D<double> &aVelocity, const VectorXT<double> &aTimeVector) {
 
     // Replace current ORSP feature points with undistorted ones
-    for (ORSP<double> &orsp : mORSPFeaturePoints) {
-        undistortORSP(orsp, aVelocity, aTimeVector, orsp);
+    for (FilteredPoint filteredPt : mFilteredPoints) {
+        undistortPoint(filteredPt, aVelocity, aTimeVector, filteredPt);
     }
 }
