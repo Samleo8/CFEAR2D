@@ -11,9 +11,8 @@
 #include "MotionUndistort.hpp"
 #include "ORSP.hpp"
 #include "Pose2D.hpp"
-#include <cstddef>
 
-template <typename T> extern T constrainAngle(const T &aAngleRad);
+#include "OptimisationHandler.hpp"
 
 /**
  * @brief Get transform matrix for undistorting motion given time and velocity
