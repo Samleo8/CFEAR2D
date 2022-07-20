@@ -204,6 +204,7 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     r1.computeOrientedSurfacePoints();
 
     // Try motion undistortion
+    /*
     constexpr double SCAN_PERIOD = 0.25; // seconds
     Pose2D<double> velocity(1.578334 / 0.25, -0.022725, -0.00981);
     velocity /= SCAN_PERIOD;
@@ -213,7 +214,8 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
         generateTimeVector<RADAR_NAZIMUTHS>(SCAN_PERIOD);
 
     r1.performMotionUndistortion(velocity, aTimeVector);
-
+    */
+    
     const ORSPVec<double> &featurePoints = r1.getORSPFeaturePoints();
 
     // Draw ORSP points
