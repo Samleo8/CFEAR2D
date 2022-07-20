@@ -16,16 +16,9 @@
 
 #include "ORSP.hpp"
 #include "OrientedSurfacePointsHandler.hpp" // some ORSP-related functions for the
+#include "Pose2D.hpp"
 #include "RadarImageHandler.hpp" // needed to handle file path and data
                                  // RadarImage class are defined here
-
-// Constants
-/** @brief Tau = 2 * Pi. Used for radian conversion and img proc */
-#ifndef M_TAU
-#define M_TAU 6.2831853071795864769
-#endif
-
-// const double RANGE_RESOLUTION = 0.49107142857142855; // m per px
 
 /** @brief Default high-pass filter size */
 constexpr double DEFAULT_FILTER_SIZE = 150;
@@ -70,7 +63,7 @@ class RadarImage {
      */
     Eigen::Vector2d mORSPCentroidGrid[ORSP_GRID_N][ORSP_GRID_N];
 
-    /** @brief Vector of oriented surface points */
+    /** @brief Vector of oriented surface points, local coordinates */
     ORSPVec<double> mORSPFeaturePoints;
 
     // TODO: Unused for now
@@ -139,6 +132,7 @@ class RadarImage {
     const FilteredPointsVec &getFilteredPoints() const;
 
     // Generating Oriented Surface Points
+    // NOTE: Implemented in OrientedSurfacePointsHandler.cpp
     void clearORSPInfo();
     void downsamplePointCloud();
     void findValidNeighbours(Point2DList &aValidNeighbours, const size_t aGridX,
@@ -147,6 +141,10 @@ class RadarImage {
     void computeOrientedSurfacePoints();
 
     const ORSPVec<double> &getORSPFeaturePoints() const;
+
+    // Motion Undistortion
+    void performMotionUndistortion(const Pose2D<double> &aVelocity,
+                                   const VectorXT<double> &aTimeVector);
 
     // NOTE: UNUSED
     void performFFTOnImage(ImageType &aSrcImageType, cv::Mat &aDestImage);

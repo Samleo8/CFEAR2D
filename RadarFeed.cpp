@@ -9,6 +9,8 @@
  */
 
 #include "RadarFeed.hpp"
+#include "Pose2D.hpp"
+#include "RadarImageHandler.hpp"
 
 namespace fs = std::filesystem;
 
@@ -254,16 +256,33 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
     poseOutputFile.open(poseOutputPath,
                         std::ofstream::out | std::ofstream::trunc);
 
+    // Velocity needed for motion undistortion, init at 0
+    Pose2D<double> velocity(0, 0, 0);
+
     // Keep finding frames
     while (nextFrame()) {
         if (mCurrentFrameIdx == aEndFrameID) break;
 
         std::cout << "[Frame " << mCurrentFrameIdx << "]" << std::endl;
 
-        // K-filtering and ORSP
+        /******************************************************
+         * Filtering using K-strongest
+         *****************************************************/
         mCurrentRImage.performKStrong(K, Z_MIN);
+
+        /******************************************************
+         * Motion Undistortion (on filtered points)
+         *****************************************************/
+        mCurrentRImage.performMotionUndistortion(velocity, mMotionTimeVector);
+
+        /******************************************************
+         * Compute oriented surface points (ORSP)
+         *****************************************************/
         mCurrentRImage.computeOrientedSurfacePoints();
 
+        /******************************************************
+         * Image registration and pose estimation
+         *****************************************************/
         // Save world pose for velocity propagation later
         prevWorldPose.copyFrom(currWorldPose);
 
@@ -280,6 +299,10 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
 
         // Save pose to file
         poseOutputFile << currWorldPose.toString();
+
+        /*******************************************
+         * Velocity and Frame to Frame propagation
+         *******************************************/
 
         // Obtain transform from current world pose to
         // previous pose for velocity/seed pose propagation
@@ -328,6 +351,9 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
             /************************************************************
              * Velocity propagation
              ***********************************************************/
+            // Set velocity for motion undistortion
+            velocity = f2fDeltaPose;
+            velocity /= RadarFeed::RADAR_SCAN_PERIOD;
 
             // Now actually change the world pose, updating using transforms
             // because additive might not account for rotation well
@@ -340,6 +366,7 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         else {
             // TODO: Do we revert to previous pose or propagate by 0 velocity?
             currWorldPose = prevWorldPose;
+            velocity.setZero();
 
             std::cout << "Stationary. Reverting back to "
                          "previous pose."

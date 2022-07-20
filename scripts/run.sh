@@ -13,8 +13,16 @@ fi
 echo "[Dataset $DATASET_ID]"
 
 if [[ $TARGET == "main" || $TARGET == "cfear" || $TARGET == "feed" ]]; then
+    if [[ $START_IND == 0 && $END_IND == -1 ]]; then
+        echo "NOTE: Running on full sequence! Benchmarks will be performed after completion."
+    fi
+
     ./build/RunCFEAR $DATASET_ID $START_IND $END_IND || exit 1
     ./scripts/run.sh $DATASET_ID plotter $START_IND $END_IND
+
+    if [[ $START_IND == 0 && $END_IND == -1 ]]; then
+        ./scripts/run.sh $DATASET_ID benchmark $START_IND $END_IND
+    fi
 elif [[ $TARGET == "radar" || $TARGET == "video" || $TARGET == "filter" ]]; then
     for ((IMG_IND = $START_IND; IMG_IND <= $END_IND; IMG_IND++)); do
         echo " > Running on image $IMG_IND"
@@ -38,7 +46,7 @@ elif [[ $TARGET == "groundtruth" || $TARGET == "gt" || $TARGET == "procgt" ]]; t
     ./build/ProcessGroundTruth $DATASET_ID || exit 1
 elif [[ $TARGET == "debug" ]]; then
     ./build/TestCostFunction $DATASET_ID $START_IND || exit 1
-    python plotter/parseORSP.py $DATASET_ID $START_IND $(( $START_IND + 3 ))
+    python plotter/parseORSP.py $DATASET_ID $START_IND $(($START_IND + 3))
 elif [[ $TARGET == "keyframe" ]]; then
     ./build/TestKeyframe $DATASET_ID $START_IND $END_IND || exit 1
     ./scripts/run.sh $DATASET_ID plotter_nogt $START_IND $END_IND

@@ -38,9 +38,9 @@ convertCoordinate(const Vector2T<T> &aCoordinate,
                   bool isVector = false);
 
 template <typename T>
-void convertORSPCoordinates(const ORSP<T> &aLocalORSPPoint,
-                            ORSP<T> &aWorldORSPPoint,
-                            const PoseTransform2D<T> &aWorldPoseTransform);
+void convertORSPCoordinates(const ORSP<T> &aInputORSPPoint,
+                            ORSP<T> &aOutputORSPPoint,
+                            const PoseTransform2D<T> &aConversionTransform);
 
 // Include implementation file
 #include "PoseTransformHandler.tpp"

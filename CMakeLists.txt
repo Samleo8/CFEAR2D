@@ -22,6 +22,7 @@ add_executable(
   TestRadar
   CVColor.cpp
   ImageProcessing.cpp
+  MotionUndistort.cpp
   PointPolar.cpp 
   RadarImageHandler.cpp
   RadarImage.cpp
@@ -34,24 +35,25 @@ set_property(TARGET TestRadar PROPERTY CXX_STANDARD 17)
 target_link_libraries(TestRadar ${OpenCV_LIBS})
 
 # # Keyframe Testing Module
-add_executable(
-  TestKeyframe
-  CVColor.cpp
-  ImageProcessing.cpp
-  PointPolar.cpp 
-  RadarImageHandler.cpp
-  Keyframe.cpp
-  RadarImage.cpp
-  RegistrationCostFunctor.cpp
-  OptimisationHandler.cpp
-  OrientedSurfacePointsHandler.cpp
-  RadarFeedHandler.cpp
-  RadarFeed.cpp
-  TestKeyframe.cpp
-)
-set_property(TARGET TestKeyframe PROPERTY C_STANDARD 11)
-set_property(TARGET TestKeyframe PROPERTY CXX_STANDARD 17)
-target_link_libraries(TestKeyframe ${OpenCV_LIBS} ${CERES_LIBRARIES})
+# add_executable(
+#   TestKeyframe
+#   CVColor.cpp
+#   ImageProcessing.cpp
+#   PointPolar.cpp 
+#   RadarImageHandler.cpp
+#   Keyframe.cpp
+#   RadarImage.cpp
+#   RegistrationCostFunctor.cpp
+#   OptimisationHandler.cpp
+#   OrientedSurfacePointsHandler.cpp
+#   MotionUndistort.cpp
+#   RadarFeedHandler.cpp
+#   RadarFeed.cpp
+#   TestKeyframe.cpp
+# )
+# set_property(TARGET TestKeyframe PROPERTY C_STANDARD 11)
+# set_property(TARGET TestKeyframe PROPERTY CXX_STANDARD 17)
+# target_link_libraries(TestKeyframe ${OpenCV_LIBS} ${CERES_LIBRARIES})
 
 # # Debugging of Cost Function
 # add_executable(
@@ -107,6 +109,7 @@ add_executable(
   RegistrationCostFunctor.cpp
   OptimisationHandler.cpp
   OrientedSurfacePointsHandler.cpp
+  MotionUndistort.cpp
   RadarFeedHandler.cpp
   RadarFeed.cpp
   RunCFEAR.cpp
