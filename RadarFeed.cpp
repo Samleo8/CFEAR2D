@@ -275,7 +275,7 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         /******************************************************
          * Motion Undistortion
          *****************************************************/
-        mCurrentRImage.performMotionUndistortion(velocity, mMotionTimeVector);
+        // mCurrentRImage.performMotionUndistortion(velocity, mMotionTimeVector);
 
         /******************************************************
          * Image registration and pose estimation
