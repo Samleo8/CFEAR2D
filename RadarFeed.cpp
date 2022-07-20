@@ -274,7 +274,8 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         /******************************************************
          * Motion Undistortion (on filtered points)
          *****************************************************/
-        // mCurrentRImage.performMotionUndistortion(velocity, mMotionTimeVector);
+        // mCurrentRImage.performMotionUndistortion(velocity,
+        // mMotionTimeVector);
 
         /******************************************************
          * Compute oriented surface points (ORSP)
@@ -353,7 +354,12 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
              ***********************************************************/
             // Use ground truth values for rotational propagation
             // NOTE: This simulates accurate rotational data from an IMU
-            double groundTruthRot = mGroundTruths[aStartFrameID].dRotRad;
+            const size_t nextFrameIdx = mCurrentFrameIdx + 1;
+
+            const double groundTruthRot =
+                (isWithinBounds(nextFrameIdx))
+                    ? mGroundTruths[nextFrameIdx].dRotRad
+                    : 0;
             f2fDeltaPose.orientation = groundTruthRot;
 
             // Set velocity for motion undistortion
