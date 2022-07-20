@@ -63,7 +63,7 @@ class RadarImage {
      */
     Eigen::Vector2d mORSPCentroidGrid[ORSP_GRID_N][ORSP_GRID_N];
 
-    /** @brief Vector of oriented surface points */
+    /** @brief Vector of oriented surface points, local coordinates */
     ORSPVec<double> mORSPFeaturePoints;
 
     // TODO: Unused for now
