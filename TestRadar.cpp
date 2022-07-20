@@ -204,7 +204,7 @@ void outputImgFromFrames(const unsigned int dataset, const unsigned int r1ID,
     r1.computeOrientedSurfacePoints();
 
     // Try motion undistortion
-    Pose2D<double> velocity(0, 0, 0);
+    Pose2D<double> velocity(1.578334, -0.022725, -0.00981);
     constexpr int RADAR_NAZIMUTHS = RADAR_IMAGE_POLAR_N_AZIMUTHS_PX;
     const VectorDimd<RADAR_NAZIMUTHS> aTimeVector =
         generateTimeVector<RADAR_NAZIMUTHS>(0.25);
