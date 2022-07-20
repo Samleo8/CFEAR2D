@@ -78,10 +78,7 @@ void undistortPoint(const FilteredPoint &aFilteredPtLocal,
     const size_t velInd = azimuthToIndex(azimuth, aTimeVector.size());
     const double time = aTimeVector[velInd];
 
-    // TODO: Inversion might be necessary because vehicle "forward" movement
-    // results in point being more "backwards"
-    const PoseTransform2D<double> velTrans =
-        getVelocityTransform(aVelocity, time).inverse();
+    const PoseTransform2D<double> velTrans = getVelocityTransform(aVelocity, time);
 
     aUndistortedFilteredPtLocal =
         convertCoordinate<double>(aFilteredPtLocal, velTrans, false);
