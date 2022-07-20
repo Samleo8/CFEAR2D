@@ -78,7 +78,7 @@ void undistortORSP(const ORSP<double> &aORSPLocal,
     const double time = aTimeVector[velInd];
 
     const PoseTransform2D<double> velTrans =
-        getVelocityTransform(aVelocity, time);
+        getVelocityTransform(aVelocity, time).inverse();
 
     convertORSPCoordinates(aORSPLocal, aUndistortedORSPLocal, velTrans);
 }
