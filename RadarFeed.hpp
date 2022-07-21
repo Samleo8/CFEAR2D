@@ -58,6 +58,13 @@ namespace fs = std::filesystem;
  */
 class RadarFeed {
   private:
+    // CONSTANTS (FLAGS)
+    /** @brief Whether to perform motion undistortion */
+    static constexpr bool DO_MOTION_UNDISTORTION = true;
+
+    /** @brief Whether to simulate IMU via by propagating rot GT */
+    static constexpr bool DO_SIMULATED_IMU = false;
+
     // CONSTANTS FOR SEQUENTIAL PROCESSING
 
     /** @brief Radar scan frequency in Hz. Used for motion undistortion */
@@ -78,6 +85,8 @@ class RadarFeed {
      * vector space */
     static constexpr size_t EXPECTED_NUM_IMAGES = 8000;
 
+    // CONSTANTS FOR FILTERING / OPTIMISATION HANDLING
+
     /** @brief Filtering: number of points */
     static constexpr size_t K = 12;
 
@@ -86,6 +95,8 @@ class RadarFeed {
 
     /** @brief Keyframe buffer size */
     static constexpr int KF_BUFF_SIZE = 3;
+
+    // CONSTANTS FOR STAITONARY CHECKS
 
     /** @brief Whether to perform stationary check on keyframes
      */
@@ -104,6 +115,8 @@ class RadarFeed {
     /** @brief Square of @see DIST_STATIONARY_THRESH for speed */
     static constexpr double DIST_STATIONARY_THRESH_SQ =
         DIST_STATIONARY_THRESH * DIST_STATIONARY_THRESH;
+
+    // MEMBER VARIABLES
 
     /** @brief Current RadarImage in feed */
     RadarImage mCurrentRImage;

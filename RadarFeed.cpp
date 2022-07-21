@@ -275,7 +275,9 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         /******************************************************
          * Motion Undistortion (on filtered points)
          *****************************************************/
-        // mCurrentRImage.performMotionUndistortion(velocity, mMotionTimeVector);
+        if (DO_MOTION_UNDISTORTION)
+            mCurrentRImage.performMotionUndistortion(velocity,
+                                                     mMotionTimeVector);
 
         /******************************************************
          * Compute oriented surface points (ORSP)
@@ -357,12 +359,10 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
 
             // NOTE: This already gets the next frame's GT poses because
             // mGroundTruths[i] is equivalent to getting odom from i-1 to i
-            const RotTransData gt = mGroundTruths[mCurrentFrameIdx];
-            f2fDeltaPose.orientation = gt.dRotRad;
-
-            // TODO: Remove
-            // f2fDeltaPose.position[0] = gt.dx;
-            // f2fDeltaPose.position[1] = gt.dy;
+            if (DO_SIMULATED_IMU) {
+                const RotTransData gt = mGroundTruths[mCurrentFrameIdx];
+                f2fDeltaPose.orientation = gt.dRotRad;
+            }
 
             // Set velocity for motion undistortion
             velocity = f2fDeltaPose;
