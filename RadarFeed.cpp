@@ -10,7 +10,9 @@
 
 #include "RadarFeed.hpp"
 #include "Pose2D.hpp"
+#include "PoseTransformHandler.hpp"
 #include "RadarImageHandler.hpp"
+#include "TransformDefines.hpp"
 
 namespace fs = std::filesystem;
 
@@ -273,7 +275,9 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         /******************************************************
          * Motion Undistortion (on filtered points)
          *****************************************************/
-        mCurrentRImage.performMotionUndistortion(velocity, mMotionTimeVector);
+        if (DO_MOTION_UNDISTORTION)
+            mCurrentRImage.performMotionUndistortion(velocity,
+                                                     mMotionTimeVector);
 
         /******************************************************
          * Compute oriented surface points (ORSP)
@@ -303,10 +307,9 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
         /*******************************************
          * Velocity and Frame to Frame propagation
          *******************************************/
-
         // Obtain transform from current world pose to
         // previous pose for velocity/seed pose propagation
-        PoseTransform2D<double> frame2FrameTransf =
+        const PoseTransform2D<double> frame2FrameTransf =
             getTransformsBetweenPoses(prevWorldPose, currWorldPose);
 
         /*******************************************
@@ -351,6 +354,16 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
             /************************************************************
              * Velocity propagation
              ***********************************************************/
+            // Use ground truth values for rotational propagation
+            // NOTE: This simulates accurate rotational data from an IMU
+
+            // NOTE: This already gets the next frame's GT poses because
+            // mGroundTruths[i] is equivalent to getting odom from i-1 to i
+            if (DO_SIMULATED_IMU) {
+                const RotTransData gt = mGroundTruths[mCurrentFrameIdx];
+                f2fDeltaPose.orientation = gt.dRotRad;
+            }
+
             // Set velocity for motion undistortion
             velocity = f2fDeltaPose;
             velocity /= RadarFeed::RADAR_SCAN_PERIOD;
@@ -358,7 +371,7 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
             // Now actually change the world pose, updating using transforms
             // because additive might not account for rotation well
             currWorldPose = transformToPose(poseToTransform(currWorldPose) *
-                                            frame2FrameTransf);
+                                            poseToTransform(f2fDeltaPose));
 
             std::cout << "Movement with delta: " << f2fDeltaPose.toString()
                       << std::endl;
