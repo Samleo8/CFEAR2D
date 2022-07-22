@@ -15,6 +15,12 @@ C++ Implementation of [CFEAR paper](https://arxiv.org/pdf/2105.01457.pdf)
   - [Other Resources](#other-resources)
     - [Robot Car SDK (Viewing Toolkit)](#robot-car-sdk-viewing-toolkit)
 
+## Results
+
+Result on sequence 10-11-46 of [Oxford Radar RobotCar Dataset](https://oxford-robotics-institute.github.io/radar-robotcar-dataset/datasets), comparing outputs with and without motion undistortion/fake IMU.
+
+![10-11-46-compare](./img/CFEAR_compare_101146.jpg)
+
 ## Requirements
 
 C++ >= C++17
