@@ -362,8 +362,8 @@ void RadarImage::getTopK(const uint8_t *aAzim, const size_t aSize,
     aTopKVec.clear();
     aTopKVec.reserve(aK);
 
-    size_t kpq = pq.size();
-    for (size_t i = 0; i < kpq; i++) {
+    // size_t kpq = pq.size();
+    for (size_t i = 0; i < aK; i++) {
         aTopKVec.push_back(pq.top());
         pq.pop();
     }
