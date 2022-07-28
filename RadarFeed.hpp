@@ -60,7 +60,7 @@ class RadarFeed {
   private:
     // CONSTANTS (FLAGS)
     /** @brief Whether to perform motion undistortion */
-    static constexpr bool DO_MOTION_UNDISTORTION = false;
+    static constexpr bool DO_MOTION_UNDISTORTION = true;
 
     /** @brief Whether to simulate IMU via by propagating rot GT */
     static constexpr bool DO_SIMULATED_IMU = true;
