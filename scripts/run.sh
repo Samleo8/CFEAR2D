@@ -39,6 +39,10 @@ elif [[ $TARGET == "benchmark" ]]; then
     ./scripts/run.sh $DATASET_ID gt || exit 1
     ./scripts/run.sh $DATASET_ID kitti -1 || exit 1
     ./scripts/run.sh $DATASET_ID kitti $START_IND $END_IND || exit 1
+
+    rm -rf results/poses/plots
+    rm -rf results/poses/saved_results
+    
     ./scripts/startBenchmark.sh $DATASET_ID $START_IND $END_IND || exit 1
 elif [[ $TARGET == "kitti" ]]; then
     ./build/PosesToKITTI $DATASET_ID $START_IND $END_IND
