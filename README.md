@@ -3,6 +3,7 @@
 C++ Implementation of [CFEAR paper](https://arxiv.org/pdf/2105.01457.pdf)
 
 - [CFEAR](#cfear)
+  - [Results](#results)
   - [Requirements](#requirements)
   - [Build](#build)
     - [Linux](#linux)
@@ -11,6 +12,7 @@ C++ Implementation of [CFEAR paper](https://arxiv.org/pdf/2105.01457.pdf)
     - [Radar Image Format](#radar-image-format)
   - [Universal Run Script](#universal-run-script)
     - [Target Names](#target-names)
+  - [Benchmarking](#benchmarking)
   - [Code Documentation](#code-documentation)
   - [Other Resources](#other-resources)
     - [Robot Car SDK (Viewing Toolkit)](#robot-car-sdk-viewing-toolkit)
@@ -20,6 +22,10 @@ C++ Implementation of [CFEAR paper](https://arxiv.org/pdf/2105.01457.pdf)
 Result on sequence 10-11-46 of [Oxford Radar RobotCar Dataset](https://oxford-robotics-institute.github.io/radar-robotcar-dataset/datasets), comparing outputs with and without motion undistortion/fake IMU.
 
 ![10-11-46-compare](./img/CFEAR_compare_101146.jpg)
+
+It is noted that I am unable to reproduce the results presented in the paper. The relative translation and yaw based on the KITTI benchmarking process (see [below](#benchmarking)) is shown below. 
+
+![10-11-46-KITTI-benchmark](./img/KITTI_101146.jpg)
 
 ## Requirements
 
