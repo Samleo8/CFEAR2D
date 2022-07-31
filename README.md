@@ -1,6 +1,6 @@
 # CFEAR
 
-C++ Implementation of [CFEAR paper](https://arxiv.org/pdf/2105.01457.pdf)
+C++ Implementation of [CFEAR paper](https://arxiv.org/pdf/2105.01457.pdf). There is an added component where ground truth yaw values are used to propagate rotational velocity. This simulates the presence of an IMU, and was added as an attempt to improve the [results](#results). However, I am still unable to replicate the results of the original paper.
 
 - [CFEAR](#cfear)
   - [Results](#results)
@@ -23,7 +23,7 @@ Result on sequence 10-11-46 of [Oxford Radar RobotCar Dataset](https://oxford-ro
 
 ![10-11-46-compare](./img/CFEAR_compare_101146.jpg)
 
-It is noted that I am unable to reproduce the results presented in the paper. The relative translation and yaw based on the KITTI benchmarking process (see [below](#benchmarking)) is shown below. 
+It is noted that I am unable to reproduce the results presented in the paper. The relative translation and yaw based on the KITTI benchmarking process (see [below](#benchmarking)) for the best result (with fake IMU and motion undistortion) is shown below:
 
 ![10-11-46-KITTI-benchmark](./img/KITTI_101146.jpg)
 
