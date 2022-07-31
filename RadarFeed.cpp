@@ -231,7 +231,7 @@ void RadarFeed::run(const int aStartFrameID, const int aEndFrameID,
     loadFrame(aStartFrameID);
 
     // NOTE: Remember to compute oriented surface points
-    mCurrentRImage.performKStrong(K, Z_MIN);
+    mCurrentRImage.performRadarFiltering(DEFAULT_FILTERING_ALGORITHM, K, Z_MIN);
     mCurrentRImage.computeOrientedSurfacePoints();
 
     // Saving of previous and current world pose

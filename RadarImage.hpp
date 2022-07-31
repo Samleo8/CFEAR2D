@@ -107,6 +107,12 @@ class RadarImage {
         // subCart
     };
 
+    /**
+     * @brief Enum for filtering algorithm
+     * @return Raw image
+     */
+    enum FilteringAlgorithm { K_STRONGEST, OS_CFAR };
+
     const cv::Mat &getImage(ImageType aType) const;
     const cv::Mat &getImageRaw() const;
     const cv::Mat &getImageMetaData() const;
@@ -125,6 +131,9 @@ class RadarImage {
     void preprocessImages();
 
     // Filtering process
+    void performRadarFiltering(FilteringAlgorithm aFilterAlgo, const size_t aK,
+                               const double aZmin, const bool aClearOld);
+
     void getTopK(const uint8_t *aAzim, const size_t aSize, const size_t aK,
                  std::vector<ValueIndexPair> &aTopKVec) const;
     void performKStrong(const size_t aK, const double aZmin,

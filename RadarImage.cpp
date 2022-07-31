@@ -330,6 +330,23 @@ void RadarImage::preprocessImages() {
 }
 
 /**
+ * @brief Perform filtering on radar image
+ */
+void RadarImage::performRadarFiltering(FilteringAlgorithm aFilterAlgo,
+                                       const size_t aK, const double aZmin,
+                                       const bool aClearOld) {
+    switch (aFilterAlgo) {
+        case K_STRONGEST: performKStrong(aK, aZmin, aClearOld); break;
+        case OS_CFAR:
+            // TODO: Function for OS CFAR
+            break;
+        default:
+            std::cerr << "[ERROR] Invalid filtering algorithm!" << std::endl;
+            break;
+    }
+}
+
+/**
  * @brief Efficient way of getting top k indices and values via priority
  * queue
  * @note Should be approximately n log kpq
@@ -413,7 +430,8 @@ void RadarImage::performKStrong(const size_t aK, const double aZmin,
 
         getTopK(Mi_const, N, aK, topKVec);
 
-        // Now loop through the top k and add them to the feature points vector
+        // Now loop through the top k and add them to the feature points
+        // vector
         for (int j = 0; j < aK; j++) {
             const ValueIndexPair &pair = topKVec[j];
 

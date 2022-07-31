@@ -93,6 +93,10 @@ class RadarFeed {
     /** @brief Filtering: power min threshold */
     static constexpr double Z_MIN = 55;
 
+    /** @brief Filtering: algorithm */
+    static constexpr FilteringAlgorithm DEFAULT_FILTERING_ALGORITHM =
+        FilteringAlgorithm::K_STRONGEST;
+
     /** @brief Keyframe buffer size */
     static constexpr int KF_BUFF_SIZE = 3;
 
