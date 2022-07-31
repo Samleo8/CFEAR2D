@@ -11,17 +11,14 @@
  * @author Samuel Leong <samleocw@gmail.com>
  */
 
-#ifndef __RADAR_IMAGE_H__
-#define __RADAR_IMAGE_H__
+#ifndef __RADAR_IMAGE_2D_HPP__
+#define __RADAR_IMAGE_2D_HPP__
 
 #include "ORSP.hpp"
 #include "OrientedSurfacePointsHandler.hpp" // some ORSP-related functions for the
 #include "Pose2D.hpp"
 #include "RadarImageHandler.hpp" // needed to handle file path and data
                                  // RadarImage class are defined here
-
-/** @brief Default high-pass filter size */
-constexpr double DEFAULT_FILTER_SIZE = 150;
 
 /**
  * @brief RadarImage class that performs pre-processing on the images. Will
@@ -160,4 +157,4 @@ class RadarImage {
     void performFFTOnImage(const cv::Mat &aSrcImage, cv::Mat &aDestImage);
 };
 
-#endif
+#endif // __RADAR_IMAGE_2D_HPP__

@@ -5,7 +5,8 @@
  * contain all the needed information about the radar image, such as id,
  * pre-processed image cv::Mat etc.
  *
- * @see RadarImageHandler.cpp/hpp
+ * @see RadarImageHandler.cpp
+ * @see RadarImageHandler.hpp
  *
  * @author Samuel Leong <samleocw@gmail.com>
  */
