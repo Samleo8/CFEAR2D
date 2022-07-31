@@ -132,7 +132,7 @@ class RadarImage {
 
     // Filtering process
     void performRadarFiltering(FilteringAlgorithm aFilterAlgo, const size_t aK,
-                               const double aZmin, const bool aClearOld);
+                               const double aZmin, const bool aClearOld = true);
 
     void getTopK(const uint8_t *aAzim, const size_t aSize, const size_t aK,
                  std::vector<ValueIndexPair> &aTopKVec) const;

@@ -94,8 +94,9 @@ class RadarFeed {
     static constexpr double Z_MIN = 55;
 
     /** @brief Filtering: algorithm */
-    static constexpr FilteringAlgorithm DEFAULT_FILTERING_ALGORITHM =
-        FilteringAlgorithm::K_STRONGEST;
+    static constexpr RadarImage::FilteringAlgorithm
+        DEFAULT_FILTERING_ALGORITHM =
+            RadarImage::FilteringAlgorithm::K_STRONGEST;
 
     /** @brief Keyframe buffer size */
     static constexpr int KF_BUFF_SIZE = 3;
