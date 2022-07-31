@@ -1,9 +1,11 @@
 /**
  * @file RadarFeed.cpp
  *
- * @brief Radar Image class that performs pre-processing on the images. Will
- * contain all the needed information about the radar image, such as id,
- * pre-processed image cv::Mat etc.
+ * @brief RadarFeed class that reads and processes a feed of RadarImages.
+ * In particular, the @see @a run() function performs radar
+ * odometry on a stream/feed of images, as inputted in the @see @a
+ * getDataFromFolder() function. Keyframe registration is also run in
+ * conjunction with the feed.
  *
  * @author Samuel Leong <samleocw@gmail.com>
  */

@@ -1,13 +1,11 @@
 /**
  * @file RadarFeed.hpp
  *
- * @brief RadarFeed class that holds a feed in the form of a vector of
- * RadarImages. In particular, the @see @a run() function performs radar
+ * @brief RadarFeed class that reads and processes a feed of RadarImages.
+ * In particular, the @see @a run() function performs radar
  * odometry on a stream/feed of images, as inputted in the @see @a
- * getDataFromFolder() function, and visualises it on the @see
- * OdometryVisualiser
- *
- * Pose graph optimisation is also run in conjunction with the feed.
+ * getDataFromFolder() function. Keyframe registration is also run in
+ * conjunction with the feed.
  *
  * @see RadarImage
  * @see RadarFeedHandler.cpp
