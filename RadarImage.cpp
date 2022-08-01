@@ -353,11 +353,11 @@ void RadarImage::performRadarFiltering(FilteringAlgorithm aFilterAlgo,
  * @note Should be approximately n log kpq
  * @ref
  * https://stackoverflow.com/questions/14902876/indices-of-the-k-largest-elements-in-an-unsorted-length-n-array
- * @param[in] aAzim Pointer to azimuth array
- * @param[in] aSize
- * @param[out] aTopKVec Vector of top k
+ * @param[in] aIntensities Pointer to intensity array (indexed by range bin)
+ * @param[in] aSize Size of intensity array
+ * @param[out] aTopKVec Vector of top k <value, index> pairs
  */
-void RadarImage::getTopK(const uint8_t *aAzim, const size_t aSize,
+void RadarImage::getTopK(const uint8_t *aIntensities, const size_t aSize,
                          const size_t aK,
                          std::vector<ValueIndexPair> &aTopKVec) const {
     std::priority_queue<ValueIndexPair> pq;
@@ -366,7 +366,7 @@ void RadarImage::getTopK(const uint8_t *aAzim, const size_t aSize,
     // While pruning away the elements that don't need to be in the queue,
     // thus reducing the size of the queue and improving efficiency
     for (size_t i = 0; i < aSize; i++) {
-        double val = aAzim[i];
+        double val = aIntensities[i];
         if (pq.size() < aK) {
             pq.push(std::make_pair(val, i));
         }
