@@ -76,7 +76,7 @@ void getMeanCovariance(const VectorDimdList<Dimension> &aPoints,
     Eigen::MatrixXd deltaExpected(sz, Dimension);
     deltaExpected = pointsListMat.rowwise() - aMean.transpose();
 
-    aCovMatrix = deltaExpected.transpose() * deltaExpected / sz;
+    aCovMatrix = deltaExpected.transpose() * deltaExpected / (sz - 1);
 }
 
 #endif
