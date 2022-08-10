@@ -27,6 +27,12 @@ It is noted that I am unable to reproduce the results presented in the paper. Th
 
 ![10-11-46-KITTI-benchmark](./img/KITTI_101146.jpg)
 
+**UPDATE:** A bug was found in the estimation of covariance where the covariance matrix was a biased estimate (divide by `n` instead of `n-1`). This has been corrected, but did not make significant difference in the results, shown below:
+
+![10-11-46-compare](./img/CFEAR_compare_101146_unbiased.jpg)
+
+![10-11-46-KITTI-benchmark](./img/KITTI_101146_unbiased.jpg)
+
 ## Requirements
 
 C++ >= C++17
